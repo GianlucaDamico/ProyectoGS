@@ -1,3 +1,4 @@
 .env
 definicionproyecto.txt
 modelusers.txt
+__pycache__/
