@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - CourtlyGPS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .registration-container {
+            width: 100%;
+            max-width: 900px;
+            padding: 20px;
+        }
+
+        .header-section {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        .header-section h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .header-section p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .registration-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .registration-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header-owner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .card-header-player {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 40px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .card-header-owner i,
+        .card-header-player i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .card-header-owner h2,
+        .card-header-player h2 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 30px 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-description {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            flex-grow: 1;
+        }
+
+        .card-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 30px;
+        }
+
+        .card-features li {
+            padding: 8px 0;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .card-features li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .registration-card:nth-child(2) .card-features li:before {
+            color: #f5576c;
+        }
+
+        .btn-register {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-register-owner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-register-owner:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            color: white;
+            transform: scale(1.02);
+        }
+
+        .btn-register-player {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-register-player:hover {
+            background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+            color: white;
+            transform: scale(1.02);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 30px;
+            color: white;
+        }
+
+        .login-link a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .header-section h1 {
+                font-size: 2rem;
+            }
+
+            .header-section p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="registration-container">
+        <div class="header-section">
+            <h1>🏀 CourtlyGPS</h1>
+            <p>¿Cuál es tu rol? Elige el registro adecuado</p>
+        </div>
+
+        <div class="cards-container">
+            <!-- Card para Dueños -->
+            <div class="registration-card">
+                <div class="card-header-owner">
+                    <i class="fas fa-building"></i>
+                    <h2>Soy Dueño</h2>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">
+                        Registrate como dueño de una cancha de baloncesto y gestiona tus instalaciones.
+                    </p>
+                    <ul class="card-features">
+                        <li>Registra tus canchas</li>
+                        <li>Gestiona horarios disponibles</li>
+                        <li>Recibe y gestiona reservas</li>
+                        <li>Controla ingresos</li>
+                    </ul>
+                    <button class="btn-register btn-register-owner">Registrarse como Dueño</button>
+                </div>
+            </div>
+
+            <!-- Card para Jugadores -->
+            <div class="registration-card">
+                <div class="card-header-player">
+                    <i class="fas fa-user"></i>
+                    <h2>Soy Jugador</h2>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">
+                        Registrate como jugador para encontrar canchas y reservar tus turnos favoritos.
+                    </p>
+                    <ul class="card-features">
+                        <li>Descubre canchas cercanas</li>
+                        <li>Reserva turnos</li>
+                        <li>Gestiona tus reservas</li>
+                        <li>Conecta con otros jugadores</li>
+                    </ul>
+                    <button class="btn-register btn-register-player">Registrarse como Jugador</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-link">
+            <p>¿Ya tienes cuenta? <a href="#">Inicia sesión aquí</a></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

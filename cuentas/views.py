@@ -20,3 +20,6 @@ def login(request):
             return render(request, 'cuentas/login.html')
         
         # FALTA CREAR USUARIOS EN LA BASE DE DATOS PARA PROBAR ESTA FUNCIONALIDAD
+
+def register(request):
+    return render(request, 'cuentas/register.html')
