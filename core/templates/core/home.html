@@ -16,8 +16,8 @@
                 <span class="logo-text">Courtly</span>
             </div>
             <div class="nav-links">
-                <a href="#" class="btn-login">Iniciar sesión</a>
-                <a href="#" class="btn-register">Registrarse</a>
+                <a href="{% url 'login' %}" class="btn-login">Iniciar sesión</a>
+                <a href="{% url 'register' %}" class="btn-register">Registrarse</a>
             </div>
         </div>
     </nav>
@@ -75,7 +75,7 @@
                 <div class="owners-text">
                     <h2>¿Tienes un complejo deportivo?</h2>
                     <p>Digitaliza tus reservas y maximiza tus ingresos con Courtly. Gestiona tu complejo de manera fácil y profesional. Obtén más visibilidad, atrae más clientes y optimiza tu operación.</p>
-                    <button class="btn-primary-dark">Registrar mi complejo</button>
+                    <button class="btn-primary-dark" onclick="window.location.href='{% url 'register_propietario' %}'">Registrar mi complejo</button>
                 </div>
             </div>
         </div>
