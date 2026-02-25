@@ -23,3 +23,12 @@ def login(request):
 
 def register(request):
     return render(request, 'cuentas/register.html')
+
+def register_jugador(request):
+    if request.method == 'GET':
+       return render(request, 'cuentas/register_jugador.html')
+    
+    elif request.method == 'POST':
+        pass
+        #Completar
+
