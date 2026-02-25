@@ -32,3 +32,10 @@ def register_jugador(request):
         pass
         #Completar
 
+def register_propietario(request):
+    if request.method == 'GET':
+       return render(request, 'cuentas/register_propietario.html')
+    
+    elif request.method == 'POST':
+        pass
+        #Completar

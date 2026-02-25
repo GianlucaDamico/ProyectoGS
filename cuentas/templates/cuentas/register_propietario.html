@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Propietario</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .form-step {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="password"],
+        input[type="date"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+        }
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        button {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .btn-next {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-next:hover {
+            background-color: #45a049;
+        }
+        .btn-back {
+            background-color: #999;
+            color: white;
+        }
+        .btn-back:hover {
+            background-color: #777;
+        }
+        .btn-finish {
+            background-color: #008CBA;
+            color: white;
+            grid-column: 1 / -1;
+        }
+        .btn-finish:hover {
+            background-color: #007399;
+        }
+        .hidden {
+            display: none;
+        }
+        .password-requirements {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .error {
+            color: #d32f2f;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form id="registroForm" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- PASO 1: FORMULARIO RESPONSABLE -->
+            <div id="paso1" class="form-step-container">
+                <div class="form-title">Datos del Responsable</div>
+                <div class="form-step">Paso 1 de 4</div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nombre_responsable">Nombre del Responsable *</label>
+                        <input type="text" id="nombre_responsable" name="nombre_responsable" required>
+                        <span class="error" id="error_nombre_responsable"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="apellido_responsable">Apellido del Responsable *</label>
+                        <input type="text" id="apellido_responsable" name="apellido_responsable" required>
+                        <span class="error" id="error_apellido_responsable"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dni_nie">DNI/NIE *</label>
+                        <input type="text" id="dni_nie" name="dni_nie" placeholder="Ej: 12345678A" required>
+                        <span class="error" id="error_dni_nie"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="cargo">Cargo *</label>
+                        <select id="cargo" name="cargo" required>
+                            <option value="">Selecciona un cargo</option>
+                            <option value="propietario">Propietario</option>
+                            <option value="gerente">Gerente</option>
+                            <option value="administrador">Administrador</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="telefono_responsable">Teléfono *</label>
+                        <input type="tel" id="telefono_responsable" name="telefono_responsable" placeholder="Ej: +34 600 123 456" required>
+                        <span class="error" id="error_telefono_responsable"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="fecha_nacimiento">Fecha de Nacimiento *</label>
+                        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
+                        <span class="error" id="error_fecha_nacimiento"></span>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-next" onclick="validarPaso1()">Siguiente</button>
+                </div>
+            </div>
+
+            <!-- PASO 2: INFORMACIÓN LEGAL Y FISCAL -->
+            <div id="paso2" class="form-step-container hidden">
+                <div class="form-title">Información Legal y Fiscal</div>
+                <div class="form-step">Paso 2 de 4</div>
+
+                <div class="form-row full">
+                    <div class="form-group">
+                        <label for="nombre_legal">Nombre Legal (Ej: Deportes Madrid S.L.) *</label>
+                        <input type="text" id="nombre_legal" name="nombre_legal" required>
+                        <span class="error" id="error_nombre_legal"></span>
+                    </div>
+                </div>
+
+                <div class="form-row full">
+                    <div class="form-group">
+                        <label for="nombre_complejo">Nombre del Complejo (Ej: El picadito) *</label>
+                        <input type="text" id="nombre_complejo" name="nombre_complejo" required>
+                        <span class="error" id="error_nombre_complejo"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_fiscal">ID Fiscal (CUIT/CIF/NIF) *</label>
+                        <input type="text" id="id_fiscal" name="id_fiscal" placeholder="Ej: A12345678" required>
+                        <span class="error" id="error_id_fiscal"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="categoria_fiscal">Categoría Fiscal *</label>
+                        <select id="categoria_fiscal" name="categoria_fiscal" required>
+                            <option value="">Selecciona una categoría</option>
+                            <option value="monotributo">Monotributo</option>
+                            <option value="responsable_inscripto">Responsable Inscripto</option>
+                            <option value="exento">Exento</option>
+                            <option value="no_categorizado">No Categorizado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row full">
+                    <div class="form-group">
+                        <label for="documentos">Documentos Adjuntos</label>
+                        <input type="file" id="documentos" name="documentos" multiple accept=".pdf,.doc,.docx,.jpg,.png">
+                        <span class="password-requirements">Formatos aceptados: PDF, DOC, DOCX, JPG, PNG</span>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-back" onclick="mostrarPaso1()">Anterior</button>
+                    <button type="button" class="btn-next" onclick="validarPaso2()">Siguiente</button>
+                </div>
+            </div>
+
+            <!-- PASO 3: UBICACIÓN Y CONTACTO -->
+            <div id="paso3" class="form-step-container hidden">
+                <div class="form-title">Ubicación y Contacto</div>
+                <div class="form-step">Paso 3 de 4</div>
+
+                <div class="form-row full">
+                    <div class="form-group">
+                        <label for="calle">Calle *</label>
+                        <input type="text" id="calle" name="calle" required>
+                        <span class="error" id="error_calle"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="altura">Altura *</label>
+                        <input type="text" id="altura" name="altura" required>
+                        <span class="error" id="error_altura"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="piso_departamento">Piso/Departamento</label>
+                        <input type="text" id="piso_departamento" name="piso_departamento">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ciudad">Ciudad *</label>
+                        <input type="text" id="ciudad" name="ciudad" required>
+                        <span class="error" id="error_ciudad"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="barrio">Barrio *</label>
+                        <input type="text" id="barrio" name="barrio" required>
+                        <span class="error" id="error_barrio"></span>
+                    </div>
+                </div>
+
+                <div class="form-row full">
+                    <div class="form-group">
+                        <label for="google_maps">Link Google Maps</label>
+                        <input type="text" id="google_maps" name="google_maps" placeholder="https://maps.google.com/...">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="telefono_comercial">Teléfono Comercial *</label>
+                        <input type="tel" id="telefono_comercial" name="telefono_comercial" required>
+                        <span class="error" id="error_telefono_comercial"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="email_comercial">Email Comercial *</label>
+                        <input type="email" id="email_comercial" name="email_comercial" required>
+                        <span class="error" id="error_email_comercial"></span>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-back" onclick="mostrarPaso2()">Anterior</button>
+                    <button type="button" class="btn-next" onclick="validarPaso3()">Siguiente</button>
+                </div>
+            </div>
+
+            <!-- PASO 4: CUENTA -->
+            <div id="paso4" class="form-step-container hidden">
+                <div class="form-title">Datos de Cuenta</div>
+                <div class="form-step">Paso 4 de 4</div>
+
+                <div class="form-row full">
+                    <div class="form-group">
+                        <label for="usuario_complejo">Nombre de Usuario *</label>
+                        <input type="text" id="usuario_complejo" name="usuario_complejo" required>
+                        <span class="error" id="error_usuario_complejo"></span>
+                    </div>
+                </div>
+
+                <div class="form-row full">
+                    <div class="form-group">
+                        <label for="contraseña">Contraseña *</label>
+                        <input type="password" id="contraseña" name="contraseña" required>
+                        <span class="password-requirements">Mínimo 8 caracteres, incluir mayúscula, minúscula y número</span>
+                        <span class="error" id="error_contraseña"></span>
+                    </div>
+                </div>
+
+                <div class="form-row full">
+                    <div class="form-group">
+                        <label for="confirmar_contraseña">Confirmar Contraseña *</label>
+                        <input type="password" id="confirmar_contraseña" name="confirmar_contraseña" required>
+                        <span class="error" id="error_confirmar_contraseña"></span>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-back" onclick="mostrarPaso3()">Anterior</button>
+                    <button type="submit" class="btn-finish" onclick="validarPaso4(event)">Finalizar Registro</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function mostrarPaso(numeroPaso) {
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`paso${i}`).classList.add('hidden');
+            }
+            document.getElementById(`paso${numeroPaso}`).classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function mostrarPaso1() { mostrarPaso(1); }
+        function mostrarPaso2() { mostrarPaso(2); }
+        function mostrarPaso3() { mostrarPaso(3); }
+
+        function esAdulto(fechaNacimiento) {
+            const hoy = new Date();
+            const nacimiento = new Date(fechaNacimiento);
+            let edad = hoy.getFullYear() - nacimiento.getFullYear();
+            const mes = hoy.getMonth() - nacimiento.getMonth();
+            if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
+                edad--;
+            }
+            return edad >= 18;
+        }
+
+        function validarPaso1() {
+            const nombre = document.getElementById('nombre_responsable').value.trim();
+            const apellido = document.getElementById('apellido_responsable').value.trim();
+            const dni = document.getElementById('dni_nie').value.trim();
+            const cargo = document.getElementById('cargo').value;
+            const telefono = document.getElementById('telefono_responsable').value.trim();
+            const fechaNacimiento = document.getElementById('fecha_nacimiento').value;
+
+            let esValido = true;
+
+            if (!nombre) {
+                mostrarError('error_nombre_responsable', 'El nombre es requerido');
+                esValido = false;
+            } else ocultarError('error_nombre_responsable');
+
+            if (!apellido) {
+                mostrarError('error_apellido_responsable', 'El apellido es requerido');
+                esValido = false;
+            } else ocultarError('error_apellido_responsable');
+
+            if (!dni) {
+                mostrarError('error_dni_nie', 'El DNI/NIE es requerido');
+                esValido = false;
+            } else ocultarError('error_dni_nie');
+
+            if (!cargo) {
+                mostrarError('error_cargo', 'Debe seleccionar un cargo');
+                esValido = false;
+            }
+
+            if (!telefono) {
+                mostrarError('error_telefono_responsable', 'El teléfono es requerido');
+                esValido = false;
+            } else ocultarError('error_telefono_responsable');
+
+            if (!fechaNacimiento) {
+                mostrarError('error_fecha_nacimiento', 'La fecha de nacimiento es requerida');
+                esValido = false;
+            } else if (!esAdulto(fechaNacimiento)) {
+                mostrarError('error_fecha_nacimiento', 'Debe ser mayor de 18 años');
+                esValido = false;
+            } else ocultarError('error_fecha_nacimiento');
+
+            if (esValido) {
+                mostrarPaso(2);
+            }
+        }
+
+        function validarPaso2() {
+            const nombreLegal = document.getElementById('nombre_legal').value.trim();
+            const nombreComplejo = document.getElementById('nombre_complejo').value.trim();
+            const idFiscal = document.getElementById('id_fiscal').value.trim();
+            const categoriaFiscal = document.getElementById('categoria_fiscal').value;
+
+            let esValido = true;
+
+            if (!nombreLegal) {
+                mostrarError('error_nombre_legal', 'El nombre legal es requerido');
+                esValido = false;
+            } else ocultarError('error_nombre_legal');
+
+            if (!nombreComplejo) {
+                mostrarError('error_nombre_complejo', 'El nombre del complejo es requerido');
+                esValido = false;
+            } else ocultarError('error_nombre_complejo');
+
+            if (!idFiscal) {
+                mostrarError('error_id_fiscal', 'El ID fiscal es requerido');
+                esValido = false;
+            } else ocultarError('error_id_fiscal');
+
+            if (!categoriaFiscal) {
+                mostrarError('error_categoria_fiscal', 'Debe seleccionar una categoría fiscal');
+                esValido = false;
+            }
+
+            if (esValido) {
+                mostrarPaso(3);
+            }
+        }
+
+        function validarPaso3() {
+            const calle = document.getElementById('calle').value.trim();
+            const altura = document.getElementById('altura').value.trim();
+            const ciudad = document.getElementById('ciudad').value.trim();
+            const barrio = document.getElementById('barrio').value.trim();
+            const telefonoComercial = document.getElementById('telefono_comercial').value.trim();
+            const emailComercial = document.getElementById('email_comercial').value.trim();
+
+            let esValido = true;
+
+            if (!calle) {
+                mostrarError('error_calle', 'La calle es requerida');
+                esValido = false;
+            } else ocultarError('error_calle');
+
+            if (!altura) {
+                mostrarError('error_altura', 'La altura es requerida');
+                esValido = false;
+            } else ocultarError('error_altura');
+
+            if (!ciudad) {
+                mostrarError('error_ciudad', 'La ciudad es requerida');
+                esValido = false;
+            } else ocultarError('error_ciudad');
+
+            if (!barrio) {
+                mostrarError('error_barrio', 'El barrio es requerido');
+                esValido = false;
+            } else ocultarError('error_barrio');
+
+            if (!telefonoComercial) {
+                mostrarError('error_telefono_comercial', 'El teléfono comercial es requerido');
+                esValido = false;
+            } else ocultarError('error_telefono_comercial');
+
+            if (!emailComercial) {
+                mostrarError('error_email_comercial', 'El email comercial es requerido');
+                esValido = false;
+            } else if (!validarEmail(emailComercial)) {
+                mostrarError('error_email_comercial', 'El email no es válido');
+                esValido = false;
+            } else ocultarError('error_email_comercial');
+
+            if (esValido) {
+                mostrarPaso(4);
+            }
+        }
+
+        function validarPaso4(event) {
+            event.preventDefault();
+            const usuario = document.getElementById('usuario_complejo').value.trim();
+            const contraseña = document.getElementById('contraseña').value;
+            const confirmarContraseña = document.getElementById('confirmar_contraseña').value;
+
+            let esValido = true;
+
+            if (!usuario) {
+                mostrarError('error_usuario_complejo', 'El nombre de usuario es requerido');
+                esValido = false;
+            } else ocultarError('error_usuario_complejo');
+
+            if (!contraseña) {
+                mostrarError('error_contraseña', 'La contraseña es requerida');
+                esValido = false;
+            } else if (!validarContraseña(contraseña)) {
+                mostrarError('error_contraseña', 'Mínimo 8 caracteres, incluir mayúscula, minúscula y número');
+                esValido = false;
+            } else ocultarError('error_contraseña');
+
+            if (!confirmarContraseña) {
+                mostrarError('error_confirmar_contraseña', 'Debe confirmar la contraseña');
+                esValido = false;
+            } else if (contraseña !== confirmarContraseña) {
+                mostrarError('error_confirmar_contraseña', 'Las contraseñas no coinciden');
+                esValido = false;
+            } else ocultarError('error_confirmar_contraseña');
+
+            if (esValido) {
+                document.getElementById('registroForm').submit();
+            }
+        }
+
+        function validarContraseña(contraseña) {
+            const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+            return regex.test(contraseña);
+        }
+
+        function validarEmail(email) {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
+        }
+
+        function mostrarError(elementId, mensaje) {
+            const elemento = document.getElementById(elementId);
+            elemento.textContent = mensaje;
+            elemento.style.display = 'block';
+        }
+
+        function ocultarError(elementId) {
+            const elemento = document.getElementById(elementId);
+            elemento.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
