@@ -25,7 +25,7 @@
                 </div>
                 <div class="card-body">
                     <p class="card-description">
-                        Registrate como dueño de una cancha de baloncesto y gestiona tus instalaciones.
+                        Registrate como dueño de un complejo deportivo y gestiona tus instalaciones.
                     </p>
                     <ul class="card-features">
                         <li>Registra tus canchas</li>
@@ -33,7 +33,7 @@
                         <li>Recibe y gestiona reservas</li>
                         <li>Controla ingresos</li>
                     </ul>
-                    <button class="btn-register btn-register-owner">Registrarse como Dueño</button>
+                    <button class="btn-register btn-register-owner" onclick="window.location.href='{% url 'register_propietario' %}'">Registrarse como Dueño</button>
                 </div>
             </div>
 
@@ -53,7 +53,7 @@
                         <li>Gestiona tus reservas</li>
                         <li>Conecta con otros jugadores</li>
                     </ul>
-                    <button class="btn-register btn-register-player">Registrarse como Jugador</button>
+                    <button class="btn-register btn-register-player" onclick="window.location.href='{% url 'register_jugador' %}'">Registrarse como Jugador</button>
                 </div>
             </div>
         </div>
