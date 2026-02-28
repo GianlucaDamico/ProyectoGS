@@ -160,3 +160,10 @@ button:active {
     color: #1f4f85;
     border-color: #bed8f6;
 }
+
+.form-group .error {
+    color: #c33;
+    font-size: 12px;
+    margin-top: 6px;
+    display: none;
+}

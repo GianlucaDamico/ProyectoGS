@@ -228,6 +228,7 @@
         </form>
     </div>
 
+    <script src="{% static 'cuentas/register_validations.js' %}"></script>
     <script>
         function mostrarPaso(numeroPaso) {
             for (let i = 1; i <= 4; i++) {
@@ -413,16 +414,6 @@
             if (esValido) {
                 document.getElementById('registroForm').submit();
             }
-        }
-
-        function validarContraseña(contraseña) {
-            const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-            return regex.test(contraseña);
-        }
-
-        function validarEmail(email) {
-            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return regex.test(email);
         }
 
         function mostrarError(elementId, mensaje) {

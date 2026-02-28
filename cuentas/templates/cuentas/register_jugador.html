@@ -38,6 +38,7 @@
             <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" required>
+                <span class="error" id="error_email"></span>
             </div>
 
             <div class="form-group">
@@ -62,10 +63,12 @@
                 <div class="form-group">
                     <label for="password">Contraseña</label>
                     <input type="password" id="password" name="password" required>
+                    <span class="error" id="error_password"></span>
                 </div>
                 <div class="form-group">
                     <label for="confirm_password">Repetir contraseña</label>
                     <input type="password" id="confirm_password" name="confirm_password" required>
+                    <span class="error" id="error_confirm_password"></span>
                 </div>
             </div>
 
@@ -83,5 +86,54 @@
             </div>
         </form>
     </div>
+
+    <script src="{% static 'cuentas/register_validations.js' %}"></script>
+    <script>
+        const registerForm = document.querySelector('form[method="POST"]');
+
+        function mostrarErrorJugador(elementId, mensaje) {
+            const elemento = document.getElementById(elementId);
+            elemento.textContent = mensaje;
+            elemento.style.display = 'block';
+        }
+
+        function ocultarErrorJugador(elementId) {
+            const elemento = document.getElementById(elementId);
+            elemento.style.display = 'none';
+        }
+
+        registerForm.addEventListener('submit', function (event) {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+
+            let esValido = true;
+
+            if (!validarEmail(email)) {
+                mostrarErrorJugador('error_email', 'El email no es válido.');
+                esValido = false;
+            } else {
+                ocultarErrorJugador('error_email');
+            }
+
+            if (!validarContraseña(password)) {
+                mostrarErrorJugador('error_password', 'Mínimo 8 caracteres, incluir mayúscula, minúscula y número.');
+                esValido = false;
+            } else {
+                ocultarErrorJugador('error_password');
+            }
+
+            if (password !== confirmPassword) {
+                mostrarErrorJugador('error_confirm_password', 'Las contraseñas no coinciden.');
+                esValido = false;
+            } else {
+                ocultarErrorJugador('error_confirm_password');
+            }
+
+            if (!esValido) {
+                event.preventDefault();
+            }
+        });
+    </script>
 </body>
 </html>
