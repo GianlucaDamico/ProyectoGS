@@ -14,6 +14,14 @@
             <p>Ingresa a tu cuenta</p>
         </div>
 
+        {% if messages %}
+            <div class="django-messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         <div class="error-message" id="errorMessage"></div>
 
         <form id="loginForm" method="POST">

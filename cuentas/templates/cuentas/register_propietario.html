@@ -9,6 +9,13 @@
 </head>
 <body>
     <div class="container">
+        {% if messages %}
+            <div class="django-messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
         <form id="registroForm" method="post" enctype="multipart/form-data">
             {% csrf_token %}
 

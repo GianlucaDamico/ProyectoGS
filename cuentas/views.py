@@ -27,7 +27,7 @@ def login(request):
             return redirect('core:home')
         else:
             messages.error(request, 'Credenciales inválidas.')
-            return render(request, 'cuentas/login.html')
+            return render(request, 'cuentas/login')
 
 def register(request):
     return render(request, 'cuentas/register.html')
@@ -78,7 +78,7 @@ def register_jugador(request):
         )
 
         messages.success(request, 'Registro completado. Ya puedes iniciar sesión.')
-        return redirect('cuentas:login.html')
+        return redirect('cuentas:login')
 
 def register_propietario(request):
     if request.method == 'GET':

@@ -10,6 +10,13 @@
 <body>
     <div class="container">
         <h1>Registro de Jugador</h1>
+        {% if messages %}
+            <div class="django-messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
         <form method="POST">
             {% csrf_token %}
             <div class="form-row">
