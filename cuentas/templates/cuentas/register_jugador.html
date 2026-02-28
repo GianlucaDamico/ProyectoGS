@@ -11,6 +11,7 @@
     <div class="container">
         <h1>Registro de Jugador</h1>
         <form method="POST">
+            {% csrf_token %}
             <div class="form-row">
                 <div class="form-group">
                     <label for="nombre">Nombre</label>
