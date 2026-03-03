@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'core',
     'cuentas',
     'venues',
+    'bookings',
 ]
 
 MIDDLEWARE = [
