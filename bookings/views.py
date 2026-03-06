@@ -1,4 +1,4 @@
-from django.shortcuts import render
+# bookings/views.py
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -9,6 +9,8 @@ from .models import Booking
 from .serializers import (
     BookingListSerializer,
     BookingDetailSerializer,
+    BookingCreateSerializer,
+    BookingUpdateSerializer
 )
 
 
@@ -28,6 +30,8 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 
         # Permisos de escritura solo para el dueño de la reserva
         return obj.user == request.user
+
+
 class BookingViewSet(viewsets.ModelViewSet):
     """
     ViewSet completo para Reservas.
@@ -80,8 +84,39 @@ class BookingViewSet(viewsets.ModelViewSet):
         """
         if self.action == 'list':
             return BookingListSerializer
+        elif self.action == 'create':
+            return BookingCreateSerializer
+        elif self.action in ['update', 'partial_update']:
+            return BookingUpdateSerializer
         else:  # retrieve
             return BookingDetailSerializer
+
+    def create(self, request, *args, **kwargs):
+        """
+        Crea una nueva reserva.
+
+        El usuario se asigna automáticamente desde el request (ver serializer).
+        Aquí también podríamos añadir lógica adicional, como calcular
+        el precio total automáticamente.
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # Aquí podrías calcular el precio total antes de guardar
+        # Por ahora asumimos que viene en el request
+
+        self.perform_create(serializer)
+
+        # Retornamos el detalle completo de la reserva creada
+        headers = self.get_success_headers(serializer.data)
+        booking = serializer.instance
+        detail_serializer = BookingDetailSerializer(booking)
+
+        return Response(
+            detail_serializer.data,
+            status=status.HTTP_201_CREATED,
+            headers=headers
+        )
 
     @action(detail=False, methods=['get'])
     def my_bookings(self, request):
@@ -112,31 +147,3 @@ class BookingViewSet(viewsets.ModelViewSet):
 
         serializer = BookingListSerializer(queryset, many=True)
         return Response(serializer.data)
-    
-    def create(self, request, *args, **kwargs):
-        """
-        Crea una nueva reserva.
-
-        El usuario se asigna automáticamente desde el request (ver serializer).
-        Aquí también podríamos añadir lógica adicional, como calcular
-        el precio total automáticamente.
-        """
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        # Aquí podrías calcular el precio total antes de guardar
-        # Por ahora asumimos que viene en el request
-
-        self.perform_create(serializer)
-
-        # Retornamos el detalle completo de la reserva creada
-        headers = self.get_success_headers(serializer.data)
-        booking = serializer.instance
-        detail_serializer = BookingDetailSerializer(booking)
-
-        return Response(
-            detail_serializer.data,
-            status=status.HTTP_201_CREATED,
-            headers=headers
-        )
-
