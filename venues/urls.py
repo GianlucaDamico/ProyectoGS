@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import AmenityViewSet
+from .views import AmenityViewSet, CourtViewSet
 
 # Creamos un router
 router = DefaultRouter()
@@ -11,6 +11,7 @@ router = DefaultRouter()
 # El tercero es el basename (usado para generar nombres de URL)
 
 router.register(r'amenities', AmenityViewSet, basename='amenity')
+router.register(r'courts', CourtViewSet, basename='court')
 
 # El router genera automáticamente estos URLs:
 # GET    /complexes/          → list
