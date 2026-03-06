@@ -8,7 +8,9 @@ from .models import Complex, Court, Amenity
 from .serializers import (
     AmenitySerializer,
     CourtListSerializer,
-    CourtDetailSerializer
+    CourtDetailSerializer,
+    ComplexListSerializer,
+    ComplexDetailSerializer
 )
 
 
@@ -93,3 +95,48 @@ class CourtViewSet(viewsets.ReadOnlyModelViewSet):
             'date': date,
             'message': 'Endpoint de disponibilidad - implementación pendiente'
         })
+    
+
+class ComplexViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    ViewSet para Complejos deportivos.
+
+    Proporciona endpoints para listar y ver detalles de complejos.
+    Los usuarios pueden buscar y filtrar complejos sin estar autenticados.
+    """
+    queryset = Complex.objects.all()
+    permission_classes = [permissions.AllowAny]  # Búsqueda pública
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+
+    # Campos por los que se puede filtrar
+    filterset_fields = ['city']
+
+    # Campos por los que se puede buscar (con búsqueda parcial)
+    search_fields = ['name', 'city', 'address']
+
+    # Campos por los que se puede ordenar
+    ordering_fields = ['name', 'city']
+    ordering = ['name']  # Orden por defecto
+
+    def get_queryset(self):
+        """
+        Optimizamos la query para traer relaciones necesarias
+        y evitar el problema N+1.
+        """
+        queryset = Complex.objects.all()
+
+        # Optimización: traemos canchas y amenities en la misma query
+        queryset = queryset.prefetch_related('courts', 'amenities')
+
+        return queryset
+
+    def get_serializer_class(self):
+        """
+        Retorna el serializer apropiado según la acción.
+
+        - list: serializer simplificado
+        - retrieve: serializer detallado con toda la info
+        """
+        if self.action == 'list':
+            return ComplexListSerializer
+        return ComplexDetailSerializer
