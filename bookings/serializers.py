@@ -103,3 +103,32 @@ class BookingDetailSerializer(serializers.ModelSerializer):
 
     def get_can_cancel(self, obj):
         return obj.can_be_cancelled()
+    
+class BookingCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializer específico para crear nuevas reservas.
+    """
+
+    class Meta:
+        model = Booking
+        fields = [
+            'court',
+            'start',
+            'end',
+            'lighting',
+            'total_price'
+        ]
+
+    def validate(self, attrs):
+        booking = Booking(**attrs)
+        try:
+            booking.clean()
+        except Exception as e:
+            raise serializers.ValidationError(str(e))
+        return attrs
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        validated_data['user'] = user
+        booking = Booking.objects.create(**validated_data)
+        return booking
