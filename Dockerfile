@@ -1,5 +1,5 @@
 # Etapa base con Python
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 # Establecer variable de entorno para Python
 #Los mensajes de salida se mostrarán inmediatamente
