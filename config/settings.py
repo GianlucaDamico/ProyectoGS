@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'venues',
     'bookings',
     'rest_framework',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
