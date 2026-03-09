@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Booking
 from venues.serializers import CourtDetailSerializer
+from .services import BookingService
 
 class BookingListSerializer(serializers.ModelSerializer):
     """
@@ -116,21 +117,45 @@ class BookingCreateSerializer(serializers.ModelSerializer):
             'start',
             'end',
             'lighting',
-            'total_price'
         ]
 
     def validate(self, attrs):
-        booking = Booking(**attrs)
+        """
+        Validaciones a nivel de objeto.
+        """
+        court = attrs['court']
+        start = attrs['start']
+        end = attrs['end']
+        lighting = attrs.get('lighting', False)
+        
+        # Instancia temporal para validaciones del modelo
+        booking = Booking(court=court, start=start, end=end, lighting=lighting)
+        
         try:
             booking.clean()
         except Exception as e:
             raise serializers.ValidationError(str(e))
+        
+        # Verificamos disponibilidad usando el servicio
+        is_available, conflicting = BookingService.check_availability(court, start, end)
+        if not is_available:
+            raise serializers.ValidationError(
+                f"La cancha no está disponible en ese horario. "
+                f"Hay {conflicting.count()} reserva(s) que solapan."
+            )
+        
         return attrs
 
     def create(self, validated_data):
         user = self.context['request'].user
         validated_data['user'] = user
-        booking = Booking.objects.create(**validated_data)
+        booking = BookingService.create_booking(
+            user=user,
+            court=validated_data['court'],
+            start=validated_data['start'],
+            end=validated_data['end'],
+            lighting=validated_data.get('lighting', False)
+        )
         return booking
 
 class BookingUpdateSerializer(serializers.ModelSerializer):

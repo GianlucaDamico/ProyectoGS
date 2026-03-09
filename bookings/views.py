@@ -4,6 +4,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+from .services import BookingService
+
 
 from .models import Booking
 from .serializers import (
@@ -147,3 +149,19 @@ class BookingViewSet(viewsets.ModelViewSet):
 
         serializer = BookingListSerializer(queryset, many=True)
         return Response(serializer.data)
+    
+    @action(detail=True, methods=['post'])
+    def cancel(self, request, pk=None):
+
+        booking = self.get_object()
+
+        try:
+            BookingService.cancel_booking(booking)
+
+            serializer = BookingDetailSerializer(booking)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
