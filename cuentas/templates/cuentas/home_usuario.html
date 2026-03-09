@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Usuario - CourtlyGPS</title>
+    <link rel="stylesheet" href="{% static 'cuentas/home_usuario.css' %}">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="user-nav">
+            <div class="nav-left">
+                <a class="logo" href="{% url 'cuentas:home_usuario' %}">
+                    <span class="logo-mark">CourtlyGPS</span>
+                </a>
+            </div>
+            <div class="nav-links nav-center">
+                <a href="#">Mis reservas</a>
+            </div>
+            <div class="nav-right">
+                <details class="notifications-menu">
+                    <summary class="notifications-trigger" aria-label="Abrir notificaciones">
+                        <span class="bell-icon">&#128276;</span>
+                        {% if notificaciones_count %}<span class="badge">{{ notificaciones_count }}</span>{% endif %}
+                    </summary>
+                    <div class="notifications-dropdown">
+                        <p class="dropdown-title">Notificaciones</p>
+                        <p class="dropdown-empty">No tenes notificaciones nuevas.</p>
+                    </div>
+                </details>
+                <details class="profile-menu">
+                    <summary class="profile-trigger" aria-label="Abrir menu de perfil">
+                        <span class="profile-avatar">{{ nombre|slice:":1"|upper }}</span>
+                        <span class="profile-label">Perfil</span>
+                    </summary>
+                    <div class="profile-dropdown">
+                        <a href="#" class="profile-item">Mi perfil</a>
+                        <form method="post" action="{% url 'cuentas:logout_usuario' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="profile-item logout-item">Cerrar sesion</button>
+                        </form>
+                    </div>
+                </details>
+            </div>
+        </nav>
+    </header>
+
+    <main class="page-wrap">
+        <section class="hero-saludo">
+            <h1>Hola, <span class="nombre-usuario">{{ nombre }}</span>! Que jugamos hoy?</h1>
+            <p>Organiza tu proxima reserva en minutos y mantente al dia con tus partidos.</p>
+        </section>
+
+        <section class="filtros" aria-label="Buscador de complejo por filtros">
+            <h2>Buscar complejo</h2>
+            <form method="get" class="filtros-form">
+                <div class="field field-wide">
+                    <label for="nombre">Nombre del complejo</label>
+                    <input type="text" id="nombre" name="nombre" placeholder="Ej: Club Central" value="{{ filtros.nombre }}">
+                </div>
+                <div class="field">
+                    <label for="deporte">Deporte</label>
+                    <select name="deporte" id="deporte">
+                        <option value="">Todos</option>
+                        {% for valor, etiqueta in deportes %}
+                            <option value="{{ valor }}" {% if filtros.deporte == valor %}selected{% endif %}>{{ etiqueta }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="ciudad">Ciudad</label>
+                    <input type="text" id="ciudad" name="ciudad" placeholder="Ej: Madrid" value="{{ filtros.ciudad }}">
+                </div>
+                <button type="submit">Buscar</button>
+            </form>
+            <p class="search-note">Los resultados de esta busqueda se mostraran en la pantalla de resultados que vamos a construir despues.</p>
+        </section>
+
+        <section id="mis-reservas" class="resumen-reservas">
+            <article class="reserva-card">
+                <h3>Pendientes</h3>
+                <p class="reserva-number">{{ reservas_pendientes }}</p>
+                <span>Reservas por confirmar o jugar</span>
+            </article>
+            <article class="reserva-card">
+                <h3>Historial</h3>
+                <p class="reserva-number">{{ reservas_historial }}</p>
+                <span>Partidos ya jugados</span>
+            </article>
+        </section>
+
+        <section class="proximos-partidos" aria-label="Seccion proximos partidos">
+            <h2>Proximos partidos</h2>
+            {% if partidos_proximos %}
+                <div class="grid-cards">
+                    {% for partido in partidos_proximos %}
+                        <article class="card-partido">
+                            <h3>{{ partido.court.complex.name }}</h3>
+                            <p><strong>Cancha:</strong> {{ partido.court.name }}</p>
+                            <p><strong>Fecha:</strong> {{ partido.start|date:'d/m/Y' }}</p>
+                            <p><strong>Hora:</strong> {{ partido.start|time:'H:i' }} - {{ partido.end|time:'H:i' }}</p>
+                            <p><strong>Direccion:</strong> {{ partido.court.complex.address|default:'Sin direccion cargada' }}</p>
+                            <span class="status">{{ partido.get_status_display }}</span>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="empty-state">No hay partidos programados por ahora.</p>
+            {% endif %}
+        </section>
+
+        <section class="sugerencias">
+            <h2>Recomendados para vos</h2>
+            <p class="section-copy">Aca vas a ver complejos recomendados en base a tu actividad y preferencias.</p>
+            <p class="empty-state">Seccion en construccion.</p>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>2026 CourtlyGPS. Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>
