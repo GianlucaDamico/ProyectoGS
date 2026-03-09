@@ -1,8 +1,12 @@
 from django.shortcuts import render
+from bookings.services import BookingService
 from rest_framework import viewsets, permissions, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
+from .services import ComplexStatsService as ComplexService
+from django.utils.dateparse import parse_datetime
+from rest_framework import status
 
 from .models import Complex, Court, Amenity
 from .serializers import (
@@ -96,6 +100,59 @@ class CourtViewSet(viewsets.ReadOnlyModelViewSet):
             'message': 'Endpoint de disponibilidad - implementación pendiente'
         })
     
+    @action(detail=True, methods=['get'])
+    def check_availability(self, request, pk=None):
+        """
+        Endpoint para verificar disponibilidad de una cancha en un rango de tiempo.
+
+        URL: GET /api/courts/{id}/check_availability/?start=2024-03-15T10:00&end=2024-03-15T11:00
+
+        Retorna si la cancha está disponible o no en ese rango.
+        """
+        court = self.get_object()
+        start = request.query_params.get('start', None)
+        end = request.query_params.get('end', None)
+        lighting = request.query_params.get('lighting', 'false').lower() == 'true'
+
+        if not start or not end:
+            return Response(
+                {'error': 'Parámetros "start" y "end" son requeridos.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            start = parse_datetime(start)
+            end = parse_datetime(end)
+
+            if not start or not end:
+                raise ValueError("Formato de fecha inválido")
+
+        except ValueError as e:
+            return Response(
+                {'error': f"Error en el formato de fecha: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        is_available, conflicting = BookingService.check_availability(court, start, end)
+
+        response_data = {
+            'court_id': court.id,
+            'court_name': court.name,
+            'start': start,
+            'end': end,
+            'available': is_available,
+        }
+
+        if not is_available:
+            from bookings.serializers import BookingListSerializer
+            response_data['conflicting_bookings'] = BookingListSerializer(
+                conflicting, many=True).data
+        else : 
+            estimated_price = BookingService.calculate_price(court, start, end, lighting)
+            response_data['estimated_price'] = str(estimated_price)
+            response_data['lighting_available'] = court.has_lighting
+        
+        return Response(response_data)
 
 class ComplexViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -140,3 +197,18 @@ class ComplexViewSet(viewsets.ReadOnlyModelViewSet):
         if self.action == 'list':
             return ComplexListSerializer
         return ComplexDetailSerializer
+    
+    @action(detail=True, methods=['get'])
+    def stats(self, request, pk=None):
+
+        complex = self.get_object()
+        if complex.owner != request.user and not request.user.is_superuser:
+            return Response(
+                {'error': 'No tienes permiso para ver estas estadísticas.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        days = request.query_params.get('days', 30)
+        stats = ComplexService.get_complex_stats(complex, days=days)
+
+        return Response(stats)
