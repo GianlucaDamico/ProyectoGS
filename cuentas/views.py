@@ -1,8 +1,11 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.utils import timezone
+from bookings.models import Booking
+from venues.models import Sport
 
 # Create your views here.
 
@@ -23,11 +26,66 @@ def login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             auth_login(request, user)
-            # redirigir según perfil o a home
-            return redirect('core:home')
+            return redirect('cuentas:home_usuario')
         else:
             messages.error(request, 'Credenciales inválidas.')
-            return render(request, 'cuentas/login')
+            return render(request, 'cuentas/login.html')
+
+
+@login_required
+def logout_usuario(request):
+    if request.method == 'POST':
+        auth_logout(request)
+        return redirect('core:home')
+    return redirect('cuentas:home_usuario')
+
+
+@login_required
+def home_usuario(request):
+    user = request.user
+    perfil_jugador = getattr(user, 'perfil_jugador', None)
+
+    nombre = user.first_name or user.username
+    if perfil_jugador and perfil_jugador.nombre:
+        nombre = perfil_jugador.nombre
+
+    nombre_complejo = request.GET.get('nombre', '').strip()
+    deporte = request.GET.get('deporte', '').strip()
+    ciudad = request.GET.get('ciudad', '').strip()
+
+    partidos_proximos = (
+        Booking.objects
+        .filter(user=user, start__gte=timezone.now())
+        .exclude(status=Booking.Status.CANCELLED)
+        .select_related('court__complex')
+        .order_by('start')[:6]
+    )
+
+    reservas_pendientes = Booking.objects.filter(
+        user=user,
+        start__gte=timezone.now(),
+        status__in=[Booking.Status.PENDING_PAYMENT, Booking.Status.CONFIRMED],
+    ).count()
+
+    reservas_historial = Booking.objects.filter(
+        user=user,
+        start__lt=timezone.now(),
+    ).count()
+
+    context = {
+        'nombre': nombre,
+        'deportes': Sport.choices,
+        'filtros': {
+            'nombre': nombre_complejo,
+            'deporte': deporte,
+            'ciudad': ciudad,
+        },
+        'reservas_pendientes': reservas_pendientes,
+        'reservas_historial': reservas_historial,
+        'notificaciones_count': 0,
+        'partidos_proximos': partidos_proximos,
+    }
+    return render(request, 'cuentas/home_usuario.html', context)
 
 def register(request):
     return render(request, 'cuentas/register.html')
