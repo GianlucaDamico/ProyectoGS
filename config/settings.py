@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'cuentas',
     'venues',
     'bookings',
+    'rest_framework',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -136,3 +138,26 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'core', 'static'),
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+REST_FRAMEWORK = {
+    # Autenticación: permitimos tanto sesiones (para el browsable API)
+    # como autenticación básica para desarrollo
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+
+    # Permisos por defecto: debes estar autenticado para acceder a la API
+    # Esto lo sobrescribiremos en vistas específicas cuando sea necesario
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+
+    # Paginación: limitamos las respuestas a 20 items por página
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
+
+    # Formato de fechas: ISO 8601 es el estándar para APIs REST
+    'DATETIME_FORMAT': '%Y-%m-%dT%H:%M:%S%z',
+}
