@@ -60,10 +60,19 @@ class Complex(models.Model):
         on_delete=models.CASCADE,   # Si se borra el usuario, se borran sus complejos
         related_name="owned_complexes"  # Permite hacer user.owned_complexes.all()
     )
+
+    # Datos legales/comerciales del complejo
+    nombre_legal = models.CharField(max_length=200, blank=True)
+    name = models.CharField(max_length=200, blank=True)
+    id_fiscal = models.CharField(max_length=50, blank=True)
+    categoria_fiscal = models.CharField(max_length=50, blank=True)
+    calle = models.CharField(max_length=200, blank=True)
+    altura = models.CharField(max_length=20, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    barrio = models.CharField(max_length=100, blank=True)
+    telefono_comercial = models.CharField(max_length=20, blank=True)
+    email_comercial = models.EmailField(blank=True)
     
-    name = models.CharField(max_length=120)
-    city = models.CharField(max_length=120)
-    address = models.CharField(max_length=255, blank=True)
     
     # ManyToManyField crea una relación muchos-a-muchos
     # Un complejo puede tener muchas amenities, una amenity puede estar en muchos complejos

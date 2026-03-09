@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from bookings.models import Booking
-from venues.models import Sport
+from venues.models import Sport, Complex
 
 # Create your views here.
 
@@ -151,6 +151,7 @@ def register_propietario(request):
         # Paso 1
         nombre_responsable = request.POST.get('nombre_responsable', '').strip()
         apellido_responsable = request.POST.get('apellido_responsable', '').strip()
+        email_responsable = request.POST.get('email_responsable', '').strip()
         dni_nie = request.POST.get('dni_nie', '').strip()
         cargo = request.POST.get('cargo', '').strip()
         telefono_responsable = request.POST.get('telefono_responsable', '').strip()
@@ -169,6 +170,8 @@ def register_propietario(request):
         barrio = request.POST.get('barrio', '').strip()
         telefono_comercial = request.POST.get('telefono_comercial', '').strip()
         email_comercial = request.POST.get('email_comercial', '').strip()
+        if not email_comercial:
+            email_comercial = email_responsable
 
         # simple validaciones básicas
         missing = []
@@ -177,6 +180,7 @@ def register_propietario(request):
             ('contraseña', password),
             ('nombre responsable', nombre_responsable),
             ('apellido responsable', apellido_responsable),
+            ('email responsable', email_responsable),
             ('DNI/NIE', dni_nie),
             ('cargo', cargo),
             ('tel. responsable', telefono_responsable),
@@ -190,7 +194,6 @@ def register_propietario(request):
             ('ciudad', ciudad),
             ('barrio', barrio),
             ('tel. comercial', telefono_comercial),
-            ('email comercial', email_comercial),
         ]:
             if not value:
                 missing.append(field_name)
@@ -207,29 +210,36 @@ def register_propietario(request):
             messages.error(request, 'El nombre de usuario ya está en uso.')
             return render(request, 'cuentas/register_propietario.html')
 
-        # crear usuario
+        # crear usuario (nombre/apellido del responsable en auth_user)
         user = User.objects.create_user(username=username, password=password)
+        user.first_name = nombre_responsable
+        user.last_name = apellido_responsable
+        user.email = email_responsable
+        user.save()
+
+        complex_obj = Complex.objects.create(
+            owner=user,
+            nombre_legal=nombre_legal,
+            name=nombre_complejo,
+            id_fiscal=id_fiscal,
+            categoria_fiscal=categoria_fiscal,
+            calle=calle,
+            altura=altura,
+            city=ciudad,
+            barrio=barrio,
+            telefono_comercial=telefono_comercial,
+            email_comercial=email_comercial,
+        )
 
         # crear perfil propietario
         from .models import Propietario
         Propietario.objects.create(
             user=user,
-            nombre_responsable=nombre_responsable,
-            apellido_responsable=apellido_responsable,
+            complex=complex_obj,
             dni_nie=dni_nie,
             cargo=cargo,
             telefono_responsable=telefono_responsable,
             fecha_nacimiento=fecha_nacimiento,
-            nombre_legal=nombre_legal,
-            nombre_complejo=nombre_complejo,
-            id_fiscal=id_fiscal,
-            categoria_fiscal=categoria_fiscal,
-            calle=calle,
-            altura=altura,
-            ciudad=ciudad,
-            barrio=barrio,
-            telefono_comercial=telefono_comercial,
-            email_comercial=email_comercial,
         )
 
         messages.success(request, 'Registro de propietario completado. Puedes iniciar sesión.')

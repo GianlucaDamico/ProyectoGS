@@ -62,6 +62,14 @@
                         <span class="error" id="error_telefono_responsable"></span>
                     </div>
                     <div class="form-group">
+                        <label for="email_responsable">Email del Responsable *</label>
+                        <input type="email" id="email_responsable" name="email_responsable" placeholder="Ej: responsable@correo.com" required>
+                        <span class="error" id="error_email_responsable"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
                         <label for="fecha_nacimiento">Fecha de Nacimiento *</label>
                         <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
                         <span class="error" id="error_fecha_nacimiento"></span>
@@ -178,8 +186,8 @@
                         <span class="error" id="error_telefono_comercial"></span>
                     </div>
                     <div class="form-group">
-                        <label for="email_comercial">Email Comercial *</label>
-                        <input type="email" id="email_comercial" name="email_comercial" required>
+                        <label for="email_comercial">Email Comercial (Opcional)</label>
+                        <input type="email" id="email_comercial" name="email_comercial">
                         <span class="error" id="error_email_comercial"></span>
                     </div>
                 </div>
@@ -259,6 +267,7 @@
             const dni = document.getElementById('dni_nie').value.trim();
             const cargo = document.getElementById('cargo').value;
             const telefono = document.getElementById('telefono_responsable').value.trim();
+            const emailResponsable = document.getElementById('email_responsable').value.trim();
             const fechaNacimiento = document.getElementById('fecha_nacimiento').value;
 
             let esValido = true;
@@ -287,6 +296,14 @@
                 mostrarError('error_telefono_responsable', 'El teléfono es requerido');
                 esValido = false;
             } else ocultarError('error_telefono_responsable');
+
+            if (!emailResponsable) {
+                mostrarError('error_email_responsable', 'El email es requerido');
+                esValido = false;
+            } else if (!validarEmail(emailResponsable)) {
+                mostrarError('error_email_responsable', 'El email no es válido');
+                esValido = false;
+            } else ocultarError('error_email_responsable');
 
             if (!fechaNacimiento) {
                 mostrarError('error_fecha_nacimiento', 'La fecha de nacimiento es requerida');
@@ -369,10 +386,7 @@
                 esValido = false;
             } else ocultarError('error_telefono_comercial');
 
-            if (!emailComercial) {
-                mostrarError('error_email_comercial', 'El email comercial es requerido');
-                esValido = false;
-            } else if (!validarEmail(emailComercial)) {
+            if (emailComercial && !validarEmail(emailComercial)) {
                 mostrarError('error_email_comercial', 'El email no es válido');
                 esValido = false;
             } else ocultarError('error_email_comercial');

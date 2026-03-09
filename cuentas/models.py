@@ -29,8 +29,8 @@ class Jugador(models.Model):
 class Propietario(models.Model):
 	"""Perfil de propietario (complejo deportivo) asociado a un usuario.
 
-	Este modelo agrupa todos los datos recogidos en los cuatro pasos del
-	formulario de registro de propietario.
+	Este modelo guarda los datos personales del responsable. Los datos
+	legales/comerciales del complejo se guardan en venues.Complex.
 	"""
 
 	user = models.OneToOneField(
@@ -38,31 +38,24 @@ class Propietario(models.Model):
 		on_delete=models.CASCADE,
 		related_name='perfil_propietario',
 	)
+	complex = models.OneToOneField(
+		'venues.Complex',
+		on_delete=models.CASCADE,
+		related_name='propietario',
+		null=True,
+		blank=True,
+	)
 
-	# Paso 1 - responsable
-	nombre_responsable = models.CharField(max_length=100)
-	apellido_responsable = models.CharField(max_length=100)
+	# Paso 1 - responsable (nombre/apellido quedan en auth_user)
 	dni_nie = models.CharField(max_length=20)
 	cargo = models.CharField(max_length=100)
 	telefono_responsable = models.CharField(max_length=20)
 	fecha_nacimiento = models.DateField()
 
-	# Paso 2 - legal y fiscal
-	nombre_legal = models.CharField(max_length=200)
-	nombre_complejo = models.CharField(max_length=200)
-	id_fiscal = models.CharField(max_length=50)
-	categoria_fiscal = models.CharField(max_length=50)
-
-	# Paso 3 - ubicación y contacto
-	calle = models.CharField(max_length=200)
-	altura = models.CharField(max_length=20)
-	ciudad = models.CharField(max_length=100)
-	barrio = models.CharField(max_length=100)
-	telefono_comercial = models.CharField(max_length=20)
-	email_comercial = models.EmailField()
-
 	def __str__(self):
-		return f"{self.nombre_complejo} ({self.user.username})"
+		if self.complex:
+			return f"{self.complex.nombre_complejo} ({self.user.username})"
+		return self.user.username
 
 
 # Create your models here.
