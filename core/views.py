@@ -7,6 +7,8 @@ def home(request):
 def terminos(request):
     return render(request, 'core/terminos.html')
 
+def privacidad(request):
+    return render(request, 'core/privacidad.html')
+
 def contacto(request):
-    # Por ahora solo renderiza la página, puedes añadir lógica de formulario luego
     return render(request, 'core/contacto.html')
