@@ -196,3 +196,100 @@ class BookingServiceCalculatePriceTest(TestCase):
         
         # Verificamos exactamente 2 decimales
         self.assertEqual(price.as_tuple().exponent, -2)    
+
+
+class BookingServiceAvailabilityTest(TestCase):
+    """
+    Tests para BookingService.check_availability()
+    """
+    
+    def setUp(self):
+        """
+        Datos para tests de disponibilidad.
+        """
+        self.player1 = User.objects.create_user(username='player1', password='test')
+        self.player2 = User.objects.create_user(username='player2', password='test')
+        self.owner = User.objects.create_user(username='owner1', password='test')
+        
+        self.complex = Complex.objects.create(
+            owner=self.owner,
+            name="Centro Deportivo",
+            city="Madrid"
+        )
+        self.court = Court.objects.create(
+            complex=self.complex,
+            name="Cancha 1",
+            sport=Sport.PADEL,
+            surface=Surface.CESPED_SINTETICO,
+            has_lighting=True,
+            base_price_per_hour=Decimal("30.00")
+        )
+        
+        self.tomorrow = timezone.now() + timedelta(days=1)
+        self.base_start = self.tomorrow.replace(hour=18, minute=0, second=0, microsecond=0)
+    
+    def test_availability_empty_schedule(self):
+        """
+        Test que una cancha sin reservas está disponible.
+        """
+        start = self.base_start
+        end = start + timedelta(minutes=90)
+        
+        is_available, conflicting = BookingService.check_availability(
+            court=self.court,
+            start=start,
+            end=end
+        )
+        
+        self.assertTrue(is_available)
+        self.assertEqual(conflicting.count(), 0)
+    
+    def test_availability_with_overlapping_booking(self):
+        """
+        Test que detecta solapamiento.
+        """
+        # Reserva existente: 18:00 - 19:30
+        Booking.objects.create(
+            user=self.player1,
+            court=self.court,
+            start=self.base_start,
+            end=self.base_start + timedelta(minutes=90),
+            status=Booking.Status.CONFIRMED,
+            total_price=Decimal("45.00")
+        )
+        
+        # Nueva reserva: 19:00 - 20:30 (SÍ solapa)
+        new_start = self.base_start + timedelta(hours=1)
+        new_end = new_start + timedelta(minutes=90)
+        
+        is_available, conflicting = BookingService.check_availability(
+            court=self.court,
+            start=new_start,
+            end=new_end
+        )
+        
+        self.assertFalse(is_available)
+        self.assertEqual(conflicting.count(), 1)
+    
+    def test_availability_ignores_cancelled_bookings(self):
+        """
+        Test que reservas CANCELADAS no bloquean disponibilidad.
+        """
+        # Reserva cancelada
+        Booking.objects.create(
+            user=self.player1,
+            court=self.court,
+            start=self.base_start,
+            end=self.base_start + timedelta(minutes=90),
+            status=Booking.Status.CANCELLED,
+            total_price=Decimal("45.00")
+        )
+        
+        # Intentamos reservar el mismo horario
+        is_available, conflicting = BookingService.check_availability(
+            court=self.court,
+            start=self.base_start,
+            end=self.base_start + timedelta(minutes=90)
+        )
+        
+        self.assertTrue(is_available)
