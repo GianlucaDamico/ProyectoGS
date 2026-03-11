@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Cookies - Courtly</title>
+    <link rel="stylesheet" href="{% static 'core/home.css' %}">
+    <style>
+        .legal-body { padding: 120px 20px; max-width: 800px; margin: 0 auto; line-height: 1.8; color: #444; }
+        .legal-body h1 { color: #667eea; margin-bottom: 2rem; }
+        .legal-body h2 { color: #764ba2; margin-top: 1.5rem; font-size: 1.4rem; }
+        .btn-back { display: inline-block; margin-top: 2rem; padding: 10px 25px; background: #667eea; color: white; text-decoration: none; border-radius: 50px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="legal-body">
+        <h1>Política de Cookies</h1>
+        <p>En <strong>Courtly</strong> utilizamos cookies para mejorar tu experiencia.</p>
+        <h2>1. ¿Qué son?</h2>
+        <p>Son pequeños archivos que nos ayudan a saber quién eres cuando inicias sesión para reservar una cancha.</p>
+        <h2>2. Tipos</h2>
+        <p>Usamos cookies técnicas (sesión) y de personalización (tus búsquedas recientes).</p>
+        <a href="{% url 'core:home' %}" class="btn-back">← Volver al Inicio</a>
+    </div>
+</body>
+</html>
