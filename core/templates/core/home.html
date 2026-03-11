@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="{% static 'core/home.css' %}">
 </head>
 <body>
-    <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-container">
             <div class="logo">
@@ -22,7 +21,6 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
             <h1 class="hero-title">Encuentra tu cancha deportiva ideal</h1>
@@ -31,7 +29,6 @@
         </div>
     </section>
 
-    <!-- Sección ¿Qué es Courtly? -->
     <section class="about-section">
         <div class="container">
             <div class="about-content">
@@ -46,12 +43,10 @@
         </div>
     </section>
 
-    <!-- Complejos Destacados -->
     <section class="complejos-destacados">
         <div class="container">
             <h2>Complejos Destacados</h2>
             <div class="complejos-grid">
-                <!-- Aquí irán los complejos con un for Django -->
                 {% comment %} {% for complejo in complejos %}
                 <div class="complejo-card">
                     <div class="complejo-image">{{ complejo.icono }}</div>
@@ -65,7 +60,6 @@
         </div>
     </section>
 
-    <!-- Sección Dueños de Complejos -->
     <section class="owners-section">
         <div class="container">
             <div class="owners-content">
@@ -81,7 +75,6 @@
         </div>
     </section>
 
-    <!-- Pre-footer (CTA) -->
     <section class="prefooter">
         <div class="container">
             <h2>¿Listo para empezar?</h2>
@@ -90,7 +83,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-section">
@@ -100,17 +92,17 @@
             <div class="footer-section">
                 <h4>Enlaces Rápidos</h4>
                 <ul>
-                    <li><a href="#">Inicio</a></li>
+                    <li><a href="{% url 'core:home' %}">Inicio</a></li>
                     <li><a href="#">Canchas</a></li>
                     <li><a href="#">Para dueños</a></li>
-                    <li><a href="#">Contacto</a></li>
+                    <li><a href="{% url 'core:contacto' %}">Contacto</a></li>
                     <li><a href="#">Blog</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h4>Legal</h4>
                 <ul>
-                    <li><a href="#">Términos de servicio</a></li>
+                    <li><a href="{% url 'core:terminos' %}">Términos de servicio</a></li>
                     <li><a href="#">Política de privacidad</a></li>
                     <li><a href="#">Política de cookies</a></li>
                     <li><a href="#">Aviso legal</a></li>

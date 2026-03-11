@@ -4,6 +4,7 @@ from . import views
 app_name = 'core'
 
 urlpatterns = [
-    # El primer argumento vacío '' significa la raíz de esta app
-    path('', views.home, name='home'), 
+    path('', views.home, name='home'),
+    path('terminos/', views.terminos, name='terminos'),
+    path('contacto/', views.contacto, name='contacto'),
 ]

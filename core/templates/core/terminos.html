@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Términos de Servicio - Courtly</title>
+    <link rel="stylesheet" href="{% static 'core/home.css' %}">
+    <style>
+        .legal-container { padding: 120px 20px; max-width: 900px; margin: 0 auto; color: #444; }
+        .legal-container h1 { color: #667eea; margin-bottom: 20px; }
+        .legal-container h2 { color: #764ba2; margin-top: 30px; font-size: 1.4rem; }
+        .legal-container p { margin-bottom: 15px; line-height: 1.8; }
+        .back-home { display: inline-block; margin-top: 40px; color: #667eea; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="legal-container">
+        <h1>Términos de Servicio</h1>
+        <p>Última actualización: marzo 2026</p>
+
+        <h2>1. Descripción del Servicio</h2>
+        <p>Courtly es una plataforma que conecta a deportistas con complejos deportivos para facilitar la reserva de canchas. Al utilizar nuestra web, aceptas estas condiciones.</p>
+
+        <h2>2. Registro de Usuario</h2>
+        <p>Tanto Jugadores como Propietarios se comprometen a proporcionar información real y mantener la seguridad de su contraseña. Courtly no se hace responsable del uso indebido de las cuentas.</p>
+
+        <h2>3. Reservas y Pagos</h2>
+        <p>Las reservas realizadas a través de Courtly están sujetas a la disponibilidad confirmada por el complejo deportivo. Los precios y métodos de pago son establecidos por los administradores de cada recinto.</p>
+
+        <h2>4. Cancelaciones</h2>
+        <p>Cada complejo deportivo tiene su propia política de cancelación. Es responsabilidad del usuario revisar dichas políticas antes de confirmar una reserva.</p>
+
+        <h2>5. Responsabilidad</h2>
+        <p>Courtly no se hace responsable de lesiones, pérdidas materiales o conflictos que puedan ocurrir dentro de las instalaciones de los complejos deportivos registrados.</p>
+
+        <a href="{% url 'core:home' %}" class="back-home">← Volver al inicio</a>
+    </div>
+</body>
+</html>
