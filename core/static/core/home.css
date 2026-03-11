@@ -23,12 +23,16 @@ body {
     position: sticky;
     top: 0;
     z-index: 1000;
+    min-height: 90px; /* Aumentado para que el logo no se corte */
+    display: flex;
+    align-items: center;
 }
 
 .navbar-container {
     max-width: 1800px;
+    width: 100%;
     margin: 0 auto;
-    padding: 1rem 20px;
+    padding: 0 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -37,14 +41,13 @@ body {
 .logo {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #667eea;
 }
 
-.logo-icon {
-    font-size: 2rem;
+.logo-img {
+    height: 100px; /* Tamaño mayor para que se vea claro */
+    width: auto;
+    display: block;
+    object-fit: contain;
 }
 
 .nav-links {
