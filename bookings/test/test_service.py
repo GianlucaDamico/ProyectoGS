@@ -1,0 +1,102 @@
+from django.test import TestCase
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+from datetime import timedelta
+from decimal import Decimal
+
+from bookings.models import Booking
+from bookings.services import BookingService
+from venues.models import Complex, Court, Sport, Surface
+
+User = get_user_model()
+
+class BookingServiceCreateTest(TestCase):
+    """
+    Tests para BookingService.create_booking()
+    """
+    
+    def setUp(self):
+        """
+        Datos para tests de creación.
+        """
+        self.player = User.objects.create_user(username='player1', password='test')
+        self.owner = User.objects.create_user(username='owner1', password='test')
+        
+        self.complex = Complex.objects.create(
+            owner=self.owner,
+            name="Centro Deportivo",
+            city="Madrid"
+        )
+        self.court = Court.objects.create(
+            complex=self.complex,
+            name="Cancha 1",
+            sport=Sport.PADEL,
+            surface=Surface.CESPED_SINTETICO,
+            has_lighting=True,
+            base_price_per_hour=Decimal("30.00"),
+            lighting_extra_per_hour=Decimal("5.00")
+        )
+        
+        self.tomorrow = timezone.now() + timedelta(days=1)
+        self.start = self.tomorrow.replace(hour=18, minute=0, second=0, microsecond=0)
+        self.end = self.start + timedelta(minutes=90)
+    
+    def test_create_booking_success(self):
+        """
+        Test crear una reserva exitosamente.
+        """
+        booking = BookingService.create_booking(
+            user=self.player,
+            court=self.court,
+            start=self.start,
+            end=self.end,
+            lighting=False
+        )
+        
+        self.assertIsNotNone(booking.id)
+        self.assertEqual(booking.user, self.player)
+        self.assertEqual(booking.status, Booking.Status.PENDING_PAYMENT)
+        # Precio calculado automáticamente
+        self.assertEqual(booking.total_price, Decimal("45.00"))
+    
+    def test_create_booking_with_lighting(self):
+        """
+        Test que el precio incluye recargo por iluminación.
+        """
+        booking = BookingService.create_booking(
+            user=self.player,
+            court=self.court,
+            start=self.start,
+            end=self.end,
+            lighting=True
+        )
+        
+        # 1.5h * (30 + 5) = 52.50
+        self.assertEqual(booking.total_price, Decimal("52.50"))
+        self.assertTrue(booking.lighting)
+    
+    def test_create_booking_fails_when_overlapping(self):
+        """
+        Test que falla al intentar crear reserva solapada.
+        """
+        # Primera reserva
+        BookingService.create_booking(
+            user=self.player,
+            court=self.court,
+            start=self.start,
+            end=self.end,
+            lighting=False
+        )
+        
+        # Segunda reserva solapada debe fallar
+        with self.assertRaises(ValidationError) as context:
+            BookingService.create_booking(
+                user=self.player,
+                court=self.court,
+                start=self.start + timedelta(minutes=30),
+                end=self.end + timedelta(minutes=30),
+                lighting=False
+            )
+        
+        self.assertIn('no está disponible', str(context.exception))
