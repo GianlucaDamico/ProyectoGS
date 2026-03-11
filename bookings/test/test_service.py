@@ -100,3 +100,99 @@ class BookingServiceCreateTest(TestCase):
             )
         
         self.assertIn('no está disponible', str(context.exception))
+
+    
+class BookingServiceCalculatePriceTest(TestCase):
+    """
+    Tests para BookingService.calculate_price()
+    """
+    
+    def setUp(self):
+        """
+        Crea una cancha para calcular precios.
+        """
+        self.owner = User.objects.create_user(username='owner1', password='test')
+        self.complex = Complex.objects.create(
+            owner=self.owner,
+            name="Centro Deportivo",
+            city="Madrid"
+        )
+        self.court = Court.objects.create(
+            complex=self.complex,
+            name="Cancha 1",
+            sport=Sport.PADEL,
+            surface=Surface.CESPED_SINTETICO,
+            has_lighting=True,
+            base_price_per_hour=Decimal("30.00"),
+            lighting_extra_per_hour=Decimal("5.00")
+        )
+        
+        self.tomorrow = timezone.now() + timedelta(days=1)
+        self.start = self.tomorrow.replace(hour=18, minute=0, second=0, microsecond=0)
+    
+    def test_calculate_price_60_minutes_no_lighting(self):
+        """
+        Test cálculo de precio para 60 minutos sin iluminación.
+        """
+        end = self.start + timedelta(minutes=60)
+        
+        price = BookingService.calculate_price(
+            court=self.court,
+            start=self.start,
+            end=end,
+            lighting=False
+        )
+        
+        # 1 hora * 30.00 = 30.00
+        expected = Decimal("30.00")
+        self.assertEqual(price, expected)
+    
+    def test_calculate_price_90_minutes_no_lighting(self):
+        """
+        Test cálculo para 90 minutos sin iluminación.
+        """
+        end = self.start + timedelta(minutes=90)
+        
+        price = BookingService.calculate_price(
+            court=self.court,
+            start=self.start,
+            end=end,
+            lighting=False
+        )
+        
+        # 1.5 horas * 30.00 = 45.00
+        expected = Decimal("45.00")
+        self.assertEqual(price, expected)
+    
+    def test_calculate_price_with_lighting(self):
+        """
+        Test que añade el recargo por iluminación correctamente.
+        """
+        end = self.start + timedelta(minutes=90)
+        
+        price = BookingService.calculate_price(
+            court=self.court,
+            start=self.start,
+            end=end,
+            lighting=True
+        )
+        
+        # 1.5 horas * (30.00 + 5.00) = 52.50
+        expected = Decimal("52.50")
+        self.assertEqual(price, expected)
+    
+    def test_calculate_price_precision(self):
+        """
+        Test que el precio se redondea a 2 decimales.
+        """
+        end = self.start + timedelta(minutes=90)
+        
+        price = BookingService.calculate_price(
+            court=self.court,
+            start=self.start,
+            end=end,
+            lighting=True
+        )
+        
+        # Verificamos exactamente 2 decimales
+        self.assertEqual(price.as_tuple().exponent, -2)    
