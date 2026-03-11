@@ -83,7 +83,12 @@ class ComplexListSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'city',
-            'address',
+            'calle',
+            'altura',
+            'city',
+            'barrio',
+            'telefono_comercial',
+            'email_comercial',
             'amenities',
             'courts_count',
             'courts'
@@ -110,7 +115,12 @@ class ComplexDetailSerializer(serializers.ModelSerializer):
             'owner_username',
             'name',
             'city',
-            'address',
+            'calle',
+            'altura',
+            'city',
+            'barrio',
+            'telefono_comercial',
+            'email_comercial',
             'amenities',
             'courts'
         ]
