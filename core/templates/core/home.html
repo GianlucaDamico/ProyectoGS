@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Courtly - Reserva tu cancha deportiva</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'core/home.css' %}">
 </head>
 <body>
@@ -25,11 +26,8 @@
     <section class="hero">
         <video autoplay muted loop playsinline id="hero-video">
             <source src="{% static 'core/videos/hero_video.mp4' %}" type="video/mp4">
-            Tu navegador no soporta vídeos.
         </video>
-        
         <div class="hero-overlay"></div>
-
         <div class="hero-content">
             <h1 class="hero-title">Encuentra tu cancha deportiva ideal</h1>
             <p class="hero-subtitle">Reserva canchas, campos y complejos deportivos en segundos</p>
@@ -38,24 +36,75 @@
     </section>
 
     <section class="about-section">
-        <div class="container">
-            <div class="about-content">
-                <div class="about-image">
-                    <div class="image-placeholder">📱</div>
-                </div>
-                <div class="about-text">
-                    <h2>¿Qué es Courtly?</h2>
-                    <p>Courtly es la plataforma líder en reserva de canchas deportivas. Conectamos a jugadores con complejos deportivos, facilitando la reserva de espacios de manera rápida, segura y confiable.</p>
+        <div class="container about-grid">
+            
+            <div class="about-text-content">
+                <h2 class="section-heading">¿Qué es Courtly?</h2>
+                <p class="section-desc">La plataforma líder para conectar deportistas con sus canchas ideales. Simplificamos tu reserva en 4 pasos:</p>
+                
+                <div class="booking-flow">
+                    <div class="flow-step">
+                        <div class="step-icon"><i class="fas fa-search"></i></div>
+                        <div class="step-info">
+                            <h4>Busca tu cancha</h4>
+                            <p>Filtra por deporte, ubicación y horario.</p>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-line"></div>
+                        <div class="step-icon"><i class="fas fa-filter"></i></div>
+                        <div class="step-info">
+                            <h4>Filtra y Selecciona</h4>
+                            <p>Compara precios, fotos y disponibilidad real.</p>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-line"></div>
+                        <div class="step-icon"><i class="fas fa-calendar-check"></i></div>
+                        <div class="step-info">
+                            <h4>Reserva al instante</h4>
+                            <p>Sin llamadas, todo desde tu navegador.</p>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-line"></div>
+                        <div class="step-icon"><i class="fas fa-credit-card"></i></div>
+                        <div class="step-info">
+                            <h4>Pago Seguro</h4>
+                            <p>Completa la transacción de forma confiable.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <section class="complejos-destacados">
-        <div class="container">
-            <h2>Complejos Destacados</h2>
-            <div class="complejos-grid">
+            <div class="about-visual-panel">
+                <div class="perspective-container">
+                    <div class="confirmation-card-3d">
+                        <div class="card-header-3d">
+                            <span class="status-badge-3d">RESERVA COMPLETADA</span>
+                            <h3>Complejo Madrid Central</h3>
+                        </div>
+                        <div class="card-body-3d">
+                            <div class="booking-detail">
+                                <small>Deporte</small>
+                                <p>Pádel - Cancha #3</p>
+                            </div>
+                            <div class="booking-detail">
+                                <small>Fecha y Hora</small>
+                                <p>Sábado, 14 Mar | 18:00 - 19:30</p>
+                            </div>
+                            <div class="booking-detail">
+                                <small>Estado</small>
+                                <p class="text-success">✅ Pago Confirmado</p>
+                            </div>
+                        </div>
+                        <div class="card-footer-3d">
+                            <div class="qr-mock">🔳</div>
+                            <p>Scan para entrar</p>
+                        </div>
+                    </div>
                 </div>
+            </div>
         </div>
     </section>
 
@@ -100,7 +149,6 @@
                 <ul>
                     <li><a href="{% url 'core:terminos' %}">Términos de servicio</a></li>
                     <li><a href="{% url 'core:privacidad' %}">Política de privacidad</a></li>
-                    <li><a href="{% url 'core:cookies' %}">Política de cookies</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -118,4 +166,4 @@
         </div>
     </footer>
 </body>
-</html> 
+</html>
