@@ -23,6 +23,13 @@
     </nav>
 
     <section class="hero">
+        <video autoplay muted loop playsinline id="hero-video">
+            <source src="{% static 'core/videos/hero_video.mp4' %}" type="video/mp4">
+            Tu navegador no soporta vídeos.
+        </video>
+        
+        <div class="hero-overlay"></div>
+
         <div class="hero-content">
             <h1 class="hero-title">Encuentra tu cancha deportiva ideal</h1>
             <p class="hero-subtitle">Reserva canchas, campos y complejos deportivos en segundos</p>
@@ -111,4 +118,4 @@
         </div>
     </footer>
 </body>
-</html>
+</html> 
