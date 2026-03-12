@@ -10,18 +10,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='complex',
-            name='address',
-        ),
-        migrations.RemoveField(
-            model_name='complex',
-            name='ciudad',
-        ),
-        migrations.RemoveField(
-            model_name='complex',
-            name='nombre_complejo',
-        ),
         migrations.AlterField(
             model_name='complex',
             name='city',
