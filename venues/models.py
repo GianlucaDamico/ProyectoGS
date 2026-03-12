@@ -33,7 +33,7 @@ class Surface(models.TextChoices):
 class Amenity(models.Model):
     """
     Servicios adicionales que puede ofrecer un complejo.
-    Ejemplos: vestuarios, parking, zona de parrillas, cafetería, etc.
+    Ejemplos: vestuarios, parking, zona de parrillas, cafetería, etc..
     """
     name = models.CharField(max_length=80, unique=True)
     
