@@ -212,3 +212,167 @@ class PublicCourtAPITest(APITestCase):
         
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 1)
+
+
+class CourtAvailabilityAPITest(APITestCase):
+    """
+    Tests para el endpoint de verificación de disponibilidad.
+    """
+    
+    def setUp(self):
+        """
+        Crea datos de prueba.
+        """
+        from django.utils import timezone
+        from datetime import timedelta
+        from bookings.models import Booking
+        
+        self.user = User.objects.create_user(username='player1', password='test')
+        self.owner = User.objects.create_user(username='owner1', password='test')
+        
+        self.complex = Complex.objects.create(
+            owner=self.owner,
+            name="Centro Deportivo",
+            city="Madrid"
+        )
+        
+        self.court = Court.objects.create(
+            complex=self.complex,
+            name="Cancha 1",
+            sport=Sport.PADEL,
+            surface=Surface.CESPED_SINTETICO,
+            has_lighting=True,
+            base_price_per_hour=Decimal("30.00"),
+            lighting_extra_per_hour=Decimal("5.00")
+        )
+        
+        # Crear una reserva existente
+        tomorrow = timezone.now() + timedelta(days=1)
+        start = tomorrow.replace(hour=18, minute=0, second=0, microsecond=0)
+        
+        self.existing_booking = Booking.objects.create(
+            user=self.user,
+            court=self.court,
+            start=start,
+            end=start + timedelta(minutes=90),
+            status=Booking.Status.CONFIRMED,
+            total_price=Decimal("45.00")
+        )
+    
+    def test_check_availability_free_slot(self):
+        """
+        Test: verificar disponibilidad en horario libre.
+        """
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        # Horario diferente (20:00 - 21:30)
+        tomorrow = timezone.now() + timedelta(days=1)
+        start = tomorrow.replace(hour=20, minute=0, second=0, microsecond=0)
+        end = start + timedelta(minutes=90)
+        
+        url = f'/api/courts/{self.court.id}/check_availability/'
+        params = {
+            'start': start.isoformat(),
+            'end': end.isoformat(),
+            'lighting': 'false'
+        }
+        
+        response = self.client.get(url, params)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data['available'])
+        self.assertEqual(response.data['estimated_price'], '45.00')
+    
+    def test_check_availability_occupied_slot(self):
+        """
+        Test: verificar disponibilidad en horario ocupado.
+        """
+        # Mismo horario que la reserva existente
+        start = self.existing_booking.start
+        end = self.existing_booking.end
+        
+        url = f'/api/courts/{self.court.id}/check_availability/'
+        params = {
+            'start': start.isoformat(),
+            'end': end.isoformat()
+        }
+        
+        response = self.client.get(url, params)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(response.data['available'])
+        self.assertIn('conflicting_bookings', response.data)
+
+
+class ComplexStatsAPITest(APITestCase):
+    """
+    Tests para el endpoint de estadísticas del complejo.
+    """
+    
+    def setUp(self):
+        """
+        Crea propietario con complejo.
+        """
+        from django.utils import timezone
+        from datetime import timedelta
+        from bookings.models import Booking
+        
+        self.owner = User.objects.create_user(username='owner1', password='test')
+        self.player = User.objects.create_user(username='player1', password='test')
+        
+        self.complex = Complex.objects.create(
+            owner=self.owner,
+            name="Centro Deportivo",
+            city="Madrid"
+        )
+        
+        self.court = Court.objects.create(
+            complex=self.complex,
+            name="Cancha 1",
+            sport=Sport.PADEL,
+            surface=Surface.CESPED_SINTETICO,
+            base_price_per_hour=Decimal("30.00")
+        )
+        
+        # Crear algunas reservas
+        for i in range(3):
+            start = timezone.now() + timedelta(days=i)
+            Booking.objects.create(
+                user=self.player,
+                court=self.court,
+                start=start,
+                end=start + timedelta(minutes=90),
+                status=Booking.Status.CONFIRMED,
+                total_price=Decimal("45.00")
+            )
+    
+    def test_owner_can_access_own_complex_stats(self):
+        """
+        Test: propietario puede ver estadísticas de SU complejo.
+        """
+        self.client.force_authenticate(user=self.owner)
+        
+        url = f'/api/complexes/{self.complex.id}/stats/'
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        # Debe incluir métricas
+        self.assertIn('total_bookings', response.data)
+        self.assertIn('confirmed_bookings', response.data)
+        self.assertIn('total_revenue', response.data)
+        self.assertEqual(response.data['total_bookings'], 3)
+    
+    def test_other_user_cannot_access_complex_stats(self):
+        """
+        Test CRÍTICO: otro usuario NO puede ver estadísticas del complejo.
+        """
+        other_user = User.objects.create_user(username='other', password='test')
+        self.client.force_authenticate(user=other_user)
+        
+        url = f'/api/complexes/{self.complex.id}/stats/'
+        response = self.client.get(url)
+        
+        # Debe denegar acceso
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
