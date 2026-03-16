@@ -119,3 +119,96 @@ class PublicComplexAPITest(APITestCase):
         
         # Los endpoints públicos son ReadOnly
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+
+class PublicCourtAPITest(APITestCase):
+    """
+    Tests para endpoints públicos de Court.
+    """
+    
+    def setUp(self):
+        """
+        Crea canchas de prueba.
+        """
+        self.owner = User.objects.create_user(username='owner1', password='test')
+        
+        self.complex = Complex.objects.create(
+            owner=self.owner,
+            name="Centro Deportivo",
+            city="Madrid"
+        )
+        
+        # Canchas de diferentes deportes
+        self.court_padel = Court.objects.create(
+            complex=self.complex,
+            name="Pádel 1",
+            sport=Sport.PADEL,
+            surface=Surface.CESPED_SINTETICO,
+            has_lighting=True,
+            base_price_per_hour=Decimal("30.00")
+        )
+        
+        self.court_tennis = Court.objects.create(
+            complex=self.complex,
+            name="Tenis 1",
+            sport=Sport.TENIS,
+            surface=Surface.CEMENTO,
+            has_lighting=False,
+            base_price_per_hour=Decimal("25.00")
+        )
+    
+    def test_list_courts(self):
+        """
+        Test: listar todas las canchas.
+        """
+        url = '/api/courts/'
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 2)
+    
+    def test_filter_courts_by_sport(self):
+        """
+        Test: filtrar canchas por deporte.
+        """
+        url = '/api/courts/?sport=padel'
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 1)
+        self.assertEqual(response.data['results'][0]['sport'], 'padel')
+    
+    def test_filter_courts_with_lighting(self):
+        """
+        Test: filtrar canchas que tienen iluminación.
+        """
+        url = '/api/courts/?has_lighting=true'
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 1)
+        self.assertTrue(response.data['results'][0]['has_lighting'])
+    
+    def test_order_courts_by_price(self):
+        """
+        Test: ordenar canchas por precio.
+        """
+        url = '/api/courts/?ordering=base_price_per_hour'
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        # Debe estar ordenado de menor a mayor precio
+        prices = [Decimal(c['base_price_per_hour']) for c in response.data['results']]
+        self.assertEqual(prices, sorted(prices))
+    
+    def test_search_courts_by_name(self):
+        """
+        Test: buscar canchas por nombre.
+        """
+        url = '/api/courts/?search=Pádel'
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 1)
