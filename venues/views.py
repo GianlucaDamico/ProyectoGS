@@ -169,7 +169,7 @@ class ComplexViewSet(viewsets.ReadOnlyModelViewSet):
     filterset_fields = ['city']
 
     # Campos por los que se puede buscar (con búsqueda parcial)
-    search_fields = ['name', 'city', 'address']
+    search_fields = ['name', 'city']
 
     # Campos por los que se puede ordenar
     ordering_fields = ['name', 'city']
