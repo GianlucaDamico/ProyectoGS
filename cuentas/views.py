@@ -125,7 +125,7 @@ def register_jugador(request):
         user.last_name = apellido
         user.save()
 
-        # crear perfil de jugador
+        # crear perfil de jugadores
         from .models import Jugador
         Jugador.objects.create(
             user=user,
