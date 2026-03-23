@@ -48,5 +48,46 @@
         </div>
     </section>
 
+    <!-- Información del complejo -->
+    <section class="complejo-info-section">
+        <div class="container">
+            <div class="info-grid">
+                <div class="info-main">
+                    <h2>Sobre este complejo</h2>
+                    <p class="complejo-description">
+                        {{ complejo.name }} es un complejo deportivo ubicado en {{ complejo.city }}.
+                        Cuenta con {{ complejo.courts.count }} cancha{{ complejo.courts.count|pluralize }}
+                        de diferentes deportes.
+                    </p>
+                    
+                    {% if complejo.amenities.exists %}
+                    <h3>Servicios disponibles</h3>
+                    <ul class="amenities-list">
+                        {% for amenity in complejo.amenities.all %}
+                            <li>✓ {{ amenity.name }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+                
+                <div class="info-sidebar">
+                    <div class="contact-card">
+                        <h3>Información de contacto</h3>
+                        <p><strong>Propietario:</strong> {{ complejo.owner.username }}</p>
+                        {% if complejo.phone %}
+                            <p><strong>Teléfono:</strong> {{ complejo.phone }}</p>
+                        {% endif %}
+                        {% if complejo.email %}
+                            <p><strong>Email:</strong> {{ complejo.email }}</p>
+                        {% endif %}
+                        <p><strong>Ubicación:</strong> {{ complejo.city }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+
 </body>
 </html>

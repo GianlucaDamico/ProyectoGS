@@ -1,4 +1,10 @@
-*{
+/* core/static/core/complejo.css */
+
+/* SELECTOR UNIVERSAL (*)
+   Elimina los márgenes y espacios internos por defecto de todos los elementos.
+   box-sizing: border-box asegura que el ancho total incluya bordes y padding.
+*/
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -278,4 +284,162 @@ body {
     font-size: 0.9rem;
     font-weight: 500;
     border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* ============ SECCIÓN DE INFORMACIÓN DEL COMPLEJO ============ */
+
+/* CLASE .complejo-info-section
+   Sección que contiene información detallada del complejo.
+   - padding: 60px 20px: Espaciado amplio vertical y horizontal
+   - background: white: Fondo blanco para contrastar con el hero
+*/
+.complejo-info-section {
+    padding: 60px 20px;
+    background: white;
+}
+
+/* CLASE .info-grid
+   Grid que divide la información en dos columnas: contenido principal y tarjeta de contacto.
+   - display: grid: Usa CSS Grid para disposición
+   - grid-template-columns: 2fr 1fr: Columna izquierda 2 veces más ancha que la derecha
+   - gap: 40px: Espacio entre las columnas
+   - align-items: start: Alinea elementos al inicio (top) de sus filas
+*/
+.info-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+    align-items: start;
+}
+
+/* CLASE .info-main h2
+   Título secundario en la sección de información principal.
+   - font-size: 2rem: Tamaño grande pero menor que el hero
+   - color: #333: Gris muy oscuro (casi negro)
+   - margin-bottom: 20px: Espacio debajo del título
+*/
+.info-main h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* CLASE .complejo-description
+   Párrafo descriptivo del complejo.
+   - font-size: 1.1rem: Tamaño ligeramente mayor al normal para legibilidad
+   - color: #666: Gris medio para texto de cuerpo
+   - line-height: 1.8: Altura de línea mayor para mejor legibilidad
+   - margin-bottom: 30px: Espacio amplio debajo del párrafo
+*/
+.complejo-description {
+    font-size: 1.1rem;
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 30px;
+}
+
+/* CLASE .info-main h3
+   Título terciario para subsecciones (como "Amenidades").
+   - font-size: 1.5rem: Tamaño moderadamente grande
+   - color: #333: Gris muy oscuro
+   - margin-bottom: 15px: Espacio debajo
+   - margin-top: 30px: Espacio encima para separarse del contenido anterior
+*/
+.info-main h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 15px;
+    margin-top: 30px;
+}
+
+/* CLASE .amenities-list
+   Lista de amenidades sin estilos de viñeta por defecto.
+   - list-style: none: Elimina los puntos de lista
+   - padding: 0: Elimina espaciado izquierdo de la lista
+*/
+.amenities-list {
+    list-style: none;
+    padding: 0;
+}
+
+/* CLASE .amenities-list li
+   Cada elemento de amenidad en la lista.
+   - padding: 10px 0: Espaciado vertical en cada elemento
+   - font-size: 1.05rem: Tamaño ligeramente más grande
+   - color: #555: Gris medio-oscuro
+   - border-bottom: 1px solid #eee: Línea divisoria gris clara debajo de cada elemento
+*/
+.amenities-list li {
+    padding: 10px 0;
+    font-size: 1.05rem;
+    color: #555;
+    border-bottom: 3px solid #eee;
+}
+
+/* CLASE .amenities-list li:last-child
+   Último elemento de amenidad (no lleva línea divisoria debajo).
+   - border-bottom: none: Elimina la línea divisoria del último elemento
+*/
+.amenities-list li:last-child {
+    border-bottom: none;
+}
+
+/* ============ TARJETA DE CONTACTO ============ */
+
+/* CLASE .contact-card
+   Tarjeta que contiene información de contacto del complejo.
+   - background: #f8f9fa: Fondo gris muy claro
+   - border-radius: 12px: Esquinas redondeadas para aspecto moderno
+   - padding: 30px: Espaciado interno amplio
+   - box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08): Sombra sutil para profundidad
+   - position: sticky: Se mantiene visible al hacer scroll
+   - top: 100px: Se queda a 100px del tope
+*/
+.contact-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    position: sticky;
+    top: 100px; 
+}
+
+/* CLASE .contact-card h3
+   Título de la tarjeta de contacto.
+   - font-size: 1.3rem: Tamaño moderadamente grande
+   - color: #333: Gris muy oscuro
+   - margin-bottom: 20px: Espacio debajo
+   - border-bottom: 2px solid #667eea: Línea de color corporativo
+   - padding-bottom: 10px: Espacio entre el texto y la línea
+*/
+.contact-card h3 {
+    font-size: 1.3rem;
+    color: #333;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 10px;
+}
+
+/* CLASE .contact-card p
+   Párrafo de información dentro de la tarjeta de contacto.
+   - margin-bottom: 12px: Espacio debajo de cada párrafo
+   - color: #555: Gris medio-oscuro
+   - font-size: 0.95rem: Tamaño de texto pequeño
+*/
+.contact-card p {
+    margin-bottom: 12px;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+/* CLASE .contact-card strong
+   Etiquetas (labels) en negrita dentro de la tarjeta de contacto.
+   - color: #333: Gris muy oscuro
+   - display: inline-block: Permite aplicar ancho mínimo
+   - min-width: 90px: Ancho mínimo para alinear verticalmente los valores
+*/
+.contact-card strong {
+    color: #333;
+    display: inline-block;
+    min-width: 90px;
 }
