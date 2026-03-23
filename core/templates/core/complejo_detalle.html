@@ -133,7 +133,69 @@
         </div>
     </section>
 
-    
+    <!-- Grid de canchas -->
+    <section class="canchas-section">
+        <div class="container">
+            <h2>Canchas disponibles
+                {% if canchas.count != complejo.courts.count %}
+                    ({{ canchas.count }} de {{ complejo.courts.count }})
+                {% else %}
+                    ({{ canchas.count }})
+                {% endif %}
+            </h2>
+            
+            {% if canchas %}
+                <div class="canchas-grid">
+                    {% for cancha in canchas %}
+                        <div class="cancha-card">
+                            <div class="cancha-image">
+                                <!-- Icono según el deporte -->
+                                {% if cancha.sport == 'padel' %}⚾
+                                {% elif cancha.sport == 'tenis' %}🎾
+                                {% elif cancha.sport == 'futsal' %}⚽
+                                {% elif cancha.sport == 'baloncesto' %}🏀
+                                {% elif cancha.sport == 'voleibol' %}🏐
+                                {% else %}🏆
+                                {% endif %}
+                            </div>
+                            
+                            <div class="cancha-content">
+                                <h3>{{ cancha.name }}</h3>
+                                
+                                <div class="cancha-details">
+                                    <span class="detail-badge">{{ cancha.get_sport_display }}</span>
+                                    <span class="detail-badge">{{ cancha.get_surface_display }}</span>
+                                    {% if cancha.has_lighting %}
+                                        <span class="detail-badge lighting">💡 Iluminación</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="cancha-precio">
+                                    <span class="precio-label">Desde</span>
+                                    <span class="precio-valor">€{{ cancha.base_price_per_hour }}/hora</span>
+                                    {% if cancha.has_lighting and cancha.lighting_extra_per_hour > 0 %}
+                                        <span class="precio-extra">+€{{ cancha.lighting_extra_per_hour }} con luz</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <button class="btn-reservar"
+                                    onclick="verDisponibilidad({{ cancha.id }}, '{{ cancha.name }}')">
+                                    Ver disponibilidad
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-results">
+                    <p>No se encontraron canchas con los filtros seleccionados.</p>
+                    <a href="{% url 'core:complejo_detalle' complejo.id %}" class="btn-primary">
+                        Ver todas las canchas
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </section>
 
 </body>
 </html>

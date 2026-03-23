@@ -582,6 +582,7 @@ body {
 */
 .btn-clear-filters:hover {
     background: #d32f2f;
+}
 /* ============ SECCIÓN DE FILTROS ============ */
 
 /* CLASE .filtros-section
@@ -720,4 +721,364 @@ body {
 */
 .btn-clear-filters:hover {
     background: #d32f2f;
+}
+
+/* ============ SECCIÓN DE CANCHAS ============ */
+
+/* CLASE .canchas-section
+   Sección que contiene la cuadrícula de canchas disponibles.
+   - padding: 60px 20px: Espaciado amplio vertical y horizontal
+   - background: #f8f9fa: Fondo gris muy claro
+*/
+.canchas-section {
+    padding: 60px 20px;
+    background: #f8f9fa;
+}
+
+/* CLASE .canchas-section h2
+   Título de la sección de canchas.
+   - font-size: 2rem: Tamaño grande
+   - color: #333: Gris muy oscuro
+   - margin-bottom: 40px: Espacio amplio debajo del título
+   - text-align: center: Justifica el título al centro
+*/
+.canchas-section h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+/* CLASE .canchas-grid
+   Grid que organiza las tarjetas de canchas en una cuadrícula responsive.
+   - display: grid: Usa CSS Grid
+   - grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)): Crea columnas repetidas de mínimo 320px, se adapta al espacio disponible
+   - gap: 30px: Espacio entre tarjetas
+*/
+.canchas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
+}
+
+/* ============ TARJETA DE CANCHA ============ */
+
+/* CLASE .cancha-card
+   Tarjeta que muestra información de una cancha individual.
+   - background: white: Fondo blanco
+   - border-radius: 12px: Esquinas redondeadas para aspecto moderno
+   - overflow: hidden: Oculta contenido que sale de los límites (importante para border-radius)
+   - box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1): Sombra para profundidad
+   - transition: transform 0.3s, box-shadow 0.3s: Transiciones suaves
+   - display: flex: Usa flexbox
+   - flex-direction: column: Organiza contenido verticalmente
+*/
+.cancha-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+/* CLASE .cancha-card:hover
+   Efecto hover de la tarjeta de cancha (al pasar el mouse).
+   - transform: translateY(-8px): Mueve la tarjeta hacia arriba 8px
+   - box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15): Sombra más pronunciada
+*/
+.cancha-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* CLASE .cancha-image
+   Área de imagen de la cancha en la tarjeta.
+   - width: 100%: Ocupa todo el ancho de la tarjeta
+   - height: 180px: Altura fija para consistencia
+   - background: Degradado lineal de azul a púrpura
+   - display: flex: Usa flexbox para centrar contenido
+   - align-items: center: Centra verticalmente
+   - justify-content: center: Centra horizontalmente
+   - font-size: 80px: Tamaño grande para emoji/icono
+*/
+.cancha-image {
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 80px;
+}
+
+/* CLASE .cancha-content
+   Contenedor del contenido de la tarjeta (título, detalles, precio, botón).
+   - padding: 20px: Espaciado interno
+   - flex-grow: 1: Se expande para llenar el espacio disponible
+   - display: flex: Usa flexbox
+   - flex-direction: column: Organiza el contenido verticalmente
+*/
+.cancha-content {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* CLASE .cancha-content h3
+   Título del nombre de la cancha.
+   - font-size: 1.4rem: Tamaño moderadamente grande
+   - color: #333: Gris muy oscuro
+   - margin-bottom: 15px: Espacio debajo
+*/
+.cancha-content h3 {
+    font-size: 1.4rem;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+/* CLASE .cancha-details
+   Contenedor de las etiquetas de detalles de la cancha (tipo, tamaño, etc).
+   - display: flex: Alinea las etiquetas horizontalmente
+   - flex-wrap: wrap: Permite que las etiquetas se rompan en líneas
+   - gap: 8px: Espacio entre etiquetas
+   - margin-bottom: 20px: Espacio debajo del contenedor
+*/
+.cancha-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+/* CLASE .detail-badge
+   Etiqueta de detalle (aire libre, cubierta, etc).
+   - background: #e3f2fd: Fondo azul muy claro
+   - color: #1976d2: Texto azul
+   - padding: 5px 12px: Espaciado interno pequeño
+   - border-radius: 15px: Esquinas muy redondeadas para aspecto de píldora
+   - font-size: 0.85rem: Tamaño pequeño
+   - font-weight: 500: Texto semi-negrita
+*/
+.detail-badge {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* CLASE .detail-badge.lighting
+   Variante de etiqueta para iluminación/luz.
+   - background: #fff3e0: Fondo anaranjado claro
+   - color: #f57c00: Texto anaranjado oscuro
+*/
+.detail-badge.lighting {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+/* ============ PRECIO DE LA CANCHA ============ */
+
+/* CLASE .cancha-precio
+   Sección que muestra el precio de la cancha.
+   - background: #f8f9fa: Fondo gris muy claro
+   - padding: 15px: Espaciado interno
+   - border-radius: 8px: Esquinas redondeadas
+   - margin-bottom: 20px: Espacio debajo
+   - display: flex: Usa flexbox
+   - flex-direction: column: Organiza contenido verticalmente
+   - gap: 5px: Espacio pequeño entre elementos
+*/
+.cancha-precio {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* CLASE .precio-label
+   Etiqueta del precio (ej: "Precio por hora").
+   - font-size: 0.85rem: Tamaño pequeño
+   - color: #999: Gris claro
+   - text-transform: uppercase: Convierte el texto a mayúsculas
+   - letter-spacing: 0.5px: Espaciado entre letras para aspecto formal
+*/
+.precio-label {
+    font-size: 0.85rem;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* CLASE .precio-valor
+   Valor del precio (número).
+   - font-size: 1.8rem: Tamaño muy grande para destacar
+   - font-weight: 700: Texto en negrita
+   - color: #667eea: Color corporativo para la cifra principal
+*/
+.precio-valor {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+/* CLASE .precio-extra
+   Información adicional sobre el precio (ej: "más impuestos").
+   - font-size: 0.85rem: Tamaño pequeño
+   - color: #666: Gris medio
+*/
+.precio-extra {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+/* CLASE .btn-reservar
+   Botón para realizar una reserva.
+   - background: #667eea: Fondo de color corporativo
+   - color: white: Texto blanco
+   - border: none: Sin borde
+   - padding: 12px 24px: Espaciado interno amplio
+   - border-radius: 6px: Esquinas redondeadas
+   - font-size: 1rem: Tamaño normal
+   - font-weight: 600: Texto semi-negrita
+   - cursor: pointer: Cursor tipo mano
+   - transition: background 0.3s, transform 0.2s: Transiciones suaves
+   - margin-top: auto: Se coloca al fondo de la tarjeta
+*/
+.btn-reservar {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    margin-top: auto;
+}
+
+/* CLASE .btn-reservar:hover
+   Efecto hover del botón reservar.
+   - background: #764ba2: Cambio a púrpura más oscuro
+   - transform: translateY(-2px): Mueve el botón hacia arriba ligeramente
+*/
+.btn-reservar:hover {
+    background: #764ba2;
+    transform: translateY(-2px);
+}
+
+/* CLASE .btn-reservar:active
+   Efecto cuando se hace click en el botón.
+   - transform: translateY(0): Regresa a posición normal
+*/
+.btn-reservar:active {
+    transform: translateY(0);
+}
+
+/* ============ SIN RESULTADOS ============ */
+
+/* CLASE .no-results
+   Sección mostrada cuando no hay canchas que coincidan con los filtros.
+   - text-align: center: Centra todo el contenido
+   - padding: 60px 20px: Espaciado amplio
+*/
+.no-results {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+/* CLASE .no-results p
+   Párrafo de mensaje cuando no hay resultados.
+   - font-size: 1.2rem: Tamaño moderadamente grande
+   - color: #666: Gris medio
+   - margin-bottom: 30px: Espacio debajo
+*/
+.no-results p {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+/* ============ SECCIÓN CTA (CALL TO ACTION) ============ */
+
+/* CLASE .cta-section
+   Sección que contiene una llamada a la acción (CTA) para los usuarios.
+   - padding: 80px 20px: Espaciado amplio para destacar
+   - text-align: center: Centra todo el contenido
+   - background: white: Fondo blanco
+*/
+.cta-section {
+    padding: 80px 20px;
+    text-align: center;
+    background: white;
+}
+
+/* CLASE .cta-section h2
+   Título principal de la sección CTA.
+   - font-size: 2.5rem: Tamaño muy grande para captar atención
+   - margin-bottom: 15px: Espacio debajo
+   - color: #333: Gris muy oscuro
+*/
+.cta-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+/* CLASE .cta-section p
+   Párrafo descriptivo de la sección CTA.
+   - font-size: 1.1rem: Tamaño ligeramente mayor
+   - color: #666: Gris medio
+   - margin-bottom: 30px: Espacio amplio debajo
+*/
+.cta-section p {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+/* CLASE .btn-primary
+   Botón principal (CTA primario).
+   - background: #667eea: Fondo corporativo
+   - color: white: Texto blanco
+   - padding: 12px 40px: Espaciado interno amplio (especialmente horizontal)
+   - border: none: Sin borde
+   - border-radius: 50px: Esquinas muy redondeadas para aspecto de píldora
+   - font-size: 1rem: Tamaño normal
+   - font-weight: 600: Texto semi-negrita
+   - cursor: pointer: Cursor tipo mano
+   - text-decoration: none: Sin subrayado (para enlaces)
+   - display: inline-block: Se comporta como bloque pero en línea
+   - transition: transform 0.3s, box-shadow 0.3s: Transiciones suaves
+*/
+.btn-primary {
+    background: #667eea;
+    color: white;
+    padding: 12px 40px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+/* CLASE .btn-primary:hover
+   Efecto hover del botón primario.
+   - transform: translateY(-3px): Mueve el botón hacia arriba 3px
+   - box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3): Sombra corporativa más pronunciada
+*/
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
 }
