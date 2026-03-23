@@ -18,6 +18,8 @@ class Sport(models.TextChoices):
     PELOTA_VASCA = "pelota", "Pelota vasca"
     PISCINA = "piscina", "Piscina"
     TIRO_CON_ARCO = "arco", "Tiro con arco"
+    BALONCESTO = "baloncesto", "Baloncesto"
+    VOLEIBOL = "voleibol", "Voleibol"
 
 
 class Surface(models.TextChoices):
