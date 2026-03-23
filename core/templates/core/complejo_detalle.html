@@ -8,6 +8,25 @@
         <link rel="stylesheet" href="{% static 'core/complejo.css' %}">
     </head>
 <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="{% url 'core:home' %}" class="logo">
+                <span class="logo-icon">🏆</span>
+                <span class="logo-text">Courtly</span>
+            </a>
+            <div class="nav-links">
+                {% if user.is_authenticated %}
+                    <span class="user-greeting">Hola, {{ user.username }}</span>
+                    <a href="#" class="btn-login">Mi cuenta</a>
+                    <a href="#" class="btn-register">Cerrar sesión</a>
+                {% else %}
+                    <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>
+                    <a href="{% url 'cuentas:register' %}" class="btn-register">Registrarse</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
     
 
 </body>

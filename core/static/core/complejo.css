@@ -1,0 +1,181 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* CLASE BODY
+   Estilos globales del cuerpo de la página.
+   - font-family: Define la tipografía principal con fuentes alternativas
+   - line-height: Altura de línea de 1.6 para mejor legibilidad
+   - color: Color de texto gris oscuro por defecto
+   - background: Fondo gris claro suave
+*/
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: #f8f9fa;
+}
+
+/* CLASE .container
+   Contenedor principal que limita el ancho máximo del contenido.
+   - max-width: 1200px: Ancho máximo para mejor legibilidad
+   - margin: 0 auto: Centra el contenedor horizontalmente
+   - padding: 0 20px: Espaciado lateral para mantener distancia desde los bordes
+*/
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ============ NAVBAR (BARRA DE NAVEGACIÓN) ============ */
+
+/* CLASE .navbar
+   Barra de navegación principal del sitio.
+   - background: Fondo blanco para contraste
+   - box-shadow: Sombra sutil para separarse del contenido
+   - position: sticky: Se queda fija al hacer scroll
+   - top: 0: Posicionado al tope de la página
+   - z-index: 1000: Se coloca encima de otros elementos
+*/
+.navbar {
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* CLASE .navbar-container
+   Contenedor interno de la navbar que organiza sus elementos.
+   - max-width: 1800px: Ancho máximo para mantener contenido en pantallas grandes
+   - margin: 0 auto: Centra el contenedor
+   - padding: 1rem 20px: Espaciado interno (vertical y horizontal)
+   - display: flex: Usa flexbox para alinear elementos
+   - justify-content: space-between: Separa logo de links hacia los extremos
+   - align-items: center: Alinea verticalmente al centro
+*/
+.navbar-container {
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 1rem 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* CLASE .logo
+   Estilo del logo de la aplicación en la navbar.
+   - display: flex: Alinea el icono y texto del logo horizontalmente
+   - align-items: center: Centra verticalmente el contenido
+   - gap: 10px: Espacio entre el icono y el texto
+   - font-size: 1.5rem: Tamaño prominente
+   - font-weight: bold: Texto en negrita
+   - color: #667eea: Color púrpura/azul corporativo
+   - text-decoration: none: Elimina subrayado de enlace
+   - transition: Transición suave de 0.3s para cambios de propiedades
+*/
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #667eea;
+    text-decoration: none;
+    transition: transform 0.3s;
+}
+
+/* CLASE .logo:hover
+   Efecto del logo cuando se pasa el mouse sobre él.
+   - transform: scale(1.05): Agranda el logo un 5% para dar efecto interactivo
+*/
+.logo:hover {
+    transform: scale(1.05);
+}
+
+/* CLASE .logo-icon
+   Se aplica al icono dentro del logo.
+   - font-size: 2rem: Aumenta el tamaño del icono (emoji o símbolo) para que destaque
+*/
+.logo-icon {
+    font-size: 2rem;
+}
+
+/* CLASE .nav-links
+   Contenedor de los enlaces de navegación.
+   - display: flex: Alinea los links horizontalmente
+   - gap: 15px: Espacio entre cada enlace
+   - align-items: center: Centra verticalmente los enlaces
+*/
+.nav-links {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+/* CLASE .user-greeting
+   Mensaje de bienvenida al usuario en la navbar.
+   - color: #666: Gris medio para texto secundario
+   - font-size: 0.95rem: Tamaño ligeramente menor que el texto normal
+*/
+.user-greeting {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+/* CLASE .btn-login
+   Botón de inicio de sesión en la navbar.
+   - color: #667eea: Texto en color corporativo
+   - text-decoration: none: Sin subrayado
+   - font-weight: 600: Texto semi-negrita
+   - padding: 0.5rem 1rem: Espaciado interno para clickabilidad
+   - border-radius: 4px: Esquinas ligeramente redondeadas
+   - transition: Transición suave de 0.3s para cambios de fondo
+*/
+.btn-login {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background 0.3s;
+}
+
+/* CLASE .btn-login:hover
+   Efecto del botón login cuando se pasa el mouse.
+   - background: #f0f0f0: Fondo gris muy claro para mostrar interactividad
+*/
+.btn-login:hover {
+    background: #f0f0f0;
+}
+
+/* CLASE .btn-register
+   Botón de registro (más prominente que login).
+   - background: #667eea: Fondo sólido en color corporativo
+   - color: white: Texto blanco para contraste
+   - text-decoration: none: Sin subrayado
+   - padding: 0.5rem 1.5rem: Espaciado mayor en horizontal para mayor presencia
+   - border-radius: 4px: Esquinas redondeadas
+   - font-weight: 600: Texto semi-negrita
+   - transition: Transición suave de 0.3s para cambios de fondo
+*/
+.btn-register {
+    background: #667eea;
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+
+/* CLASE .btn-register:hover
+   Efecto del botón registro cuando se pasa el mouse.
+   - background: #764ba2: Cambia a un púrpura más oscuro para indicar estado hover
+*/
+.btn-register:hover {
+    background: #764ba2;
+}
