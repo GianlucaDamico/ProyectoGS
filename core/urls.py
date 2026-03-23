@@ -6,4 +6,6 @@ app_name = 'core'
 urlpatterns = [
     # El primer argumento vacío '' significa la raíz de esta app
     path('', views.home, name='home'), 
+    path('complejo/<int:complejo_id>/', views.complejo_detalle, name='complejo_detalle_simple'),
+    path('complejo/<int:complejo_id>/<slug:slug>/', views.complejo_detalle, name='complejo_detalle'),
 ]
