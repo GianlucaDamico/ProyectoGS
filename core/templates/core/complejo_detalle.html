@@ -87,6 +87,52 @@
         </div>
     </section>
 
+    <!-- Filtros de canchas -->
+    <section class="filtros-section">
+        <div class="container">
+            <div class="filtros-container">
+                <h3>Filtrar canchas</h3>
+                <form method="GET" class="filtros-form" id="filtrosForm">
+                    <div class="filtro-group">
+                        <label for="deporte">Deporte:</label>
+                        <select name="deporte" id="deporte" onchange="this.form.submit()">
+                            <option value="">Todos los deportes</option>
+                            {% for sport_value, sport_label in sport_choices %}
+                                {% if sport_value in deportes_disponibles %}
+                                    <option value="{{ sport_value }}"
+                                        {% if filtro_deporte == sport_value %}selected{% endif %}>
+                                        {{ sport_label }}
+                                    </option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="filtro-group">
+                        <label for="superficie">Superficie:</label>
+                        <select name="superficie" id="superficie" onchange="this.form.submit()">
+                            <option value="">Todas las superficies</option>
+                            {% for surface_value, surface_label in surface_choices %}
+                                {% if surface_value in superficies_disponibles %}
+                                    <option value="{{ surface_value }}"
+                                        {% if filtro_superficie == surface_value %}selected{% endif %}>
+                                        {{ surface_label }}
+                                    </option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    {% if filtro_deporte or filtro_superficie %}
+                        <a href="{% url 'core:complejo_detalle' complejo.id %}" class="btn-clear-filters">
+                            Limpiar filtros
+                        </a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </section>
+
     
 
 </body>

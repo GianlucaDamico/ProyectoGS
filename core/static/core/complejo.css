@@ -443,3 +443,281 @@ body {
     display: inline-block;
     min-width: 90px;
 }
+
+/* ============ SECCIÓN DE FILTROS ============ */
+
+/* CLASE .filtros-section
+   Sección que contiene los filtros para búsqueda/filtración de canchas.
+   - padding: 40px 20px: Espaciado vertical y horizontal
+   - background: white: Fondo blanco
+   - border-bottom: 1px solid #eee: Línea divisoria clara debajo
+*/
+.filtros-section {
+    padding: 40px 20px;
+    background: white;
+    border-bottom: 1px solid #eee;
+}
+
+/* CLASE .filtros-container h3
+   Título de la sección de filtros.
+   - font-size: 1.5rem: Tamaño moderadamente grande
+   - color: #333: Gris muy oscuro
+   - margin-bottom: 20px: Espacio debajo del título
+*/
+.filtros-container h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* CLASE .filtros-form
+   Formulario contenedor de los campos de filtro.
+   - display: flex: Alinea los filtros horizontalmente
+   - gap: 20px: Espacio entre los campos de filtro
+   - align-items: end: Alinea al final (bottom) para alinear botón con los selects
+   - flex-wrap: wrap: Permite que los filtros se rompan en múltiples líneas
+*/
+.filtros-form {
+    display: flex;
+    gap: 20px;
+    align-items: end;
+    flex-wrap: wrap;
+}
+
+/* CLASE .filtro-group
+   Grupo individual de filtro (etiqueta + select).
+   - display: flex: Alinea etiqueta y select verticalmente
+   - flex-direction: column: Etiqueta encima del select
+   - gap: 8px: Espacio entre etiqueta y select
+*/
+.filtro-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* CLASE .filtro-group label
+   Etiqueta del grupo de filtro.
+   - font-weight: 600: Texto semi-negrita
+   - color: #555: Gris medio-oscuro
+   - font-size: 0.95rem: Tamaño ligeramente menor
+*/
+.filtro-group label {
+    font-weight: 600;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+/* CLASE .filtro-group select
+   Campo de selección (dropdown) del filtro.
+   - padding: 10px 15px: Espaciado interno
+   - border: 2px solid #e0e0e0: Borde gris claro
+   - border-radius: 6px: Esquinas ligeramente redondeadas
+   - font-size: 1rem: Tamaño de texto normal
+   - min-width: 200px: Ancho mínimo para visibilidad
+   - cursor: pointer: Cursor cambia a mano indicando clickabilidad
+   - transition: border-color 0.3s: Transición suave del borde
+   - background: white: Fondo blanco
+*/
+.filtro-group select {
+    padding: 10px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 1rem;
+    min-width: 200px;
+    cursor: pointer;
+    transition: border-color 0.3s;
+    background: white;
+}
+
+/* CLASE .filtro-group select:hover
+   Efecto hover del select.
+   - border-color: #667eea: Borde cambia al color corporativo
+*/
+.filtro-group select:hover {
+    border-color: #667eea;
+}
+
+/* CLASE .filtro-group select:focus
+   Efecto focus del select (cuando está activo/seleccionado).
+   - outline: none: Elimina el contorno por defecto del navegador
+   - border-color: #667eea: Borde del color corporativo
+   - box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1): Sombra suave de color corporativo
+*/
+.filtro-group select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* CLASE .btn-clear-filters
+   Botón para limpiar/reset todos los filtros.
+   - background: #f44336: Fondo rojo para indicar acción destructiva
+   - color: white: Texto blanco
+   - padding: 10px 20px: Espaciado interno
+   - border: none: Sin borde
+   - border-radius: 6px: Esquinas ligeramente redondeadas
+   - font-weight: 600: Texto semi-negrita
+   - cursor: pointer: Cursor tipo mano
+   - text-decoration: none: Sin subrayado
+   - transition: background 0.3s: Transición suave del fondo
+   - display: inline-block: Se comporta como elemento de línea con propiedades de bloque
+*/
+.btn-clear-filters {
+    background: #f44336;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.3s;
+    display: inline-block;
+}
+
+/* CLASE .btn-clear-filters:hover
+   Efecto del botón limpiar filtros cuando se pasa el mouse.
+   - background: #d32f2f: Rojo más oscuro para indicar cambio de estado
+*/
+.btn-clear-filters:hover {
+    background: #d32f2f;
+/* ============ SECCIÓN DE FILTROS ============ */
+
+/* CLASE .filtros-section
+   Sección que contiene los filtros para búsqueda/filtración de canchas.
+   - padding: 40px 20px: Espaciado vertical y horizontal
+   - background: white: Fondo blanco
+   - border-bottom: 1px solid #eee: Línea divisoria clara debajo
+*/
+.filtros-section {
+    padding: 40px 20px;
+    background: white;
+    border-bottom: 1px solid #eee;
+}
+
+/* CLASE .filtros-container h3
+   Título de la sección de filtros.
+   - font-size: 1.5rem: Tamaño moderadamente grande
+   - color: #333: Gris muy oscuro
+   - margin-bottom: 20px: Espacio debajo del título
+*/
+.filtros-container h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* CLASE .filtros-form
+   Formulario contenedor de los campos de filtro.
+   - display: flex: Alinea los filtros horizontalmente
+   - gap: 20px: Espacio entre los campos de filtro
+   - align-items: end: Alinea al final (bottom) para alinear botón con los selects
+   - flex-wrap: wrap: Permite que los filtros se rompan en múltiples líneas
+*/
+.filtros-form {
+    display: flex;
+    gap: 20px;
+    align-items: end;
+    flex-wrap: wrap;
+}
+
+/* CLASE .filtro-group
+   Grupo individual de filtro (etiqueta + select).
+   - display: flex: Alinea etiqueta y select verticalmente
+   - flex-direction: column: Etiqueta encima del select
+   - gap: 8px: Espacio entre etiqueta y select
+*/
+.filtro-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* CLASE .filtro-group label
+   Etiqueta del grupo de filtro.
+   - font-weight: 600: Texto semi-negrita
+   - color: #555: Gris medio-oscuro
+   - font-size: 0.95rem: Tamaño ligeramente menor
+*/
+.filtro-group label {
+    font-weight: 600;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+/* CLASE .filtro-group select
+   Campo de selección (dropdown) del filtro.
+   - padding: 10px 15px: Espaciado interno
+   - border: 2px solid #e0e0e0: Borde gris claro
+   - border-radius: 6px: Esquinas ligeramente redondeadas
+   - font-size: 1rem: Tamaño de texto normal
+   - min-width: 200px: Ancho mínimo para visibilidad
+   - cursor: pointer: Cursor cambia a mano indicando clickabilidad
+   - transition: border-color 0.3s: Transición suave del borde
+   - background: white: Fondo blanco
+*/
+.filtro-group select {
+    padding: 10px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 1rem;
+    min-width: 200px;
+    cursor: pointer;
+    transition: border-color 0.3s;
+    background: white;
+}
+
+/* CLASE .filtro-group select:hover
+   Efecto hover del select.
+   - border-color: #667eea: Borde cambia al color corporativo
+*/
+.filtro-group select:hover {
+    border-color: #667eea;
+}
+
+/* CLASE .filtro-group select:focus
+   Efecto focus del select (cuando está activo/seleccionado).
+   - outline: none: Elimina el contorno por defecto del navegador
+   - border-color: #667eea: Borde del color corporativo
+   - box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1): Sombra suave de color corporativo
+*/
+.filtro-group select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* CLASE .btn-clear-filters
+   Botón para limpiar/reset todos los filtros.
+   - background: #f44336: Fondo rojo para indicar acción destructiva
+   - color: white: Texto blanco
+   - padding: 10px 20px: Espaciado interno
+   - border: none: Sin borde
+   - border-radius: 6px: Esquinas ligeramente redondeadas
+   - font-weight: 600: Texto semi-negrita
+   - cursor: pointer: Cursor tipo mano
+   - text-decoration: none: Sin subrayado
+   - transition: background 0.3s: Transición suave del fondo
+   - display: inline-block: Se comporta como elemento de línea con propiedades de bloque
+*/
+.btn-clear-filters {
+    background: #f44336;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.3s;
+    display: inline-block;
+}
+
+/* CLASE .btn-clear-filters:hover
+   Efecto del botón limpiar filtros cuando se pasa el mouse.
+   - background: #d32f2f: Rojo más oscuro para indicar cambio de estado
+*/
+.btn-clear-filters:hover {
+    background: #d32f2f;
+}
