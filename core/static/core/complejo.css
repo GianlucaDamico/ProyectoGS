@@ -179,3 +179,103 @@ body {
 .btn-register:hover {
     background: #764ba2;
 }
+
+/* ============ HERO DEL COMPLEJO (SECCIÓN PRINCIPAL) ============ */
+
+/* CLASE .complejo-hero
+   Sección hero (principal) que muestra la imagen de fondo del complejo.
+   - background: Degradado lineal de azul a púrpura (135 grados)
+   - min-height: 350px: Altura mínima para que la sección sea visible
+   - position: relative: Permite posicionar elementos hijos relativos a este
+   - display: flex: Usa flexbox para organizar contenido
+   - align-items: flex-end: Alinea el contenido al fondo (bottom) de la sección
+*/
+.complejo-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 350px;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+}
+
+/* CLASE .complejo-hero-overlay
+   Overlay (capa) oscura sobre el hero que mejora la legibilidad del texto.
+   - background: rgba(0, 0, 0, 0.4): Fondo negro semi-transparente (40% de opacidad)
+   - width: 100%: Ocupa todo el ancho disponible
+   - padding: 60px 0 40px: Espaciado vertical para el contenido
+*/
+.complejo-hero-overlay {
+    background: rgba(0, 0, 0, 0.4);
+    width: 100%;
+    padding: 60px 0 40px;
+}
+
+/* CLASE .complejo-hero-content
+   Contenedor del contenido del hero (título, ubicación, amenities).
+   - color: white: Todo el texto en blanco para contraste con el fondo oscuro
+*/
+.complejo-hero-content {
+    color: white;
+}
+
+/* CLASE .complejo-title
+   Título principal del complejo deportivo.
+   - font-size: 3rem: Tamaño muy grande para ser el elemento principal
+   - font-weight: 700: Texto en negrita para mayor impacto
+   - margin-bottom: 10px: Espacio debajo del título
+   - text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3): Sombra del texto para mejorar legibilidad
+*/
+.complejo-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* CLASE .complejo-location
+   Ubicación del complejo debajo del título.
+   - font-size: 1.3rem: Tamaño moderadamente grande
+   - margin-bottom: 20px: Espacio antes de las amenities
+   - opacity: 0.95: Ligeramente semi-transparente para jerarquía visual
+*/
+.complejo-location {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    opacity: 0.95;
+}
+
+/* CLASE .amenities-badges
+   Contenedor de las pequeñas etiquetas de amenidades (servicios, facilidades).
+   - display: flex: Alinea las etiquetas en fila
+   - flex-wrap: wrap: Permite que las etiquetas se rompan en múltiples líneas si es necesario
+   - gap: 10px: Espacio entre cada etiqueta
+   - margin-top: 20px: Espacio por encima del contenedor
+*/
+.amenities-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* CLASE .amenity-badge
+   Estilo de cada etiqueta individual de amenidad.
+   - background: rgba(255, 255, 255, 0.2): Fondo blanco semi-transparente
+   - backdrop-filter: blur(10px): Efecto de vidrio esmerilado (glassmorphism)
+   - color: white: Texto blanco
+   - padding: 8px 16px: Espaciado interno
+   - border-radius: 20px: Esquinas muy redondeadas para aspecto de píldora
+   - font-size: 0.9rem: Tamaño de texto pequeño
+   - font-weight: 500: Texto semi-negrita
+   - border: 1px solid rgba(255, 255, 255, 0.3): Borde blanco semi-transparente
+*/
+.amenity-badge {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}

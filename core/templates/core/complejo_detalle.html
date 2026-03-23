@@ -27,7 +27,26 @@
             </div>
         </div>
     </nav>
-    
+
+    <!-- Hero del complejo -->
+    <section class="complejo-hero">
+        <div class="complejo-hero-overlay">
+            <div class="container">
+                <div class="complejo-hero-content">
+                    <h1 class="complejo-title">{{ complejo.name }}</h1>
+                    <p class="complejo-location">📍 {{ complejo.city }}{% if complejo.address %}, {{ complejo.address }}{% endif %}</p>
+                    
+                    {% if complejo.amenities.exists %}
+                    <div class="amenities-badges">
+                        {% for amenity in complejo.amenities.all %}
+                            <span class="amenity-badge">{{ amenity.name }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
 
 </body>
 </html>
