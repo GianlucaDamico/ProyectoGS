@@ -516,8 +516,9 @@
                 // Calcular fecha-hora de fin
                 const startDate = new Date(startISO);
                 const endDate = new Date(startDate.getTime() + duracion * 60000);
-                const endISO = endDate.toISOString().slice(0, 19);
-                
+                const pad = (n) => String(n).padStart(2, '0');
+                const endISO = `${endDate.getFullYear()}-${pad(endDate.getMonth() + 1)}-${pad(endDate.getDate())}T${pad(endDate.getHours())}:${pad(endDate.getMinutes())}:${pad(endDate.getSeconds())}`;
+
                 // Deshabilitar botón y mostrar loading
                 const btnConfirmar = document.getElementById('btnConfirmar');
                 btnConfirmar.disabled = true;
