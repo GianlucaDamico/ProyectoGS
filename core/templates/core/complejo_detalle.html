@@ -124,7 +124,7 @@
                     </div>
                     
                     {% if filtro_deporte or filtro_superficie %}
-                        <a href="{% url 'core:complejo_detalle' complejo.id %}" class="btn-clear-filters">
+                        <a href="{% url 'core:complejo_detalle' complejo.id complejo.slug %}" class="btn-clear-filters">
                             Limpiar filtros
                         </a>
                     {% endif %}
@@ -196,6 +196,17 @@
             {% endif %}
         </div>
     </section>
+
+    <!-- CTA Final -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>¿Listo para reservar?</h2>
+            <p>Elige tu cancha favorita y reserva tu horario en segundos</p>
+            <a href="#" class="btn-primary">Explorar canchas</a>
+        </div>
+    </section>
+
+
 
 </body>
 </html>
