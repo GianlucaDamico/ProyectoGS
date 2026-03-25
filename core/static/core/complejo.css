@@ -1180,6 +1180,7 @@ body {
    - overflow: auto: Permite scroll si el contenido es muy grande
 */
 .modal {
+    display: none;
     position: fixed;
     z-index: 2000;
     left: 0;
