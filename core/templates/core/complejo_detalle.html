@@ -7,245 +7,593 @@
         <title>{{ complejo.name }} - Courtly</title>
         <link rel="stylesheet" href="{% static 'core/complejo.css' %}">
     </head>
-<body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="navbar-container">
-            <a href="{% url 'core:home' %}" class="logo">
-                <span class="logo-icon">🏆</span>
-                <span class="logo-text">Courtly</span>
-            </a>
-            <div class="nav-links">
-                {% if user.is_authenticated %}
-                    <span class="user-greeting">Hola, {{ user.username }}</span>
-                    <a href="#" class="btn-login">Mi cuenta</a>
-                    <a href="#" class="btn-register">Cerrar sesión</a>
-                {% else %}
-                    <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>
-                    <a href="{% url 'cuentas:register' %}" class="btn-register">Registrarse</a>
-                {% endif %}
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero del complejo -->
-    <section class="complejo-hero">
-        <div class="complejo-hero-overlay">
-            <div class="container">
-                <div class="complejo-hero-content">
-                    <h1 class="complejo-title">{{ complejo.name }}</h1>
-                    <p class="complejo-location">📍 {{ complejo.city }}{% if complejo.address %}, {{ complejo.address }}{% endif %}</p>
-                    
-                    {% if complejo.amenities.exists %}
-                    <div class="amenities-badges">
-                        {% for amenity in complejo.amenities.all %}
-                            <span class="amenity-badge">{{ amenity.name }}</span>
-                        {% endfor %}
-                    </div>
+    <body>
+        <!-- Navbar (igual que en home) -->
+        <nav class="navbar">
+            <div class="navbar-container">
+                <a href="{% url 'core:home' %}" class="logo">
+                    <span class="logo-icon">🏆</span>
+                    <span class="logo-text">Courtly</span>
+                </a>
+                <div class="nav-links">
+                    {% if user.is_authenticated %}
+                        <span class="user-greeting">Hola, {{ user.username }}</span>
+                        <a href="#" class="btn-login">Mi cuenta</a>
+                        <a href="#" class="btn-register">Cerrar sesión</a>
+                    {% else %}
+                        <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>
+                        <a href="{% url 'cuentas:register' %}" class="btn-register">Registrarse</a>
                     {% endif %}
                 </div>
             </div>
-        </div>
-    </section>
+        </nav>
 
-    <!-- Información del complejo -->
-    <section class="complejo-info-section">
-        <div class="container">
-            <div class="info-grid">
-                <div class="info-main">
-                    <h2>Sobre este complejo</h2>
-                    <p class="complejo-description">
-                        {{ complejo.name }} es un complejo deportivo ubicado en {{ complejo.city }}.
-                        Cuenta con {{ complejo.courts.count }} cancha{{ complejo.courts.count|pluralize }}
-                        de diferentes deportes.
-                    </p>
+        <!-- Hero del complejo -->
+        <section class="complejo-hero">
+            <div class="complejo-hero-overlay">
+                <div class="container">
+                    <div class="complejo-hero-content">
+                        <h1 class="complejo-title">{{ complejo.name }}</h1>
+                        <p class="complejo-location">📍 {{ complejo.city }}{% if complejo.address %}, {{ complejo.address }}{% endif %}</p>
+                        
+                        {% if complejo.amenities.exists %}
+                        <div class="amenities-badges">
+                            {% for amenity in complejo.amenities.all %}
+                                <span class="amenity-badge">{{ amenity.name }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Información del complejo -->
+        <section class="complejo-info-section">
+            <div class="container">
+                <div class="info-grid">
+                    <div class="info-main">
+                        <h2>Sobre este complejo</h2>
+                        <p class="complejo-description">
+                            {{ complejo.name }} es un complejo deportivo ubicado en {{ complejo.city }}.
+                            Cuenta con {{ complejo.courts.count }} cancha{{ complejo.courts.count|pluralize }}
+                            de diferentes deportes.
+                        </p>
+                        
+                        {% if complejo.amenities.exists %}
+                        <h3>Servicios disponibles</h3>
+                        <ul class="amenities-list">
+                            {% for amenity in complejo.amenities.all %}
+                                <li>✓ {{ amenity.name }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
                     
-                    {% if complejo.amenities.exists %}
-                    <h3>Servicios disponibles</h3>
-                    <ul class="amenities-list">
-                        {% for amenity in complejo.amenities.all %}
-                            <li>✓ {{ amenity.name }}</li>
-                        {% endfor %}
-                    </ul>
+                    <div class="info-sidebar">
+                        <div class="contact-card">
+                            <h3>Información de contacto</h3>
+                            <p><strong>Propietario:</strong> {{ complejo.owner.username }}</p>
+                            {% if complejo.phone %}
+                                <p><strong>Teléfono:</strong> {{ complejo.phone }}</p>
+                            {% endif %}
+                            {% if complejo.email %}
+                                <p><strong>Email:</strong> {{ complejo.email }}</p>
+                            {% endif %}
+                            <p><strong>Ubicación:</strong> {{ complejo.city }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filtros de canchas -->
+        <section class="filtros-section">
+            <div class="container">
+                <div class="filtros-container">
+                    <h3>Filtrar canchas</h3>
+                    <form method="GET" class="filtros-form" id="filtrosForm">
+                        <div class="filtro-group">
+                            <label for="deporte">Deporte:</label>
+                            <select name="deporte" id="deporte" onchange="this.form.submit()">
+                                <option value="">Todos los deportes</option>
+                                {% for sport_value, sport_label in sport_choices %}
+                                    {% if sport_value in deportes_disponibles %}
+                                        <option value="{{ sport_value }}" 
+                                            {% if filtro_deporte == sport_value %}selected{% endif %}>
+                                            {{ sport_label }}
+                                        </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="filtro-group">
+                            <label for="superficie">Superficie:</label>
+                            <select name="superficie" id="superficie" onchange="this.form.submit()">
+                                <option value="">Todas las superficies</option>
+                                {% for surface_value, surface_label in surface_choices %}
+                                    {% if surface_value in superficies_disponibles %}
+                                        <option value="{{ surface_value }}"
+                                            {% if filtro_superficie == surface_value %}selected{% endif %}>
+                                            {{ surface_label }}
+                                        </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        {% if filtro_deporte or filtro_superficie %}
+                            <a href="{% url 'core:complejo_detalle' complejo.id complejo.slug %}" class="btn-clear-filters">
+                                Limpiar filtros
+                            </a>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Grid de canchas -->
+        <section class="canchas-section">
+            <div class="container">
+                <h2>Canchas disponibles 
+                    {% if canchas.count != complejo.courts.count %}
+                        ({{ canchas.count }} de {{ complejo.courts.count }})
+                    {% else %}
+                        ({{ canchas.count }})
                     {% endif %}
+                </h2>
+                
+                {% if canchas %}
+                    <div class="canchas-grid">
+                        {% for cancha in canchas %}
+                            <div class="cancha-card">
+                                <div class="cancha-image">
+                                    <!-- Icono según el deporte -->
+                                    {% if cancha.sport == 'padel' %}⚾
+                                    {% elif cancha.sport == 'tenis' %}🎾
+                                    {% elif cancha.sport == 'futbol_sala' %}⚽
+                                    {% elif cancha.sport == 'basquetbol' %}🏀
+                                    {% elif cancha.sport == 'voleibol' %}🏐
+                                    {% else %}🏆
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="cancha-content">
+                                    <h3>{{ cancha.name }}</h3>
+                                    
+                                    <div class="cancha-details">
+                                        <span class="detail-badge">{{ cancha.get_sport_display }}</span>
+                                        <span class="detail-badge">{{ cancha.get_surface_display }}</span>
+                                        {% if cancha.has_lighting %}
+                                            <span class="detail-badge lighting">💡 Iluminación</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="cancha-precio">
+                                        <span class="precio-label">Desde</span>
+                                        <span class="precio-valor">€{{ cancha.base_price_per_hour }}/hora</span>
+                                        {% if cancha.has_lighting and cancha.lighting_extra_per_hour > 0 %}
+                                            <span class="precio-extra">+€{{ cancha.lighting_extra_per_hour }} con luz</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <button class="btn-reservar" 
+                                        onclick="verDisponibilidad({{ cancha.id }}, '{{ cancha.name }}')">
+                                        Ver disponibilidad
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="no-results">
+                        <p>No se encontraron canchas con los filtros seleccionados.</p>
+                        <a href="{% url 'core:complejo_detalle' complejo.id %}" class="btn-primary">
+                            Ver todas las canchas
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- CTA Final -->
+        <section class="cta-section">
+            <div class="container">
+                <h2>¿Listo para reservar?</h2>
+                <p>Elige tu cancha favorita y reserva tu horario en segundos</p>
+                <a href="{% url 'core:explorar_complejos' %}" class="btn-primary">Explorar canchas</a>
+            </div>
+        </section>
+
+        <!-- Modal de Disponibilidad y Reserva -->
+        <div id="modalDisponibilidad" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modalCanchaNombre">Reservar cancha</h2>
+                    <span class="modal-close" onclick="cerrarModal()">&times;</span>
                 </div>
                 
-                <div class="info-sidebar">
-                    <div class="contact-card">
-                        <h3>Información de contacto</h3>
-                        <p><strong>Propietario:</strong> {{ complejo.owner.username }}</p>
-                        {% if complejo.phone %}
-                            <p><strong>Teléfono:</strong> {{ complejo.phone }}</p>
-                        {% endif %}
-                        {% if complejo.email %}
-                            <p><strong>Email:</strong> {{ complejo.email }}</p>
-                        {% endif %}
-                        <p><strong>Ubicación:</strong> {{ complejo.city }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Filtros de canchas -->
-    <section class="filtros-section">
-        <div class="container">
-            <div class="filtros-container">
-                <h3>Filtrar canchas</h3>
-                <form method="GET" class="filtros-form" id="filtrosForm">
-                    <div class="filtro-group">
-                        <label for="deporte">Deporte:</label>
-                        <select name="deporte" id="deporte" onchange="this.form.submit()">
-                            <option value="">Todos los deportes</option>
-                            {% for sport_value, sport_label in sport_choices %}
-                                {% if sport_value in deportes_disponibles %}
-                                    <option value="{{ sport_value }}"
-                                        {% if filtro_deporte == sport_value %}selected{% endif %}>
-                                        {{ sport_label }}
-                                    </option>
-                                {% endif %}
-                            {% endfor %}
-                        </select>
+                <div class="modal-body">
+                    <!-- Paso 1: Seleccionar fecha -->
+                    <div class="reserva-step">
+                        <h3>1. Selecciona la fecha</h3>
+                        <div class="date-selector">
+                            <input type="date" id="fechaReserva" 
+                                min="{{ today|date:'Y-m-d' }}"
+                                onchange="cargarHorariosDisponibles()">
+                        </div>
                     </div>
                     
-                    <div class="filtro-group">
-                        <label for="superficie">Superficie:</label>
-                        <select name="superficie" id="superficie" onchange="this.form.submit()">
-                            <option value="">Todas las superficies</option>
-                            {% for surface_value, surface_label in surface_choices %}
-                                {% if surface_value in superficies_disponibles %}
-                                    <option value="{{ surface_value }}"
-                                        {% if filtro_superficie == surface_value %}selected{% endif %}>
-                                        {{ surface_label }}
-                                    </option>
-                                {% endif %}
-                            {% endfor %}
-                        </select>
+                    <!-- Paso 2: Seleccionar horario -->
+                    <div class="reserva-step">
+                        <h3>2. Elige el horario</h3>
+                        <div id="horariosContainer" class="horarios-grid">
+                            <p class="info-text">Selecciona una fecha para ver horarios disponibles</p>
+                        </div>
                     </div>
                     
-                    {% if filtro_deporte or filtro_superficie %}
-                        <a href="{% url 'core:complejo_detalle' complejo.id complejo.slug %}" class="btn-clear-filters">
-                            Limpiar filtros
-                        </a>
-                    {% endif %}
-                </form>
-            </div>
-        </div>
-    </section>
-
-    <!-- Grid de canchas -->
-    <section class="canchas-section">
-        <div class="container">
-            <h2>Canchas disponibles
-                {% if canchas.count != complejo.courts.count %}
-                    ({{ canchas.count }} de {{ complejo.courts.count }})
-                {% else %}
-                    ({{ canchas.count }})
-                {% endif %}
-            </h2>
-            
-            {% if canchas %}
-                <div class="canchas-grid">
-                    {% for cancha in canchas %}
-                        <div class="cancha-card">
-                            <div class="cancha-image">
-                                <!-- Icono según el deporte -->
-                                {% if cancha.sport == 'padel' %}⚾
-                                {% elif cancha.sport == 'tenis' %}🎾
-                                {% elif cancha.sport == 'futsal' %}⚽
-                                {% elif cancha.sport == 'baloncesto' %}🏀
-                                {% elif cancha.sport == 'voleibol' %}🏐
-                                {% else %}🏆
-                                {% endif %}
+                    <!-- Paso 3: Configurar duración e iluminación -->
+                    <div class="reserva-step">
+                        <h3>3. Configura tu reserva</h3>
+                        <div class="config-grid">
+                            <div class="config-item">
+                                <label for="duracion">Duración:</label>
+                                <select id="duracion" onchange="calcularPrecio()">
+                                    <option value="60">60 minutos</option>
+                                    <option value="90" selected>90 minutos</option>
+                                    <option value="120">120 minutos</option>
+                                </select>
                             </div>
                             
-                            <div class="cancha-content">
-                                <h3>{{ cancha.name }}</h3>
-                                
-                                <div class="cancha-details">
-                                    <span class="detail-badge">{{ cancha.get_sport_display }}</span>
-                                    <span class="detail-badge">{{ cancha.get_surface_display }}</span>
-                                    {% if cancha.has_lighting %}
-                                        <span class="detail-badge lighting">💡 Iluminación</span>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="cancha-precio">
-                                    <span class="precio-label">Desde</span>
-                                    <span class="precio-valor">€{{ cancha.base_price_per_hour }}/hora</span>
-                                    {% if cancha.has_lighting and cancha.lighting_extra_per_hour > 0 %}
-                                        <span class="precio-extra">+€{{ cancha.lighting_extra_per_hour }} con luz</span>
-                                    {% endif %}
-                                </div>
-                                
-                                <button class="btn-reservar"
-                                    onclick="verDisponibilidad({{ cancha.id }}, '{{ cancha.name }}')">
-                                    Ver disponibilidad
-                                </button>
+                            <div class="config-item" id="iluminacionContainer" style="display: none;">
+                                <label for="iluminacion">
+                                    <input type="checkbox" id="iluminacion" onchange="calcularPrecio()">
+                                    Añadir iluminación
+                                </label>
                             </div>
                         </div>
-                    {% endfor %}
+                    </div>
+                    
+                    <!-- Resumen y precio -->
+                    <div class="reserva-resumen">
+                        <div class="resumen-info">
+                            <p id="resumenFecha"></p>
+                            <p id="resumenHorario"></p>
+                            <p id="resumenDuracion"></p>
+                        </div>
+                        <div class="resumen-precio">
+                            <span class="precio-label">Total:</span>
+                            <span class="precio-total" id="precioTotal">€0.00</span>
+                        </div>
+                    </div>
                 </div>
-            {% else %}
-                <div class="no-results">
-                    <p>No se encontraron canchas con los filtros seleccionados.</p>
-                    <a href="{% url 'core:complejo_detalle' complejo.id %}" class="btn-primary">
-                        Ver todas las canchas
-                    </a>
+                
+                <div class="modal-footer">
+                    <button class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+                    <button class="btn-confirmar" id="btnConfirmar" onclick="confirmarReserva()" disabled style="display: none;">
+                        Confirmar Reserva
+                    </button>
                 </div>
-            {% endif %}
+                
+                <!-- Mensajes de error/éxito -->
+                <div id="modalMensaje" class="modal-mensaje"></div>
+            </div>
         </div>
-    </section>
 
-    <!-- CTA Final -->
-    <section class="cta-section">
-        <div class="container">
-            <h2>¿Listo para reservar?</h2>
-            <p>Elige tu cancha favorita y reserva tu horario en segundos</p>
-            <a href="#" class="btn-primary">Explorar canchas</a>
-        </div>
-    </section>
-
-    
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-section">
-                <h4>Courtly</h4>
-                <p>La mejor plataforma para reservar canchas deportivas. Conectamos jugadores con complejos en toda la región.</p>
-            </div>
-            <div class="footer-section">
-                <h4>Enlaces Rápidos</h4>
-                <ul>
-                    <li><a href="#">Inicio</a></li>
-                    <li><a href="#">Canchas</a></li>
-                    <li><a href="#">Para dueños</a></li>
-                    <li><a href="#">Contacto</a></li>
-                    <li><a href="#">Blog</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Legal</h4>
-                <ul>
-                    <li><a href="#">Términos de servicio</a></li>
-                    <li><a href="#">Política de privacidad</a></li>
-                    <li><a href="#">Política de cookies</a></li>
-                    <li><a href="#">Aviso legal</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Síguenos</h4>
-                <div class="social-links">
-                    <a href="#">📘 Facebook</a>
-                    <a href="#">📷 Instagram</a>
-                    <a href="#">𝕏 Twitter</a>
-                    <a href="#">💼 LinkedIn</a>
+        <!-- Footer (igual que en home) -->
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-section">
+                    <h4>Courtly</h4>
+                    <p>La mejor plataforma para reservar canchas deportivas.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Enlaces Rápidos</h4>
+                    <ul>
+                        <li><a href="{% url 'core:home' %}">Inicio</a></li>
+                        <li><a href="#">Canchas</a></li>
+                        <li><a href="#">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Términos de servicio</a></li>
+                        <li><a href="#">Política de privacidad</a></li>
+                    </ul>
                 </div>
             </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 Courtly. Todos los derechos reservados.</p>
-        </div>
-    </footer>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Courtly. Todos los derechos reservados.</p>
+            </div>
+        </footer>
 
-</body>
+        <script>
+            // Variables globales para el modal
+            let canchaSeleccionada = null;
+            let horarioSeleccionado = null;
+            let precioBase = 0;
+            let precioLuz = 0;
+
+            // Función para abrir el modal (reemplaza el alert anterior)
+            function verDisponibilidad(canchaId, canchaNombre) {
+                // Buscar la información de la cancha en el DOM
+                const canchaCard = event.target.closest('.cancha-card');
+                const precioElement = canchaCard.querySelector('.precio-valor');
+                const precioTexto = precioElement.textContent;
+                precioBase = parseFloat(precioTexto.replace('€', '').replace('/hora', ''));
+                
+                // Verificar si tiene iluminación
+                const hasLighting = canchaCard.querySelector('.detail-badge.lighting') !== null;
+                if (hasLighting) {
+                    const precioExtraElement = canchaCard.querySelector('.precio-extra');
+                    if (precioExtraElement) {
+                        const precioExtraTexto = precioExtraElement.textContent;
+                        precioLuz = parseFloat(precioExtraTexto.replace('+€', '').replace(' con luz', ''));
+                    }
+                    document.getElementById('iluminacionContainer').style.display = 'block';
+                } else {
+                    document.getElementById('iluminacionContainer').style.display = 'none';
+                    precioLuz = 0;
+                }
+                
+                // Guardar información de la cancha
+                canchaSeleccionada = {
+                    id: canchaId,
+                    nombre: canchaNombre,
+                    precioBase: precioBase,
+                    precioLuz: precioLuz,
+                    hasLighting: hasLighting
+                };
+                
+                // Actualizar título del modal
+                document.getElementById('modalCanchaNombre').textContent = `Reservar ${canchaNombre}`;
+                
+                // Resetear el modal
+                resetearModal();
+
+                const btnConfirmar = document.getElementById('btnConfirmar');
+                btnConfirmar.style.display = 'inline-block';
+                btnConfirmar.disabled = true;
+                
+                // Mostrar el modal
+                const modal = document.getElementById('modalDisponibilidad');
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+
+                // Mostrar el botón de confirmar al abrir disponibilidad
+                document.getElementById('btnConfirmar').style.display = 'inline-block';
+            }
+
+            function cerrarModal() {
+                document.getElementById('modalDisponibilidad').classList.remove('active');
+                document.body.style.overflow = 'auto';
+                resetearModal();
+            }
+
+            function resetearModal() {
+                // Resetear formulario
+                document.getElementById('fechaReserva').value = '';
+                document.getElementById('duracion').value = '90';
+                document.getElementById('iluminacion').checked = false;
+                document.getElementById('horariosContainer').innerHTML = 
+                    '<p class="info-text">Selecciona una fecha para ver horarios disponibles</p>';
+                document.getElementById('btnConfirmar').disabled = true;
+                horarioSeleccionado = null;
+                
+                // Limpiar resumen
+                document.getElementById('resumenFecha').textContent = '';
+                document.getElementById('resumenHorario').textContent = '';
+                document.getElementById('resumenDuracion').textContent = '';
+                document.getElementById('precioTotal').textContent = '€0.00';
+                
+                // Limpiar mensajes
+                document.getElementById('modalMensaje').textContent = '';
+                document.getElementById('modalMensaje').className = 'modal-mensaje';
+
+                const btnConfirmar = document.getElementById('btnConfirmar');
+                btnConfirmar.disabled = true;
+                btnConfirmar.style.display = 'none';
+                btnConfirmar.textContent = 'Confirmar Reserva';
+            }
+
+            async function cargarHorariosDisponibles() {
+                const fecha = document.getElementById('fechaReserva').value;
+                if (!fecha) return;
+                
+                const container = document.getElementById('horariosContainer');
+                container.innerHTML = '<p class="info-text">⏳ Cargando horarios disponibles...</p>';
+                
+                try {
+                    // Generar horarios del día (9:00 a 22:00, cada hora)
+                    const horarios = [];
+                    for (let hora = 9; hora <= 22; hora++) {
+                        const horaStr = hora.toString().padStart(2, '0') + ':00';
+                        horarios.push(horaStr);
+                    }
+                    
+                    // Por ahora mostramos todos los horarios
+                    // En el futuro, aquí consultaremos la API para verificar disponibilidad
+                    const horariosHTML = horarios.map(horario => `
+                        <button class="horario-btn" onclick="seleccionarHorario('${horario}')">
+                            ${horario}
+                        </button>
+                    `).join('');
+                    
+                    container.innerHTML = horariosHTML;
+                    
+                } catch (error) {
+                    console.error('Error al cargar horarios:', error);
+                    container.innerHTML = '<p class="error-text">Error al cargar horarios. Intenta de nuevo.</p>';
+                }
+            }
+
+            function seleccionarHorario(horario) {
+                // Quitar selección previa
+                document.querySelectorAll('.horario-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                
+                // Marcar el nuevo seleccionado
+                event.target.classList.add('selected');
+                horarioSeleccionado = horario;
+                
+                // Actualizar resumen y calcular precio
+                actualizarResumen();
+                calcularPrecio();
+                
+                // Habilitar botón de confirmar
+                document.getElementById('btnConfirmar').disabled = false;
+            }
+
+            function actualizarResumen() {
+                const fecha = document.getElementById('fechaReserva').value;
+                const duracion = document.getElementById('duracion').value;
+                
+                if (fecha) {
+                    const fechaObj = new Date(fecha + 'T00:00:00');
+                    const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                    const fechaFormateada = fechaObj.toLocaleDateString('es-ES', opciones);
+                    document.getElementById('resumenFecha').textContent = `📅 ${fechaFormateada}`;
+                }
+                
+                if (horarioSeleccionado) {
+                    const [hora, minuto] = horarioSeleccionado.split(':');
+                    const horaInicio = parseInt(hora);
+                    const minutosInt = parseInt(minuto);
+                    const minutosDuracion = parseInt(duracion);
+                    
+                    const horaFin = Math.floor((horaInicio * 60 + minutosInt + minutosDuracion) / 60);
+                    const minutoFin = (horaInicio * 60 + minutosInt + minutosDuracion) % 60;
+                    
+                    const horarioFin = `${horaFin.toString().padStart(2, '0')}:${minutoFin.toString().padStart(2, '0')}`;
+                    document.getElementById('resumenHorario').textContent = `🕐 ${horarioSeleccionado} - ${horarioFin}`;
+                }
+                
+                document.getElementById('resumenDuracion').textContent = `⏱️ ${duracion} minutos`;
+            }
+
+            function calcularPrecio() {
+                if (!horarioSeleccionado) return;
+                
+                const duracion = parseInt(document.getElementById('duracion').value);
+                const conIluminacion = document.getElementById('iluminacion').checked;
+                
+                // Calcular precio
+                const horas = duracion / 60;
+                let precioFinal = canchaSeleccionada.precioBase * horas;
+                
+                if (conIluminacion && canchaSeleccionada.hasLighting) {
+                    precioFinal += canchaSeleccionada.precioLuz * horas;
+                }
+                
+                // Mostrar precio
+                document.getElementById('precioTotal').textContent = `€${precioFinal.toFixed(2)}`;
+                
+                // Actualizar resumen
+                actualizarResumen();
+            }
+
+            async function confirmarReserva() {
+                // Verificar que el usuario esté autenticado
+                {% if not user.is_authenticated %}
+                    mostrarMensaje('Debes iniciar sesión para reservar', 'error');
+                    setTimeout(() => {
+                        window.location.href = '{% url "cuentas:login" %}?next=' + window.location.pathname;
+                    }, 2000);
+                    return;
+                {% endif %}
+                
+                const fecha = document.getElementById('fechaReserva').value;
+                const duracion = parseInt(document.getElementById('duracion').value);
+                const conIluminacion = document.getElementById('iluminacion').checked;
+                
+                // Construir fecha-hora ISO
+                const [hora, minuto] = horarioSeleccionado.split(':');
+                const startISO = `${fecha}T${hora}:${minuto}:00`;
+                
+                // Calcular fecha-hora de fin
+                const startDate = new Date(startISO);
+                const endDate = new Date(startDate.getTime() + duracion * 60000);
+                const endISO = endDate.toISOString().slice(0, 19);
+                
+                // Deshabilitar botón y mostrar loading
+                const btnConfirmar = document.getElementById('btnConfirmar');
+                btnConfirmar.disabled = true;
+                btnConfirmar.textContent = 'Procesando...';
+                
+                try {
+                    // Llamar a la API de reservas
+                    const response = await fetch('/api/bookings/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: JSON.stringify({
+                            court: canchaSeleccionada.id,
+                            start: startISO,
+                            end: endISO,
+                            lighting: conIluminacion
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        // Éxito
+                        mostrarMensaje('¡Reserva confirmada! Redirigiendo...', 'success');
+                        setTimeout(() => {
+                            // Redirigir a mis reservas o donde prefieras
+                            window.location.href = '/api/bookings/my_bookings/';
+                        }, 2000);
+                    } else {
+                        // Error de validación
+                        const errorMsg = data.non_field_errors ? data.non_field_errors[0] : 'Error al crear la reserva';
+                        mostrarMensaje(errorMsg, 'error');
+                        btnConfirmar.disabled = false;
+                        btnConfirmar.textContent = 'Confirmar Reserva';
+                    }
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    mostrarMensaje('Error de conexión. Intenta de nuevo.', 'error');
+                    btnConfirmar.disabled = false;
+                    btnConfirmar.textContent = 'Confirmar Reserva';
+                }
+            }
+
+            function mostrarMensaje(texto, tipo) {
+                const mensajeEl = document.getElementById('modalMensaje');
+                mensajeEl.textContent = texto;
+                mensajeEl.className = `modal-mensaje ${tipo}`;
+                mensajeEl.style.display = 'block';
+            }
+
+            // Helper para obtener CSRF token de las cookies
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            // Cerrar modal al hacer click fuera
+            window.onclick = function(event) {
+                const modal = document.getElementById('modalDisponibilidad');
+                if (event.target === modal) {
+                    cerrarModal();
+                }
+            }
+        </script>
+    </body>
 </html>

@@ -583,145 +583,6 @@ body {
 .btn-clear-filters:hover {
     background: #d32f2f;
 }
-/* ============ SECCIÓN DE FILTROS ============ */
-
-/* CLASE .filtros-section
-   Sección que contiene los filtros para búsqueda/filtración de canchas.
-   - padding: 40px 20px: Espaciado vertical y horizontal
-   - background: white: Fondo blanco
-   - border-bottom: 1px solid #eee: Línea divisoria clara debajo
-*/
-.filtros-section {
-    padding: 40px 20px;
-    background: white;
-    border-bottom: 1px solid #eee;
-}
-
-/* CLASE .filtros-container h3
-   Título de la sección de filtros.
-   - font-size: 1.5rem: Tamaño moderadamente grande
-   - color: #333: Gris muy oscuro
-   - margin-bottom: 20px: Espacio debajo del título
-*/
-.filtros-container h3 {
-    font-size: 1.5rem;
-    color: #333;
-    margin-bottom: 20px;
-}
-
-/* CLASE .filtros-form
-   Formulario contenedor de los campos de filtro.
-   - display: flex: Alinea los filtros horizontalmente
-   - gap: 20px: Espacio entre los campos de filtro
-   - align-items: end: Alinea al final (bottom) para alinear botón con los selects
-   - flex-wrap: wrap: Permite que los filtros se rompan en múltiples líneas
-*/
-.filtros-form {
-    display: flex;
-    gap: 20px;
-    align-items: end;
-    flex-wrap: wrap;
-}
-
-/* CLASE .filtro-group
-   Grupo individual de filtro (etiqueta + select).
-   - display: flex: Alinea etiqueta y select verticalmente
-   - flex-direction: column: Etiqueta encima del select
-   - gap: 8px: Espacio entre etiqueta y select
-*/
-.filtro-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-/* CLASE .filtro-group label
-   Etiqueta del grupo de filtro.
-   - font-weight: 600: Texto semi-negrita
-   - color: #555: Gris medio-oscuro
-   - font-size: 0.95rem: Tamaño ligeramente menor
-*/
-.filtro-group label {
-    font-weight: 600;
-    color: #555;
-    font-size: 0.95rem;
-}
-
-/* CLASE .filtro-group select
-   Campo de selección (dropdown) del filtro.
-   - padding: 10px 15px: Espaciado interno
-   - border: 2px solid #e0e0e0: Borde gris claro
-   - border-radius: 6px: Esquinas ligeramente redondeadas
-   - font-size: 1rem: Tamaño de texto normal
-   - min-width: 200px: Ancho mínimo para visibilidad
-   - cursor: pointer: Cursor cambia a mano indicando clickabilidad
-   - transition: border-color 0.3s: Transición suave del borde
-   - background: white: Fondo blanco
-*/
-.filtro-group select {
-    padding: 10px 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 6px;
-    font-size: 1rem;
-    min-width: 200px;
-    cursor: pointer;
-    transition: border-color 0.3s;
-    background: white;
-}
-
-/* CLASE .filtro-group select:hover
-   Efecto hover del select.
-   - border-color: #667eea: Borde cambia al color corporativo
-*/
-.filtro-group select:hover {
-    border-color: #667eea;
-}
-
-/* CLASE .filtro-group select:focus
-   Efecto focus del select (cuando está activo/seleccionado).
-   - outline: none: Elimina el contorno por defecto del navegador
-   - border-color: #667eea: Borde del color corporativo
-   - box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1): Sombra suave de color corporativo
-*/
-.filtro-group select:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-/* CLASE .btn-clear-filters
-   Botón para limpiar/reset todos los filtros.
-   - background: #f44336: Fondo rojo para indicar acción destructiva
-   - color: white: Texto blanco
-   - padding: 10px 20px: Espaciado interno
-   - border: none: Sin borde
-   - border-radius: 6px: Esquinas ligeramente redondeadas
-   - font-weight: 600: Texto semi-negrita
-   - cursor: pointer: Cursor tipo mano
-   - text-decoration: none: Sin subrayado
-   - transition: background 0.3s: Transición suave del fondo
-   - display: inline-block: Se comporta como elemento de línea con propiedades de bloque
-*/
-.btn-clear-filters {
-    background: #f44336;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background 0.3s;
-    display: inline-block;
-}
-
-/* CLASE .btn-clear-filters:hover
-   Efecto del botón limpiar filtros cuando se pasa el mouse.
-   - background: #d32f2f: Rojo más oscuro para indicar cambio de estado
-*/
-.btn-clear-filters:hover {
-    background: #d32f2f;
-}
 
 /* ============ SECCIÓN DE CANCHAS ============ */
 
@@ -1083,113 +944,29 @@ body {
     box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
 }
 
+/* ============ FOOTER (PIE DE PÁGINA) ============ */
 
-/* ============ SECCIÓN CTA (CALL TO ACTION) ============ */
-
-/* CLASE .cta-section
-   Sección que contiene una llamada a la acción (CTA) para los usuarios.
-   - padding: 80px 20px: Espaciado amplio para destacar
-   - text-align: center: Centra todo el contenido
-   - background: white: Fondo blanco
-*/
-.cta-section {
-    padding: 80px 20px;
-    text-align: center;
-    background: white;
-}
-
-/* CLASE .cta-section h2
-   Título principal de la sección CTA.
-   - font-size: 2.5rem: Tamaño muy grande para captar atención
-   - margin-bottom: 15px: Espacio debajo
-   - color: #333: Gris muy oscuro
-*/
-.cta-section h2 {
-    font-size: 2.5rem;
-    margin-bottom: 15px;
-    color: #333;
-}
-
-/* CLASE .cta-section p
-   Párrafo descriptivo de la sección CTA.
-   - font-size: 1.1rem: Tamaño ligeramente mayor
-   - color: #666: Gris medio
-   - margin-bottom: 30px: Espacio amplio debajo
-*/
-.cta-section p {
-    font-size: 1.1rem;
-    color: #666;
-    margin-bottom: 30px;
-}
-
-/* CLASE .btn-primary
-   Botón principal (CTA primario).
-   - background: #667eea: Fondo corporativo
+/* CLASE .footer
+   Pie de página del sitio.
+   - background: #1a1a1a: Fondo gris muy oscuro casi negro
    - color: white: Texto blanco
-   - padding: 12px 40px: Espaciado interno amplio (especialmente horizontal)
-   - border: none: Sin borde
-   - border-radius: 50px: Esquinas muy redondeadas para aspecto de píldora
-   - font-size: 1rem: Tamaño normal
-   - font-weight: 600: Texto semi-negrita
-   - cursor: pointer: Cursor tipo mano
-   - text-decoration: none: Sin subrayado (para enlaces)
-   - display: inline-block: Se comporta como bloque pero en línea
-   - transition: transform 0.3s, box-shadow 0.3s: Transiciones suaves
+   - padding: 60px 20px 20px: Espaciado amplio vertical, menos en el bottom
 */
-.btn-primary {
-    background: #667eea;
-    color: white;
-    padding: 12px 40px;
-    border: none;
-    border-radius: 50px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-
-/* CLASE .btn-primary:hover
-   Efecto hover del botón primario.
-   - transform: translateY(-3px): Mueve el botón hacia arriba 3px
-   - box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3): Sombra corporativa más pronunciada
-*/
-.btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-}
-
-
-/* ============ Pre-footer ============ */
-.prefooter {
-    padding: 80px 20px;
-    text-align: center;
-    background: white;
-}
-
-.prefooter h2 {
-    font-size: 2.5rem;
-    margin-bottom: 15px;
-    color: #333;
-}
-
-.prefooter p {
-    font-size: 1.1rem;
-    color: #666;
-    margin-bottom: 30px;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* ============ Footer ============ */
 .footer {
     background: #1a1a1a;
     color: white;
     padding: 60px 20px 20px;
 }
 
+/* CLASE .footer-container
+   Contenedor principal del footer con múltiples columnas.
+   - max-width: 1200px: Ancho máximo para limitar contenido
+   - margin: 0 auto: Centra el contenedor
+   - display: grid: Usa CSS Grid
+   - grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)): Crea columnas adaptativas
+   - gap: 40px: Espacio entre columnas
+   - margin-bottom: 40px: Espacio debajo del contenedor
+*/
 .footer-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -1199,26 +976,53 @@ body {
     margin-bottom: 40px;
 }
 
+/* CLASE .footer-section h4
+   Título de cada sección del footer.
+   - font-size: 1.2rem: Tamaño moderadamente grande
+   - margin-bottom: 15px: Espacio debajo del título
+   - color: #667eea: Color corporativo
+*/
 .footer-section h4 {
     font-size: 1.2rem;
     margin-bottom: 15px;
     color: #667eea;
 }
 
+/* CLASE .footer-section p
+   Párrafo de descripción en el footer.
+   - color: #aaa: Gris claro
+   - line-height: 1.8: Altura de línea amplia para legibilidad
+   - font-size: 0.95rem: Tamaño ligeramente menor
+*/
 .footer-section p {
     color: #aaa;
     line-height: 1.8;
     font-size: 0.95rem;
 }
 
+/* CLASE .footer-section ul
+   Lista sin viñetas en el footer.
+   - list-style: none: Elimina los puntos de lista
+*/
 .footer-section ul {
     list-style: none;
 }
 
+/* CLASE .footer-section ul li
+   Elemento de lista en el footer.
+   - margin-bottom: 10px: Espacio entre elementos de lista
+*/
 .footer-section ul li {
     margin-bottom: 10px;
 }
 
+/* CLASE .footer-section a
+   Enlace en el footer.
+   - color: #aaa: Gris claro
+   - text-decoration: none: Sin subrayado
+   - transition: color 0.3s: Transición suave del color
+   - font-size: 0.95rem: Tamaño ligeramente menor
+*/
 .footer-section a {
     color: #aaa;
     text-decoration: none;
@@ -1226,16 +1030,23 @@ body {
     font-size: 0.95rem;
 }
 
+/* CLASE .footer-section a:hover
+   Efecto hover en los enlaces del footer.
+   - color: #667eea: Cambio al color corporativo
+*/
 .footer-section a:hover {
     color: #667eea;
 }
 
-.social-links {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
+/* CLASE .footer-bottom
+   Sección inferior del footer con información de derechos de autor.
+   - max-width: 1200px: Ancho máximo
+   - margin: 0 auto: Centra el contenedor
+   - text-align: center: Centra el contenido
+   - padding-top: 30px: Espaciado superior
+   - border-top: 1px solid #333: Línea divisoria oscura arriba
+   - color: #888: Gris medio-claro (más claro que el contenido normal)
+*/
 .footer-bottom {
     max-width: 1200px;
     margin: 0 auto;
@@ -1243,4 +1054,812 @@ body {
     padding-top: 30px;
     border-top: 1px solid #333;
     color: #888;
+}
+
+/* ============ MEDIA QUERIES (ESTILOS RESPONSIVOS) ============ */
+
+/* MEDIA QUERY: Tablets y pantallas medianas (max-width: 1024px)
+   Se aplica cuando el ancho de la pantalla es de 1024px o menos.
+   Ajustes:
+   - info-grid: Cambia a una sola columna
+   - contact-card: Deja de ser sticky para mejor UX en tablets
+*/
+@media (max-width: 1024px) {
+    /* Grid de informacion cambia de 2 columnas a 1 */
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Tarjeta de contacto ya no se queda fija al hacer scroll */
+    .contact-card {
+        position: static;
+    }
+}
+
+/* MEDIA QUERY: Moviles horizontales y tablets pequenos (max-width: 768px)
+   Se aplica cuando el ancho de la pantalla es de 768px o menos.
+   Ajustes principales:
+   - Titulos: Se reducen de tamanio
+   - Badges de amenities: Mas pequenos
+   - Formulario de filtros: Pasa a orientacion vertical
+   - Grid de canchas: Se convierte en una sola columna
+   - Navbar: Se ajusta para pantallas pequenas
+*/
+@media (max-width: 768px) {
+    /* Titulo principal mas pequenio */
+    .complejo-title {
+        font-size: 2rem;
+    }
+    
+    /* Ubicacion mas pequenia */
+    .complejo-location {
+        font-size: 1rem;
+    }
+    
+    /* Reducir espacio entre badges de amenities */
+    .amenities-badges {
+        gap: 6px;
+    }
+    
+    /* Badges mas pequenios */
+    .amenity-badge {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+    
+    /* Filtros en vertical en lugar de horizontal */
+    .filtros-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    /* Los selects ocupan todo el ancho disponible */
+    .filtro-group select {
+        min-width: 100%;
+    }
+    
+    /* El grid de canchas pasa a una columna */
+    .canchas-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Navbar se adapta para movil */
+    .navbar-container {
+        flex-wrap: wrap;
+    }
+    
+    /* Links de navegacion ocupan todo el ancho */
+    .nav-links {
+        width: 100%;
+        margin-top: 10px;
+        gap: 10px;
+    }
+}
+
+/* MEDIA QUERY: Moviles y pantallas muy pequenias (max-width: 480px)
+   Se aplica cuando el ancho de la pantalla es de 480px o menos.
+   Ajustes para pantallas moviles de tamanio reducido:
+   - Hero mas compacto
+   - Titulos mas pequenios
+   - Precios mas compactos
+*/
+@media (max-width: 480px) {
+    /* Seccion hero mas compacta */
+    .complejo-hero {
+        min-height: 250px;
+    }
+    
+    /* Titulo principal aun mas pequenio */
+    .complejo-title {
+        font-size: 1.5rem;
+    }
+    
+    /* Precio mas pequenio en moviles */
+    .precio-valor {
+        font-size: 1.4rem;
+    }
+    
+    .cancha-content h3 {
+        font-size: 1.2rem;
+    }
+}
+
+/* ============ MODAL DE DISPONIBILIDAD Y RESERVA ============ */
+
+/* CLASE .modal
+   Contenedor del modal que cubre toda la pantalla.
+   - display: none: Oculto por defecto, se muestra con JavaScript
+   - position: fixed: Se posiciona relativamente a la ventana del navegador
+   - z-index: 2000: Se coloca encima de todos los elementos (navbar es 1000)
+   - left: 0, top: 0: Se posiciona en la esquina superior izquierda
+   - width: 100%, height: 100%: Cubre toda la pantalla
+   - background: rgba(0, 0, 0, 0.6): Fondo negro semi-transparente (overlay)
+   - display: flex: Usa flexbox para centrar el contenido
+   - align-items: center: Centra verticalmente
+   - justify-content: center: Centra horizontalmente
+   - overflow: auto: Permite scroll si el contenido es muy grande
+*/
+.modal {
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+}
+
+.modal.active {
+    display: flex;
+}
+
+/* CLASE .modal-content
+   Contenedor principal del contenido del modal.
+   - background: white: Fondo blanco para contrastar
+   - border-radius: 12px: Esquinas redondeadas
+   - box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2): Sombra pronunciada para profundidad
+   - width: 90%: Ocupa el 90% del ancho disponible (responsive)
+   - max-width: 600px: Ancho máximo para no ser demasiado ancho en pantallas grandes
+   - max-height: 90vh: Altura máxima del 90% de la ventana
+   - overflow-y: auto: Permite scroll vertical si el contenido es muy largo
+   - animation: slideIn 0.3s ease-out: Animación de entrada suave
+*/
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideIn 0.3s ease-out;
+}
+
+/* ANIMACIÓN slideIn
+   Anima la entrada del modal desde abajo hacia arriba.
+   - from: Comienza con opacidad 0 (invisible) y translateY(30px) (30px más abajo)
+   - to: Termina con opacidad 1 (visible) y translateY(0) (posición final)
+*/
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============ HEADER DEL MODAL ============ */
+
+/* CLASE .modal-header
+   Encabezado del modal que contiene el título y el botón de cerrar.
+   - display: flex: Usa flexbox
+   - justify-content: space-between: Separa el título del botón cerrar
+   - align-items: center: Alinea verticalmente al centro
+   - padding: 30px: Espaciado interno amplio
+   - border-bottom: 2px solid #e0e0e0: Línea divisoria gris clara
+*/
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+/* CLASE .modal-header h2
+   Título del modal.
+   - margin: 0: Sin margen externo
+   - font-size: 1.8rem: Tamaño grande
+   - color: #333: Gris muy oscuro
+*/
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: #333;
+}
+
+/* CLASE .modal-close
+   Botón para cerrar el modal (X).
+   - font-size: 2rem: Tamaño grande
+   - color: #999: Gris claro
+   - cursor: pointer: Cursor tipo mano
+   - transition: color 0.3s: Transición suave del color
+   - background: none: Sin fondo
+   - border: none: Sin borde
+   - padding: 0: Sin espaciado interno
+   - line-height: 1: Elimina espaciado de línea extra
+*/
+.modal-close {
+    font-size: 2rem;
+    color: #999;
+    cursor: pointer;
+    transition: color 0.3s;
+    background: none;
+    border: none;
+    padding: 0;
+    line-height: 1;
+}
+
+/* CLASE .modal-close:hover
+   Efecto del botón cerrar cuando se pasa el mouse.
+   - color: #333: Cambia a gris muy oscuro
+*/
+.modal-close:hover {
+    color: #333;
+}
+
+/* ============ BODY DEL MODAL ============ */
+
+/* CLASE .modal-body
+   Cuerpo principal del modal que contiene los pasos de reserva.
+   - padding: 30px: Espaciado interno amplio
+   - background: white: Fondo blanco
+*/
+.modal-body {
+    padding: 30px;
+    background: white;
+}
+
+/* CLASE .reserva-step
+   Cada paso/sección del proceso de reserva.
+   - margin-bottom: 30px: Espacio debajo de cada paso
+   - padding-bottom: 30px: Espaciado interno inferior
+   - border-bottom: 1px solid #eee: Línea divisoria clara
+*/
+.reserva-step {
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #eee;
+}
+
+/* CLASE .reserva-step:last-of-type
+   El último paso no tiene línea divisoria debajo.
+   - border-bottom: none: Elimina la línea
+*/
+.reserva-step:last-of-type {
+    border-bottom: none;
+}
+
+/* CLASE .reserva-step h3
+   Título de cada paso.
+   - font-size: 1.2rem: Tamaño moderadamente grande
+   - color: #333: Gris muy oscuro
+   - margin-bottom: 20px: Espacio debajo del título
+*/
+.reserva-step h3 {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* ============ SELECTOR DE FECHA ============ */
+
+/* CLASE .date-selector
+   Contenedor del input de fecha.
+   - display: flex: Usa flexbox
+   - gap: 10px: Espacio entre elementos
+*/
+.date-selector {
+    display: flex;
+    gap: 10px;
+}
+
+/* CLASE .date-selector input[type="date"]
+   Input de selección de fecha.
+   - padding: 12px 15px: Espaciado interno
+   - border: 2px solid #e0e0e0: Borde gris claro
+   - border-radius: 6px: Esquinas redondeadas
+   - font-size: 1rem: Tamaño normal
+   - cursor: pointer: Cursor tipo mano
+   - transition: border-color 0.3s: Transición suave del borde
+   - flex: 1: Ocupa el espacio disponible
+*/
+.date-selector input[type="date"] {
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: border-color 0.3s;
+    flex: 1;
+}
+
+/* CLASE .date-selector input[type="date"]:hover
+   Efecto hover del input de fecha.
+   - border-color: #667eea: Borde cambia al color corporativo
+*/
+.date-selector input[type="date"]:hover {
+    border-color: #667eea;
+}
+
+/* CLASE .date-selector input[type="date"]:focus
+   Efecto focus del input de fecha.
+   - outline: none: Elimina el contorno por defecto
+   - border-color: #667eea: Borde del color corporativo
+   - box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1): Sombra suave
+*/
+.date-selector input[type="date"]:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* ============ HORARIOS DISPONIBLES ============ */
+
+/* CLASE .horarios-grid
+   Grid que organiza los botones de horarios.
+   - display: grid: Usa CSS Grid
+   - grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)): Crea columnas de mínimo 70px
+   - gap: 10px: Espacio entre horarios
+   - margin-top: 15px: Espacio por encima
+*/
+.horarios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+/* CLASE .horario-btn
+   Botón individual de selección de horario.
+   - padding: 10px: Espaciado interno
+   - border: 2px solid #e0e0e0: Borde gris claro
+   - background: white: Fondo blanco
+   - border-radius: 6px: Esquinas redondeadas
+   - cursor: pointer: Cursor tipo mano
+   - font-size: 0.9rem: Tamaño pequeño
+   - font-weight: 500: Texto semi-negrita
+   - transition: all 0.3s: Transición suave de todas las propiedades
+   - color: #333: Gris muy oscuro
+*/
+.horario-btn {
+    padding: 10px;
+    border: 2px solid #e0e0e0;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    color: #333;
+}
+
+/* CLASE .horario-btn:hover
+   Efecto hover del botón horario.
+   - border-color: #667eea: Borde cambia al color corporativo
+   - background: #f0f4ff: Fondo azul muy claro
+*/
+.horario-btn:hover {
+    border-color: #667eea;
+    background: #f0f4ff;
+}
+
+/* CLASE .horario-btn.selected
+   Estilo del horario seleccionado.
+   - background: #667eea: Fondo de color corporativo
+   - color: white: Texto blanco
+   - border-color: #667eea: Borde del color corporativo
+*/
+.horario-btn.selected {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+/* CLASE .info-text
+   Texto informativo dentro del modal.
+   - color: #999: Gris claro
+   - text-align: center: Centrado
+   - padding: 20px: Espaciado interno
+   - font-size: 0.95rem: Tamaño pequeño
+*/
+.info-text {
+    color: #999;
+    text-align: center;
+    padding: 20px;
+    font-size: 0.95rem;
+}
+
+/* CLASE .error-text
+   Texto de error en el modal.
+   - color: #f44336: Rojo para indicar error
+   - text-align: center: Centrado
+   - padding: 20px: Espaciado interno
+*/
+.error-text {
+    color: #f44336;
+    text-align: center;
+    padding: 20px;
+}
+
+/* ============ CONFIGURACIÓN DE RESERVA ============ */
+
+/* CLASE .config-grid
+   Grid para los elementos de configuración (duración, iluminación).
+   - display: grid: Usa CSS Grid
+   - grid-template-columns: 1fr: Una columna
+   - gap: 20px: Espacio entre elementos
+*/
+.config-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+/* CLASE .config-item
+   Elemento individual de configuración.
+   - display: flex: Usa flexbox
+   - flex-direction: column: Organiza verticalmente
+   - gap: 8px: Espacio entre etiqueta e input
+*/
+.config-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* CLASE .config-item label
+   Etiqueta de configuración.
+   - font-weight: 600: Texto semi-negrita
+   - color: #555: Gris medio-oscuro
+   - font-size: 0.95rem: Tamaño pequeño
+*/
+.config-item label {
+    font-weight: 600;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+/* CLASE .config-item select
+   Select de configuración (duración).
+   - padding: 10px 15px: Espaciado interno
+   - border: 2px solid #e0e0e0: Borde gris claro
+   - border-radius: 6px: Esquinas redondeadas
+   - font-size: 1rem: Tamaño normal
+   - cursor: pointer: Cursor tipo mano
+   - transition: border-color 0.3s: Transición suave
+   - background: white: Fondo blanco
+   - width: 100%: Ocupa todo el ancho disponible
+*/
+.config-item select {
+    padding: 10px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: border-color 0.3s;
+    background: white;
+    width: 100%;
+}
+
+/* CLASE .config-item select:hover
+   Efecto hover del select.
+   - border-color: #667eea: Borde cambia al color corporativo
+*/
+.config-item select:hover {
+    border-color: #667eea;
+}
+
+/* CLASE .config-item select:focus
+   Efecto focus del select.
+   - outline: none: Elimina el contorno por defecto
+   - border-color: #667eea: Borde del color corporativo
+   - box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1): Sombra suave
+*/
+.config-item select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* CLASE .config-item input[type="checkbox"]
+   Checkbox de iluminación.
+   - margin-right: 8px: Espacio a la derecha del checkbox
+   - cursor: pointer: Cursor tipo mano
+*/
+.config-item input[type="checkbox"] {
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+/* ============ RESUMEN Y PRECIO ============ */
+
+/* CLASE .reserva-resumen
+   Sección que muestra el resumen de la reserva y el precio total.
+   - background: #f8f9fa: Fondo gris muy claro
+   - padding: 20px: Espaciado interno
+   - border-radius: 8px: Esquinas redondeadas
+   - margin-bottom: 20px: Espacio debajo
+   - display: flex: Usa flexbox
+   - justify-content: space-between: Separa la información del precio
+   - align-items: center: Alinea verticalmente al centro
+*/
+.reserva-resumen {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* CLASE .resumen-info
+   Contenedor de la información del resumen.
+   - flex: 1: Ocupa el espacio disponible
+*/
+.resumen-info {
+    flex: 1;
+}
+
+/* CLASE .resumen-info p
+   Párrafo individual de información en el resumen.
+   - margin: 8px 0: Espaciado vertical pequeño
+   - color: #666: Gris medio
+   - font-size: 0.9rem: Tamaño pequeño
+*/
+.resumen-info p {
+    margin: 8px 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* CLASE .resumen-precio
+   Contenedor del precio total en el resumen.
+   - display: flex: Usa flexbox
+   - flex-direction: column: Organiza verticalmente
+   - align-items: flex-end: Alinea a la derecha
+   - gap: 8px: Espacio entre elementos
+*/
+.resumen-precio {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+/* CLASE .precio-total
+   Valor del precio total.
+   - font-size: 1.8rem: Tamaño muy grande para destacar
+   - font-weight: 700: Texto en negrita
+   - color: #667eea: Color corporativo
+*/
+.precio-total {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+/* ============ FOOTER DEL MODAL ============ */
+
+/* CLASE .modal-footer
+   Pie del modal que contiene los botones de acción.
+   - display: flex: Usa flexbox
+   - justify-content: flex-end: Alinea los botones a la derecha
+   - gap: 15px: Espacio entre botones
+   - padding: 20px 30px: Espaciado interno
+   - border-top: 1px solid #eee: Línea divisoria clara arriba
+   - background: #f8f9fa: Fondo gris muy claro
+*/
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    padding: 20px 30px;
+    border-top: 1px solid #eee;
+    background: #f8f9fa;
+}
+
+/* CLASE .btn-cancelar
+   Botón para cancelar la reserva.
+   - background: white: Fondo blanco
+   - color: #666: Texto gris
+   - border: 2px solid #e0e0e0: Borde gris claro
+   - padding: 10px 25px: Espaciado interno
+   - border-radius: 6px: Esquinas redondeadas
+   - font-weight: 600: Texto semi-negrita
+   - cursor: pointer: Cursor tipo mano
+   - transition: all 0.3s: Transición suave
+*/
+.btn-cancelar {
+    background: white;
+    color: #666;
+    border: 2px solid #e0e0e0;
+    padding: 10px 25px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+/* CLASE .btn-cancelar:hover
+   Efecto hover del botón cancelar.
+   - background: #f0f0f0: Fondo gris muy claro
+   - border-color: #999: Borde gris más oscuro
+*/
+.btn-cancelar:hover {
+    background: #f0f0f0;
+    border-color: #999;
+}
+
+/* CLASE .btn-confirmar
+   Botón para confirmar la reserva.
+   - background: #667eea: Fondo corporativo
+   - color: white: Texto blanco
+   - border: none: Sin borde
+   - padding: 10px 30px: Espaciado interno
+   - border-radius: 6px: Esquinas redondeadas
+   - font-weight: 600: Texto semi-negrita
+   - cursor: pointer: Cursor tipo mano
+   - transition: all 0.3s: Transición suave
+*/
+.btn-confirmar {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+/* CLASE .btn-confirmar:hover
+   Efecto hover del botón confirmar.
+   - background: #764ba2: Cambio a púrpura más oscuro
+   - transform: translateY(-2px): Mueve el botón hacia arriba
+*/
+.btn-confirmar:hover {
+    background: #764ba2;
+    transform: translateY(-2px);
+}
+
+/* CLASE .btn-confirmar:disabled
+   Estilo cuando el botón está deshabilitado.
+   - background: #ccc: Gris para indicar estado deshabilitado
+   - cursor: not-allowed: Cursor cambia a "no permitido"
+   - opacity: 0.6: Reduce la opacidad para indicar deshabilitado
+*/
+.btn-confirmar:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* ============ MENSAJES DEL MODAL ============ */
+
+/* CLASE .modal-mensaje
+   Contenedor de mensajes de éxito o error en el modal.
+   - display: none: Oculto por defecto
+   - padding: 15px 20px: Espaciado interno
+   - border-radius: 6px: Esquinas redondeadas
+   - margin-top: 15px: Espacio arriba
+   - font-weight: 500: Texto semi-negrita
+   - text-align: center: Centrado
+*/
+.modal-mensaje {
+    display: none;
+    padding: 15px 20px;
+    border-radius: 6px;
+    margin-top: 15px;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* CLASE .modal-mensaje.success
+   Estilo para mensajes de éxito.
+   - background: #d4edda: Fondo verde muy claro
+   - color: #155724: Texto verde oscuro
+   - border: 1px solid #c3e6cb: Borde verde claro
+*/
+.modal-mensaje.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+/* CLASE .modal-mensaje.error
+   Estilo para mensajes de error.
+   - background: #f8d7da: Fondo rojo muy claro
+   - color: #721c24: Texto rojo oscuro
+   - border: 1px solid #f5c6cb: Borde rojo claro
+*/
+.modal-mensaje.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* ============ MEDIA QUERIES PARA MODAL ============ */
+
+/* MEDIA QUERY: Tablets y pantallas medianas (max-width: 768px)
+   Ajustes del modal para tablets.
+*/
+@media (max-width: 768px) {
+    /* Modal-content más pequeño en tablets */
+    .modal-content {
+        width: 95%;
+        max-width: 500px;
+    }
+    
+    /* Header menos espaciado */
+    .modal-header {
+        padding: 20px;
+    }
+    
+    /* Body menos espaciado */
+    .modal-body {
+        padding: 20px;
+    }
+    
+    /* Footer menos espaciado */
+    .modal-footer {
+        padding: 15px 20px;
+    }
+    
+    /* Grid de horarios con menos columnas */
+    .horarios-grid {
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    }
+    
+    /* Resumen en vertical en tablets */
+    .reserva-resumen {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .resumen-precio {
+        width: 100%;
+        align-items: flex-start;
+    }
+}
+
+/* MEDIA QUERY: Moviles (max-width: 480px)
+   Ajustes del modal para moviles muy pequeños.
+*/
+@media (max-width: 480px) {
+    /* Modal-content ocupa casi toda la pantalla */
+    .modal-content {
+        width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+    
+    /* Header con menos padding */
+    .modal-header {
+        padding: 15px;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.4rem;
+    }
+    
+    /* Body con menos padding */
+    .modal-body {
+        padding: 15px;
+    }
+    
+    /* Botones más grandes en movil para mejor clickabilidad */
+    .btn-cancelar,
+    .btn-confirmar {
+        flex: 1;
+        padding: 12px 15px;
+    }
+    
+    /* Grid de horarios con menos columnas */
+    .horarios-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    /* Titulo más pequeño */
+    .modal-header h2 {
+        font-size: 1.2rem;
+    }
 }
