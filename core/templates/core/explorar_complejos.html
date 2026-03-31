@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorar Complejos - Courtly</title>
+    <link rel="stylesheet" href="{% static 'core/explorar.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo">
+                <span class="logo-icon">🏆</span>
+                <span class="logo-text">Courtly</span>
+            </div>
+            <div class="nav-links">
+                <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>
+                <a href="{% url 'cuentas:register' %}" class="btn-register">Registrarse</a>
+            </div>
+        </div>
+    </nav>
+
+    
+</body>
+</html>
