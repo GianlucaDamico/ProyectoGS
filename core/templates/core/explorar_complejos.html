@@ -21,7 +21,7 @@
             </div>
         </div>
     </nav>
-    
+
     <!-- Header de la página -->
     <section class="page-header">
         <div class="container">
@@ -30,5 +30,77 @@
         </div>
     </section>
     
+        <!-- Sección de búsqueda y filtros -->
+    <section class="filtros-section">
+        <div class="container">
+            <form method="GET" class="filtros-form" id="filtrosForm">
+                <!-- Búsqueda -->
+                <div class="filtro-item search-box">
+                    <label for="q">🔍 Buscar</label>
+                    <input 
+                        type="text" 
+                        id="q" 
+                        name="q" 
+                        value="{{ query }}"
+                        placeholder="Nombre del complejo o ciudad..."
+                    >
+                </div>
+
+                <!-- Filtro por ciudad -->
+                <div class="filtro-item">
+                    <label for="ciudad">📍 Ciudad</label>
+                    <select name="ciudad" id="ciudad" onchange="this.form.submit()">
+                        <option value="">Todas las ciudades</option>
+                        {% for ciudad in ciudades_disponibles %}
+                            <option value="{{ ciudad }}" 
+                                {% if ciudad_filtro == ciudad %}selected{% endif %}>
+                                {{ ciudad }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Filtro por deporte -->
+                <div class="filtro-item">
+                    <label for="deporte">🏐 Deporte</label>
+                    <select name="deporte" id="deporte" onchange="this.form.submit()">
+                        <option value="">Todos los deportes</option>
+                        {% for sport_value, sport_label in sport_choices %}
+                            <option value="{{ sport_value }}"
+                                {% if deporte_filtro == sport_value %}selected{% endif %}>
+                                {{ sport_label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Ordenamiento -->
+                <div class="filtro-item">
+                    <label for="orden">📊 Ordenar por</label>
+                    <select name="orden" id="orden" onchange="this.form.submit()">
+                        <option value="nombre" {% if orden_actual == 'nombre' %}selected{% endif %}>
+                            Nombre A-Z
+                        </option>
+                        <option value="ciudad" {% if orden_actual == 'ciudad' %}selected{% endif %}>
+                            Ciudad
+                        </option>
+                        <option value="canchas" {% if orden_actual == 'canchas' %}selected{% endif %}>
+                            Más canchas
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Botones -->
+                <div class="filtro-actions">
+                    <button type="submit" class="btn-buscar">Buscar</button>
+                    {% if query or ciudad_filtro or deporte_filtro %}
+                        <a href="{% url 'core:explorar_complejos' %}" class="btn-limpiar">
+                            Limpiar filtros
+                        </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </section>
 </body>
 </html>
