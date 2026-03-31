@@ -27,7 +27,7 @@
         <div class="hero-content">
             <h1 class="hero-title">Encuentra tu cancha deportiva ideal</h1>
             <p class="hero-subtitle">Reserva canchas, campos y complejos deportivos en segundos</p>
-            <button class="btn-primary">Explorar canchas</button>
+            <button class="btn-primary" onclick="window.location.href='{% url 'core:explorar_complejos' %}'">Explorar complejos</button>
         </div>
     </section>
 
@@ -100,8 +100,8 @@
             <div class="footer-section">
                 <h4>Enlaces Rápidos</h4>
                 <ul>
-                    <li><a href="#">Inicio</a></li>
-                    <li><a href="#">Canchas</a></li>
+                    <li><a href="{% url 'core:home' %}">Inicio</a></li>
+                    <li><a href="{% url 'core:explorar_complejos' %}">Complejos</a></li>
                     <li><a href="#">Para dueños</a></li>
                     <li><a href="#">Contacto</a></li>
                     <li><a href="#">Blog</a></li>
