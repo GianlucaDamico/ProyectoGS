@@ -102,5 +102,173 @@
             </form>
         </div>
     </section>
+
+        <!-- Resultados -->
+    <section class="resultados-section">
+        <div class="container">
+            <!-- Header de resultados -->
+            <div class="resultados-header">
+                <h2>
+                    {% if query or ciudad_filtro or deporte_filtro %}
+                        Resultados de búsqueda
+                    {% else %}
+                        Todos los complejos
+                    {% endif %}
+                </h2>
+                <p class="resultados-count">
+                    {{ total_complejos }} complejo{{ total_complejos|pluralize }} encontrado{{ total_complejos|pluralize }}
+                </p>
+            </div>
+
+            <!-- Grid de complejos -->
+            {% if complejos %}
+                <div class="complejos-grid">
+                    {% for complejo in complejos %}
+                        <div class="complejo-card" onclick="window.location.href='{{ complejo.get_absolute_url }}'">
+                            <div class="complejo-image">
+                                <!-- Icono según el primer deporte -->
+                                {% with first_court=complejo.courts.first %}
+                                    {% if first_court %}
+                                        {% if first_court.sport == 'padel' %}⚾
+                                        {% elif first_court.sport == 'tenis' %}🎾
+                                        {% elif first_court.sport == 'futbol_sala' %}⚽
+                                        {% elif first_court.sport == 'basquetbol' %}🏀
+                                        {% elif first_court.sport == 'voleibol' %}🏐
+                                        {% else %}🏆
+                                        {% endif %}
+                                    {% else %}
+                                        🏆
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
+                            
+                            <div class="complejo-content">
+                                <h3>{{ complejo.name }}</h3>
+                                
+                                <p class="complejo-ubicacion">
+                                    📍 {{ complejo.city }}
+                                </p>
+                                
+                                <div class="complejo-stats">
+                                    <span class="stat-item">
+                                        🏟️ {{ complejo.num_courts }} cancha{{ complejo.num_courts|pluralize }}
+                                    </span>
+                                    {% if complejo.amenities.exists %}
+                                        <span class="stat-item">
+                                            ⭐ {{ complejo.amenities.count }} servicio{{ complejo.amenities.count|pluralize }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                
+                                {% if complejo.amenities.exists %}
+                                    <div class="complejo-amenities">
+                                        {% for amenity in complejo.amenities.all|slice:":3" %}
+                                            <span class="amenity-tag">{{ amenity.name }}</span>
+                                        {% endfor %}
+                                        {% if complejo.amenities.count > 3 %}
+                                            <span class="amenity-tag">+{{ complejo.amenities.count|add:"-3" }} más</span>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="complejo-deportes">
+                                    {% for court in complejo.courts.all|slice:":5" %}
+                                        <span class="deporte-badge">{{ court.get_sport_display }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <div class="complejo-footer">
+                                <span class="ver-mas">Ver detalles →</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Paginación -->
+                {% if page_obj.has_other_pages %}
+                    <div class="pagination">
+                        {% if page_obj.has_previous %}
+                            <a href="?page=1{% if query %}&q={{ query }}{% endif %}{% if ciudad_filtro %}&ciudad={{ ciudad_filtro }}{% endif %}{% if deporte_filtro %}&deporte={{ deporte_filtro }}{% endif %}{% if orden_actual %}&orden={{ orden_actual }}{% endif %}" 
+                               class="page-link">
+                                « Primera
+                            </a>
+                            <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if ciudad_filtro %}&ciudad={{ ciudad_filtro }}{% endif %}{% if deporte_filtro %}&deporte={{ deporte_filtro }}{% endif %}{% if orden_actual %}&orden={{ orden_actual }}{% endif %}" 
+                               class="page-link">
+                                ‹ Anterior
+                            </a>
+                        {% endif %}
+
+                        <span class="page-current">
+                            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                        </span>
+
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if ciudad_filtro %}&ciudad={{ ciudad_filtro }}{% endif %}{% if deporte_filtro %}&deporte={{ deporte_filtro }}{% endif %}{% if orden_actual %}&orden={{ orden_actual }}{% endif %}" 
+                               class="page-link">
+                                Siguiente ›
+                            </a>
+                            <a href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}{% if ciudad_filtro %}&ciudad={{ ciudad_filtro }}{% endif %}{% if deporte_filtro %}&deporte={{ deporte_filtro }}{% endif %}{% if orden_actual %}&orden={{ orden_actual }}{% endif %}" 
+                               class="page-link">
+                                Última »
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+            {% else %}
+                <!-- Sin resultados -->
+                <div class="no-resultados">
+                    <div class="no-resultados-icon">🔍</div>
+                    <h3>No se encontraron complejos</h3>
+                    <p>Intenta ajustar los filtros de búsqueda o explora todas las opciones disponibles.</p>
+                    <a href="{% url 'core:explorar_complejos' %}" class="btn-primary">
+                        Ver todos los complejos
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>Courtly</h4>
+                <p>La mejor plataforma para reservar canchas deportivas. Conectamos jugadores con complejos en toda la región.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Enlaces Rápidos</h4>
+                <ul>
+                    <li><a href="{% url 'core:home' %}">Inicio</a></li>
+                    <li><a href="{% url 'core:explorar_complejos' %}">Complejos</a></li>
+                    <li><a href="#">Para dueños</a></li>
+                    <li><a href="#">Contacto</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Términos de servicio</a></li>
+                    <li><a href="#">Política de privacidad</a></li>
+                    <li><a href="#">Política de cookies</a></li>
+                    <li><a href="#">Aviso legal</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Síguenos</h4>
+                <div class="social-links">
+                    <a href="#">📘 Facebook</a>
+                    <a href="#">📷 Instagram</a>
+                    <a href="#">𝕏 Twitter</a>
+                    <a href="#">💼 LinkedIn</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Courtly. Todos los derechos reservados.</p>
+        </div>
+    </footer>
 </body>
 </html>

@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
-
+from django.urls import reverse
+from django.utils.text import slugify
 # Definimos los tipos de deportes como choices
 # Esto es similar a un enum en otros lenguajes
 class Sport(models.TextChoices):
@@ -74,6 +75,7 @@ class Complex(models.Model):
     barrio = models.CharField(max_length=100, blank=True)
     telefono_comercial = models.CharField(max_length=20, blank=True)
     email_comercial = models.EmailField(blank=True)
+    slug = models.SlugField(max_length=200, blank=True, unique=True, null = True)
     
     
     # ManyToManyField crea una relación muchos-a-muchos
@@ -89,6 +91,15 @@ class Complex(models.Model):
     
     def __str__(self):
         return f"{self.name} ({self.city})"
+    
+    def save(self, *args, **kwargs):
+        "Genera el slsug automatico si no existe"
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+    
+    def get_absolute_url(self):
+        return reverse('core:complejo_detalle', kwargs={'complejo_id': self.id, 'slug': self.slug})
     
 class Court(models.Model):
     """
