@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.db.models import Count, Q
 from venues.models import Complex, Court, Amenity, Sport, Surface
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 from django.http import HttpResponse
@@ -131,3 +132,8 @@ def explorar_complejos(request):
     }
     
     return render(request, 'core/explorar_complejos.html', context)
+
+@login_required(login_url='cuentas:login')
+def mis_reservas(request):
+
+    return render(request, 'core/mis_reservas.html')
