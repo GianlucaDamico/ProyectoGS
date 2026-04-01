@@ -1,3 +1,4 @@
+from datetime import timedelta
 from django.db import models
 from decimal import Decimal
 from django.conf import settings
@@ -189,7 +190,7 @@ class Booking(models.Model):
         """
         # timezone.now() nos da la fecha/hora actual con timezone awareness
         # si USE_TZ está activado en settings
-        return self.end < timezone.now()
+        return self.end < timezone.now() + timedelta(hours=2)
     
     def is_active(self):
         """
@@ -198,7 +199,7 @@ class Booking(models.Model):
         Returns:
             bool: True si estamos entre start y end, False en caso contrario
         """
-        now = timezone.now()
+        now = timezone.now() + timedelta(hours=2)
         return self.start <= now < self.end
     
     def can_be_cancelled(self):

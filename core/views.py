@@ -212,5 +212,89 @@ def mis_reservas(request):
 
 @login_required(login_url='cuentas:login')
 def reserva_detalle(request, reserva_id):
-
-    return render(request, 'core/reserva_detalle.html')
+    """
+    Muestra los detalles completos de una reserva específica con permiso de acceso.
+    
+    Esta función obtiene una reserva específica y verifica que el usuario sea el propietario
+    o administrador. Actualiza automáticamente el estado según la fecha actual y determina
+    qué acciones (confirmación de pago, cancelación, cambio de estado) puede realizar el usuario.
+    Propietarios solo pueden confirmar pago o cancelar, mientras que administradores pueden
+    cambiar a cualquier estado.
+    
+    Args:
+        reserva_id: ID de la reserva a mostrar
+    """
+   
+    reserva = get_object_or_404(
+        Booking.objects.select_related(
+            'user', 'court', 'court__complex'
+        ),
+        id=reserva_id
+    )
+    
+  
+    if not (request.user == reserva.user or request.user.is_staff):
+        return render(
+            request,
+            'core/error.html',
+            {'message': 'No tienes permiso para ver esta reserva'},
+            status=403
+        )
+    
+    
+    now = timezone.now()
+    
+    if reserva.status == Booking.Status.PENDING_PAYMENT and reserva.is_past():
+        reserva.status = Booking.Status.CANCELLED
+        reserva.save()
+    
+    elif reserva.status == Booking.Status.CONFIRMED and reserva.is_past():
+        reserva.status = Booking.Status.FINISHED
+        reserva.save()
+    
+    elif reserva.status == Booking.Status.CONFIRMED and reserva.is_active():
+        reserva.status = Booking.Status.IN_PROGRESS
+        reserva.save()
+    
+    elif reserva.status == Booking.Status.IN_PROGRESS and reserva.is_past():
+        reserva.status = Booking.Status.FINISHED
+        reserva.save()
+    
+   
+    es_propietario = request.user == reserva.user
+    es_admin = request.user.is_staff
+    
+   
+    puede_confirmar_pago = (
+        es_propietario and 
+        reserva.status == Booking.Status.PENDING_PAYMENT and
+        not reserva.is_past()
+    )
+    
+    puede_cancelar = (
+        es_propietario and 
+        reserva.can_be_cancelled()
+    )
+    
+ 
+    puede_cambiar_estado = es_admin
+    todas_las_transiciones = [] if not puede_cambiar_estado else [
+        ('confirmed', 'Confirmar'),
+        ('in_progress', 'En curso'),
+        ('finished', 'Finalizada'),
+        ('cancelled', 'Cancelada'),
+    ]
+    
+  
+    context = {
+        'reserva': reserva,
+        'es_propietario': es_propietario,
+        'es_admin': es_admin,
+        'puede_confirmar_pago': puede_confirmar_pago,
+        'puede_cancelar': puede_cancelar,
+        'puede_cambiar_estado': puede_cambiar_estado,
+        'transiciones_disponibles': todas_las_transiciones,
+    }
+    
+   
+    return render(request, 'core/reserva_detalle.html', context)
