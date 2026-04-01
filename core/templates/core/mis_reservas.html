@@ -28,13 +28,30 @@
         </div>
     </nav>
 
-        <!-- Header -->
+    <!-- Header -->
     <section class="reservas-header">
         <div class="container">
             <h1>Mis Reservas</h1>
             <p>Gestiona tus reservas de canchas</p>
         </div>
     </section>
-    
+
+    <!-- Filtros -->
+    <section class="filtros-section">
+        <div class="container">
+            <form method="GET" class="filtros-form">
+                <select name="estado" class="filter-select">
+                    <option value="">Todos los estados</option>
+                    {% for status_code, status_label in status_choices %}
+                        <option value="{{ status_code }}" {% if estado_filtro == status_code %}selected{% endif %}>
+                            {{ status_label }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn-filter">Filtrar</button>
+            </form>
+        </div>
+    </section>
+
 </body>
 </html>
