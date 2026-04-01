@@ -1,1 +1,40 @@
 {% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Reservas - Courtly</title>
+    <link rel="stylesheet" href="{% static 'core/mis_reservas.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="{% url 'core:home' %}" class="logo">
+                <span class="logo-icon">🏆</span>
+                <span class="logo-text">Courtly</span>
+            </a>
+            <div class="nav-links">
+                {% if user.is_authenticated %}
+                    <span class="user-greeting">Hola, {{ user.username }}</span>
+                    <a href="#" class="btn-login">Mi cuenta</a>
+                    <a href="#" class="btn-register">Cerrar sesión</a>
+                {% else %}
+                    <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>
+                    <a href="{% url 'cuentas:register' %}" class="btn-register">Registrarse</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+        <!-- Header -->
+    <section class="reservas-header">
+        <div class="container">
+            <h1>Mis Reservas</h1>
+            <p>Gestiona tus reservas de canchas</p>
+        </div>
+    </section>
+    
+</body>
+</html>

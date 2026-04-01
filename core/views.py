@@ -1,8 +1,15 @@
-from django.shortcuts import render, get_object_or_404
-from django.db.models import Count, Q
+from django.shortcuts import render
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Count, Q, Case, When, Value, IntegerField
 from venues.models import Complex, Court, Amenity, Sport, Surface
+from bookings.models import Booking
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.contrib.admin.views.decorators import staff_member_required
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 # Create your views here.
 from django.http import HttpResponse
@@ -135,5 +142,70 @@ def explorar_complejos(request):
 
 @login_required(login_url='cuentas:login')
 def mis_reservas(request):
-
-    return render(request, 'core/mis_reservas.html')
+    """
+    Muestra todas las reservas del usuario autenticado, ordenadas por estado y fecha.
+    
+    Esta función retrieves las reservas del usuario actual y actualiza automáticamente
+    su estado según la fecha actual (por ej., cambia de confirmada a finalizada si ya pasó).
+    Permite filtrar por estado y muestra la información de la cancha y el complejo.
+    
+    Ordena por:
+    1. Estado (en_progreso → pendiente_pago → confirmada → finalizada → cancelada)
+    2. Fecha (más recientes primero)
+    """
+    
+    reservas = Booking.objects.filter(user=request.user).select_related(
+        'court', 'court__complex'
+    )
+    
+    now = timezone.now()
+    
+    
+    for reserva in reservas:
+        # Caso 1: Si está pendiente de pago y ya pasó → cancelar automáticamente
+        if reserva.status == Booking.Status.PENDING_PAYMENT and reserva.is_past():
+            reserva.status = Booking.Status.CANCELLED
+            reserva.save()
+        # Caso 2: Si está confirmada y ya pasó → marcar como finalizada
+        elif reserva.status == Booking.Status.CONFIRMED and reserva.is_past():
+            reserva.status = Booking.Status.FINISHED
+            reserva.save()
+        # Caso 3: Si está confirmada pero ahora está en curso → cambiar a en_progreso
+        elif reserva.status == Booking.Status.CONFIRMED and reserva.is_active():
+            reserva.status = Booking.Status.IN_PROGRESS
+            reserva.save()
+        # Caso 4: Si está en progreso y ya pasó → marcar como finalizada
+        elif reserva.status == Booking.Status.IN_PROGRESS and reserva.is_past():
+            reserva.status = Booking.Status.FINISHED
+            reserva.save()
+    
+    
+    reservas = Booking.objects.filter(user=request.user).select_related(
+        'court', 'court__complex'
+    ).annotate(
+        # Asignar un valor de ordenamiento a cada estado
+        status_order=Case(
+            When(status=Booking.Status.IN_PROGRESS, then=Value(1)),
+            When(status=Booking.Status.PENDING_PAYMENT, then=Value(2)),
+            When(status=Booking.Status.CONFIRMED, then=Value(3)),
+            When(status=Booking.Status.FINISHED, then=Value(4)),
+            When(status=Booking.Status.CANCELLED, then=Value(5)),
+            default=Value(6),
+            output_field=IntegerField(),
+        )
+    ).order_by('status_order', '-start')  # Primero por estado, luego por fecha descendente
+    
+    
+    estado_filtro = request.GET.get('estado', '')
+    if estado_filtro:
+        reservas = reservas.filter(status=estado_filtro)
+    
+    
+    context = {
+        'reservas': reservas,
+        'estado_filtro': estado_filtro,
+        'status_choices': Booking.Status.choices,
+    }
+    
+    
+    return render(request, 'core/mis_reservas.html', context)
