@@ -209,3 +209,8 @@ def mis_reservas(request):
     
     
     return render(request, 'core/mis_reservas.html', context)
+
+@login_required(login_url='cuentas:login')
+def reserva_detalle(request, reserva_id):
+
+    return render(request, 'core/reserva_detalle.html')

@@ -75,7 +75,7 @@
                         </div>
                         
                         <div class="reserva-actions">
-                            <a href="#" class="btn-secondary">Ver detalles</a>
+                            <a href="{% url 'core:reserva_detalle' reserva.id %}" class="btn-secondary">Ver detalles</a>
                             {% if reserva.can_be_cancelled %}
                                 <button class="btn-danger" onclick="cancelarReserva({{ reserva.id }})">Cancelar</button>
                             {% endif %}
