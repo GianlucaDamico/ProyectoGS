@@ -132,5 +132,59 @@
             <p>&copy; 2026 Courtly. Todos los derechos reservados.</p>
         </div>
     </footer>
+
+     <script>
+        function cancelarReserva(reservaId) {
+            // Confirmación del usuario
+            if (!confirm('¿Estás seguro de que deseas cancelar esta reserva?')) {
+                return false;
+            }
+
+            // Buscar el botón y mostrar estado de carga
+            const button = event.target;
+            const originalText = button.textContent;
+            button.disabled = true;
+            button.textContent = '⏳ Cancelando...';
+
+            // Obtener el CSRF token
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                            document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
+
+            // Enviar la solicitud AJAX
+            fetch(`/reserva/${reservaId}/cambiar-estado/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: new URLSearchParams({
+                    'nuevo_estado': 'cancelled'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mostrar mensaje de éxito
+                    alert('✓ Reserva cancelada exitosamente');
+                    // Recargar la página
+                    location.reload();
+                } else {
+                    // Restaurar botón y mostrar error
+                    button.disabled = false;
+                    button.textContent = originalText;
+                    alert('✗ Error: ' + (data.error || 'No se pudo cancelar la reserva'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                button.disabled = false;
+                button.textContent = originalText;
+                alert('✗ Error al procesar tu solicitud');
+            });
+
+            return false;
+        }
+    </script>   
+
 </body>
 </html>
