@@ -53,5 +53,44 @@
         </div>
     </section>
 
+    <!-- Listado de reservas -->
+    <section class="reservas-section">
+        <div class="container">
+            {% if reservas %}
+                <div class="reservas-list">
+                    {% for reserva in reservas %}
+                    <div class="reserva-card">
+                        <div class="reserva-header">
+                            <h3>{{ reserva.court.name }}</h3>
+                            <span class="status-badge status-{{ reserva.status }}">
+                                {{ reserva.get_status_display }}
+                            </span>
+                        </div>
+                        
+                        <div class="reserva-details">
+                            <p><strong>Complejo:</strong> {{ reserva.court.complex.name }}</p>
+                            <p><strong>Fecha:</strong> {{ reserva.start|date:"d/m/Y" }}</p>
+                            <p><strong>Hora:</strong> {{ reserva.start|time:"H:i" }} - {{ reserva.end|time:"H:i" }}</p>
+                            <p><strong>Precio:</strong> €{{ reserva.total_price }}</p>
+                        </div>
+                        
+                        <div class="reserva-actions">
+                            <a href="#" class="btn-secondary">Ver detalles</a>
+                            {% if reserva.can_be_cancelled %}
+                                <button class="btn-danger" onclick="cancelarReserva({{ reserva.id }})">Cancelar</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-reservas">
+                    <p>No tienes reservas {% if estado_filtro %}con este estado{% endif %}</p>
+                    <a href="{% url 'core:explorar_complejos' %}" class="btn-primary">Explorar complejos</a>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
 </body>
 </html>
