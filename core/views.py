@@ -298,3 +298,44 @@ def reserva_detalle(request, reserva_id):
     
    
     return render(request, 'core/reserva_detalle.html', context)
+
+@login_required(login_url='cuentas:login')
+@require_POST
+def cambiar_estado_reserva(request, reserva_id):
+    reserva = get_object_or_404(Booking, id=reserva_id)
+    if not (request.user == reserva.user or request.user.is_staff):
+        return JsonResponse({'error': 'No tienes permiso para modificar esta reserva'}, status=403)
+    
+    nuevo_estado = request.POST.get('nuevo_estado')
+
+    estados_validos = [choice[0] for choice in Booking.Status.choices]
+    if nuevo_estado not in estados_validos:
+        return JsonResponse({'error': 'Estado no válido'}, status=400)
+    
+    es_propetario = request.user == reserva.user
+    es_admin = request.user.is_staff
+
+    if es_propetario and not es_admin:
+        if nuevo_estado == Booking.Status.CONFIRMED and reserva.status == Booking.Status.PENDING_PAYMENT:
+            reserva.status = Booking.Status.CONFIRMED
+        elif nuevo_estado == Booking.Status.CANCELLED and reserva.can_be_cancelled():
+            reserva.status = Booking.Status.CANCELLED
+        else:
+            return JsonResponse({'error': 'No puedes cambiar el estado a {reserva.get_status_display()}'}, status=403)
+    
+    elif es_admin:
+        reserva.status = nuevo_estado
+
+    else:
+        return JsonResponse({'error': 'No tienes permiso para cambiar el estado'}, status=403)
+    
+    reserva.save()
+
+    if request.headers.get('x-requested-with') != 'XMLHttpRequest':
+        return redirect ('core:mis_reservas')
+    
+    return JsonResponse({'success': 'Estado actualizado', 
+                         'nuevo_estado': reserva.get_status_display(),
+                         'nuevo_estado_code': reserva.status,
+                         'mensaje': f'La reserva ha sido actualizada a {reserva.get_status_display()}'
+                         })

@@ -11,4 +11,5 @@ urlpatterns = [
     path('explorar_complejos/', views.explorar_complejos, name='explorar_complejos'),
     path('mis_reservas/', views.mis_reservas, name='mis_reservas'),
     path('reserva/<int:reserva_id>/', views.reserva_detalle, name='reserva_detalle'),
+    path('reserva/<int:reserva_id>/cambiar-estado/', views.cambiar_estado_reserva, name='cambiar_estado_reserva'),
 ]
