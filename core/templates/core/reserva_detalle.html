@@ -1,1 +1,285 @@
 {% load static %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courtly - Reserva tu cancha deportiva</title>
+    <link rel="stylesheet" href="{% static 'core/reserva.css' %}">
+</head>
+<body>
+<!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo">
+                <span class="logo-icon">🏆</span>
+                <span class="logo-text">Courtly</span>
+            </div>
+            <div class="nav-links">
+                {% if user.is_authenticated %}
+                        <span class="user-greeting">Hola, {{ user.username }}</span>
+                        <a href="{% url 'cuentas:home_usuario' %}" class="btn-login">Mi cuenta</a>
+                        <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-register">Cerrar sesión</button>
+                        </form>
+                        
+                    {% else %}
+                        <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>
+                        <a href="{% url 'cuentas:register' %}" class="btn-register">Registrarse</a>
+                    {% endif %}
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <a href="{% url 'core:mis_reservas' %}" class="btn-back">← Volver a mis reservas</a>
+
+        <div class="reserva-detalle-container">
+            <!-- Encabezado con título y estado -->
+            <div class="reserva-header">
+                <h1 class="reserva-title">Detalles de tu reserva</h1>
+                <span class="reserva-status-badge status-{{ reserva.status }}">
+                    {{ reserva.get_status_display }}
+                </span>
+            </div>
+
+            <!-- Alertas según el estado -->
+            {% if reserva.status == "pending_payment" and not reserva.is_past and not reserva.is_active %}
+                <div class="alert alert-warning">
+                    <span>⚠️</span>
+                    <div>
+                        <strong>Pago pendiente</strong>
+                        <p>Tu reserva está pendiente de confirmación de pago. Completa el pago para asegurar tu cancha.</p>
+                    </div>
+                </div>
+
+            {% elif reserva.status == "confirmed" and not reserva.is_past %}
+                <div class="alert alert-info">
+                    <span>✓</span>
+                    <div>
+                        <strong>Reserva confirmada</strong>
+                        <p>Tu pago ha sido procesado. ¡Tu reserva está garantizada!</p>
+                    </div>
+                </div>
+
+            {% elif reserva.status == "in_progress" %}
+                <div class="alert alert-info">
+                    <span>⏳</span>
+                    <div>
+                        <strong>Partido en curso</strong>
+                        <p>¡Tu reserva se encuentra en progreso en este momento!</p>
+                    </div>
+                </div>
+
+            {% elif reserva.status == "finished" %}
+                <div class="alert alert-info">
+                    <span>✓</span>
+                    <div>
+                        <strong>Partido finalizado</strong>
+                        <p>Tu reserva ha sido completada. ¡Esperamos que te haya gustado!</p>
+                    </div>
+                </div>
+
+            {% elif reserva.status == "cancelled" %}
+                <div class="alert alert-warning">
+                    <span>✗</span>
+                    <div>
+                        <strong>Reserva cancelada</strong>
+                        <p>Esta reserva ha sido cancelada y no se pueden realizar acciones sobre ella.</p>
+                    </div>
+                </div>
+
+            {% endif %}
+
+            <!-- Información de la cancha -->
+            <div class="court-info">
+                <div class="court-name">{{ reserva.court.name }}</div>
+                <div class="court-details">
+                    <div class="court-detail-item">
+                        <span class="court-detail-label">Complejo</span>
+                        <span>{{ reserva.court.complex.name }}</span>
+                    </div>
+                    <div class="court-detail-item">
+                        <span class="court-detail-label">Deporte</span>
+                        <span>{{ reserva.court.get_sport_display }}</span>
+                    </div>
+                    <div class="court-detail-item">
+                        <span class="court-detail-label">Superficie</span>
+                        <span>{{ reserva.court.get_surface_display }}</span>
+                    </div>
+                    <div class="court-detail-item">
+                        <span class="court-detail-label">Ubicación</span>
+                        <span>{{ reserva.court.complex.city }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid de información -->
+            <div class="reserva-grid">
+                <!-- Información de fechas y horarios -->
+                <div class="reserva-section">
+                    <h3>📅 Fecha y Horario</h3>
+                    <div class="reserva-item">
+                        <span class="reserva-item-label">Fecha:</span>
+                        <span class="reserva-item-value">
+                            {{ reserva.start|date:"d/m/Y" }}
+                        </span>
+                    </div>
+                    <div class="reserva-item">
+                        <span class="reserva-item-label">Inicio:</span>
+                        <span class="reserva-item-value">
+                            {{ reserva.start|time:"H:i" }}
+                        </span>
+                    </div>
+                    <div class="reserva-item">
+                        <span class="reserva-item-label">Fin:</span>
+                        <span class="reserva-item-value">
+                            {{ reserva.end|time:"H:i" }}
+                        </span>
+                    </div>
+                    <div class="reserva-item">
+                        <span class="reserva-item-label">Duración:</span>
+                        <span class="reserva-item-value">
+                            {{ reserva.get_duration_minutes }} minutos
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Información adicional -->
+                <div class="reserva-section">
+                    <h3>ℹ️ Información Adicional</h3>
+                    <div class="reserva-item">
+                        <span class="reserva-item-label">Iluminación:</span>
+                        <span class="reserva-item-value">
+                            {% if reserva.lighting %}
+                                ✓ Sí
+                            {% else %}
+                                ✗ No
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="reserva-item">
+                        <span class="reserva-item-label">Creada:</span>
+                        <span class="reserva-item-value">
+                            {{ reserva.created_at|date:"d/m/Y H:i" }}
+                        </span>
+                    </div>
+                    <div class="reserva-item">
+                        <span class="reserva-item-label">Última actualización:</span>
+                        <span class="reserva-item-value">
+                            {{ reserva.updated_at|date:"d/m/Y H:i" }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de precio -->
+            <div class="price-section">
+                <div class="price-label">Precio Total</div>
+                <div class="price-amount">${{ reserva.total_price }}</div>
+            </div>
+
+            <!-- Sección de acciones -->
+            <div class="actions-section">
+                {% if puede_confirmar_pago and not reserva.is_past  %}
+                    <form method="POST" action="{% url 'core:cambiar_estado_reserva' reserva.id %}" id="formPago">
+                        {% csrf_token %}
+                        <input type="hidden" name="nuevo_estado" value="confirmed">
+                        <button type="submit" class="btn-action btn-pay" onclick="return confirm('¿Confirmar el pago de ${{ reserva.total_price }}?')">
+                            💳 Confirmar Pago
+                        </button>
+                    </form>
+                {% endif %}
+
+                {% if puede_cancelar %}
+                    <form method="POST" action="{% url 'core:cambiar_estado_reserva' reserva.id %}" id="formCancelacion">
+                        {% csrf_token %}
+                        <input type="hidden" name="nuevo_estado" value="cancelled">
+                        <button type="submit" class="btn-action btn-cancel" onclick="return confirm('¿Estás seguro de que deseas cancelar esta reserva?')">
+                            ✕ Cancelar Reserva
+                        </button>
+                    </form>
+                {% elif not puede_confirmar_pago %}
+                    <button class="btn-action disabled" disabled>
+                        No hay acciones disponibles
+                    </button>
+                {% endif %}
+            </div>
+
+            <!-- Información de restricciones -->
+            {% if reserva.is_past %}
+                <!-- Si la reserva ya pasó -->
+                <div class="alert alert-warning" style="margin-top: 20px;">
+                    <span>⏰</span>
+                    <div>
+                        <strong>Reserva expirada</strong>
+                        <p>Esta reserva ya ha pasado. No se pueden realizar acciones sobre ella.</p>
+                    </div>
+                </div>
+            {% elif reserva.is_active %}
+                <!-- Si la reserva está en curso -->
+                <div class="alert alert-warning" style="margin-top: 20px;">
+                    <span>⏳</span>
+                    <div>
+                        <strong>Reserva en curso</strong>
+                        <p>Esta reserva se encuentra en progreso. No se pueden realizar acciones sobre ella.</p>
+                    </div>
+                </div>
+            {% elif reserva.status == "pending_payment" and not puede_confirmar_pago %}
+                <!-- Si no puede pagar pero está pendiente de pago -->
+                <div class="alert alert-warning" style="margin-top: 20px;">
+                    <span>⚠️</span>
+                    <div>
+                        <strong>No se puede confirmar el pago</strong>
+                        <p>Esta reserva está muy próxima al horario de inicio, por lo que ya no se puede confirmar el pago.</p>
+                    </div>
+                </div>
+            {% elif not puede_cancelar and reserva.status == "pending_payment" %}
+                <!-- Si no puede cancelar una reserva pendiente -->
+                <div class="alert alert-warning" style="margin-top: 20px;">
+                    <span>⚠️</span>
+                    <div>
+                        <strong>No se puede cancelar</strong>
+                        <p>Esta reserva está muy próxima al horario de inicio, por lo que ya no se puede cancelar.</p>
+                    </div>
+                </div>
+
+            {% elif not puede_cancelar and reserva.status == "confirmed" %}
+                <!-- Si no puede cancelar una reserva confirmada -->
+                <div class="alert alert-warning" style="margin-top: 20px;">
+                    <span>⚠️</span>
+                    <div>
+                        <strong>No se puede cancelar</strong>
+                        <p>Esta reserva está muy próxima al horario de inicio, por lo que ya no se puede cancelar.</p>
+                    </div>
+                </div>
+
+            {% elif reserva.status == "cancelled" %}
+                <!-- Si la reserva está cancelada -->
+                <div class="alert alert-info" style="margin-top: 20px;">
+                    <span>✗</span>
+                    <div>
+                        <strong>Reserva cancelada</strong>
+                        <p>Esta reserva fue cancelada y no se pueden realizar acciones sobre ella.</p>
+                    </div>
+                </div>
+
+            {% elif reserva.status == "finished" %}
+                <!-- Si la reserva está finalizada -->
+                <div class="alert alert-info" style="margin-top: 20px;">
+                    <span>✓</span>
+                    <div>
+                        <strong>Reserva finalizada</strong>
+                        <p>Esta reserva ya ha sido completada.</p>
+                    </div>
+                </div>
+            {% endif %}
+            
+        </div>
+    </div>
+
+</body>
+
+</html>
