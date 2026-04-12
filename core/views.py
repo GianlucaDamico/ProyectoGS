@@ -72,6 +72,7 @@ def complejo_detalle(request, complejo_id, slug=None):
     
     return render(request, 'core/complejo_detalle.html', context)
 
+@login_required(login_url='cuentas:login')
 def explorar_complejos(request):
     """
     Vista de exploración de complejos.
