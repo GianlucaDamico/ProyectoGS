@@ -12,4 +12,8 @@ urlpatterns = [
     path('mis_reservas/', views.mis_reservas, name='mis_reservas'),
     path('reserva/<int:reserva_id>/', views.reserva_detalle, name='reserva_detalle'),
     path('reserva/<int:reserva_id>/cambiar-estado/', views.cambiar_estado_reserva, name='cambiar_estado_reserva'),
+    path('terminos/', views.terminos, name='terminos'),
+    path('privacidad/', views.privacidad, name='privacidad'),
+    path('cookies/', views.cookies, name='cookies'),
+    path('contacto/', views.contacto, name='contacto'),
 ]
