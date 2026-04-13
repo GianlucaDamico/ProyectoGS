@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Propietario - CourtlyGPS</title>
+    <title>{{ page }} - CourtlyGPS</title>
     <link rel="stylesheet" href="{% static 'core/explorar.css' %}">
 </head>
 <body>
@@ -31,14 +31,8 @@
 
     <main>
         <section>
-            <h2>Panel de Propietario</h2>
-            {% if complex %}
-                <p>Complejo: {{ complex.name }}</p>
-                <!-- Aquí puedes agregar más información sobre el complejo -->
-            {% else %}
-                <p>No tienes un complejo asignado.</p>
-            {% endif %}
-            <!-- Agrega más contenido específico para propietarios aquí -->
+            <h2>{{ page }}</h2>
+            <p>Contenido de {{ page }} aquí.</p>
         </section>
     </main>
 </body>

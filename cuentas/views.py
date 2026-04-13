@@ -115,6 +115,58 @@ def home_propietario(request):
     return render(request, 'cuentas/home_propietario.html', context)
 
 
+@login_required
+def agenda(request):
+    user = request.user
+    perfil_propietario = getattr(user, 'perfil_propietario', None)
+
+    nombre = user.first_name or user.username
+    context = {
+        'nombre': nombre,
+        'page': 'Agenda',
+    }
+    return render(request, 'cuentas/dashboard_base.html', context)
+
+
+@login_required
+def configuration(request):
+    user = request.user
+    perfil_propietario = getattr(user, 'perfil_propietario', None)
+
+    nombre = user.first_name or user.username
+    context = {
+        'nombre': nombre,
+        'page': 'Configuración',
+    }
+    return render(request, 'cuentas/dashboard_base.html', context)
+
+
+@login_required
+def gestion(request):
+    user = request.user
+    perfil_propietario = getattr(user, 'perfil_propietario', None)
+
+    nombre = user.first_name or user.username
+    context = {
+        'nombre': nombre,
+        'page': 'Gestión',
+    }
+    return render(request, 'cuentas/dashboard_base.html', context)
+
+
+@login_required
+def resenas(request):
+    user = request.user
+    perfil_propietario = getattr(user, 'perfil_propietario', None)
+
+    nombre = user.first_name or user.username
+    context = {
+        'nombre': nombre,
+        'page': 'Reseñas',
+    }
+    return render(request, 'cuentas/dashboard_base.html', context)
+
+
 def register(request):
     return render(request, 'cuentas/register.html')
 
