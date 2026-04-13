@@ -26,7 +26,7 @@ def login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             auth_login(request, user)
-            return redirect('cuentas:home_usuario')
+            return redirect('core:explorar_complejos')
         else:
             messages.error(request, 'Credenciales inválidas.')
             return render(request, 'cuentas/login.html')
