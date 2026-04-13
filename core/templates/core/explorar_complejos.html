@@ -11,10 +11,10 @@
     <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-container">
-            <div class="logo">
+            <a href="{% url 'core:home' %}" class="logo">
                 <span class="logo-icon">🏆</span>
                 <span class="logo-text">Courtly</span>
-            </div>
+            </a>
             <div class="nav-links">
                 {% if user.is_authenticated %}
                         <span class="user-greeting">Hola, {{ user.username }}</span>
@@ -34,7 +34,7 @@
     <!-- Header de la página -->
     <section class="page-header">
         <div class="container">
-            <h1>Explora Complejos Deportivos</h1>
+            <h1>Explorar Complejos Deportivos</h1>
             <p>Encuentra el complejo perfecto para tu deporte favorito</p>
         </div>
     </section>
