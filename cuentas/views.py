@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.utils import timezone
 from bookings.models import Booking
 from venues.models import Sport, Complex
+from .models import Jugador, Propietario
 
 # Create your views here.
 
@@ -26,7 +27,13 @@ def login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             auth_login(request, user)
-            return redirect('core:explorar_complejos')
+            # Redirigir según el tipo de usuario
+            if hasattr(user, 'perfil_jugador'):
+                return redirect('core:explorar_complejos')
+            elif hasattr(user, 'perfil_propietario'):
+                return redirect('cuentas:home_propietario')
+            else:
+                return redirect('core:home')
         else:
             messages.error(request, 'Credenciales inválidas.')
             return render(request, 'cuentas/login.html')
@@ -86,6 +93,27 @@ def home_usuario(request):
         'partidos_proximos': partidos_proximos,
     }
     return render(request, 'cuentas/home_usuario.html', context)
+
+
+@login_required
+def home_propietario(request):
+    user = request.user
+    perfil_propietario = getattr(user, 'perfil_propietario', None)
+
+    nombre = user.first_name or user.username
+    if perfil_propietario:
+        # Aquí puedes agregar lógica específica para propietarios
+        complex = perfil_propietario.complex
+        context = {
+            'nombre': nombre,
+            'complex': complex,
+        }
+    else:
+        context = {
+            'nombre': nombre,
+        }
+    return render(request, 'cuentas/home_propietario.html', context)
+
 
 def register(request):
     return render(request, 'cuentas/register.html')
