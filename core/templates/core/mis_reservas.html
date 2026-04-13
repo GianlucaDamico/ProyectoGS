@@ -15,6 +15,10 @@
                 <span class="logo-icon">🏆</span>
                 <span class="logo-text">Courtly</span>
             </a>
+            <div class="nav-links nav-center">
+                <a href="{% url 'core:explorar_complejos' %}">Explorar Complejos</a>
+            </div>
+            <div class="nav-right">
             <div class="nav-links">
                 {% if user.is_authenticated %}
                     <span class="user-greeting">Hola, {{ user.username }}</span>
