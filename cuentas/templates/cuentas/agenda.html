@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page }} - CourtlyGPS</title>
+    <link rel="stylesheet" href="{% static 'core/explorar.css' %}">
+    <link rel="stylesheet" href="{% static 'cuentas/agenda.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="{% url 'core:home' %}" class="logo">
+                <span class="logo-icon">🏆</span>
+                <span class="logo-text">Courtly</span>
+            </a>
+            <div class="nav-links" style="display: flex; justify-content: space-around; flex: 1;">
+                <a href="{% url 'cuentas:home_propietario' %}">Control</a>
+                <a href="{% url 'cuentas:agenda' %}">Agenda</a>
+                <a href="{% url 'cuentas:configuration' %}">Configuracion</a>
+                <a href="{% url 'cuentas:gestion' %}">Gestion</a>
+                <a href="{% url 'cuentas:resenas' %}">Reseñas</a>
+                <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-register">Cerrar sesión</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section>
+            <h2>{{ page }}</h2>
+            <div class="agenda-container">
+                <div class="date-selector">
+                    <label for="date">Seleccionar fecha:</label>
+                    <input type="date" id="date" name="date" value="{{ selected_date|date:'Y-m-d' }}" onchange="changeDate(this.value)">
+                </div>
+                <div class="agenda-grid">
+                    {% for court_data in agenda_data %}
+                        <div class="court-column">
+                            <div class="court-header">{{ court_data.court.name }}</div>
+                            {% for booking in court_data.bookings %}
+                                <div class="booking-item">
+                                    <div class="booking-time">{{ booking.hora }}</div>
+                                    <div class="booking-user">{{ booking.usuario }}</div>
+                                    <div class="booking-phone">{{ booking.telefono }}</div>
+                                </div>
+                            {% empty %}
+                                <p>No hay reservas para este día.</p>
+                            {% endfor %}
+                        </div>
+                    {% empty %}
+                        <p>No hay canchas en tu complejo.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function changeDate(date) {
+            window.location.href = '?date=' + date;
+        }
+    </script>
+</body>
+</html>

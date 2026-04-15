@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
+import datetime
 from bookings.models import Booking
 from venues.models import Sport, Complex
 from .models import Jugador, Propietario
@@ -120,12 +121,58 @@ def agenda(request):
     user = request.user
     perfil_propietario = getattr(user, 'perfil_propietario', None)
 
+    if not perfil_propietario or not perfil_propietario.complex:
+        # Si no tiene complejo, redirigir o mostrar error
+        messages.error(request, 'No tienes un complejo asignado.')
+        return redirect('cuentas:home_propietario')
+
+    complex = perfil_propietario.complex
+
+    selected_date_str = request.GET.get('date')
+    if selected_date_str:
+        try:
+            selected_date = datetime.datetime.fromisoformat(selected_date_str).date()
+        except ValueError:
+            selected_date = timezone.now().date()
+    else:
+        selected_date = timezone.now().date()
+
+    # Obtener courts del complex
+    courts = complex.courts.all()
+
+    # Para cada court, obtener bookings en selected_date
+    agenda_data = []
+    for court in courts:
+        bookings = Booking.objects.filter(
+            court=court,
+            start__date=selected_date,
+            status__in=[Booking.Status.CONFIRMED, Booking.Status.IN_PROGRESS]
+        ).select_related('user__perfil_jugador').order_by('start')
+
+        court_data = {
+            'court': court,
+            'bookings': []
+        }
+
+        for booking in bookings:
+            user_name = booking.user.get_full_name() or booking.user.username
+            telefono = getattr(booking.user.perfil_jugador, 'telefono', '') if hasattr(booking.user, 'perfil_jugador') else ''
+            court_data['bookings'].append({
+                'hora': booking.start.strftime('%H:%M'),
+                'usuario': user_name,
+                'telefono': telefono,
+            })
+
+        agenda_data.append(court_data)
+
     nombre = user.first_name or user.username
     context = {
         'nombre': nombre,
         'page': 'Agenda',
+        'selected_date': selected_date,
+        'agenda_data': agenda_data,
     }
-    return render(request, 'cuentas/dashboard_base.html', context)
+    return render(request, 'cuentas/agenda.html', context)
 
 
 @login_required
