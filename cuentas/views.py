@@ -6,7 +6,8 @@ from django.contrib import messages
 from django.utils import timezone
 import datetime
 from bookings.models import Booking
-from venues.models import Sport, Complex
+from venues.models import Sport, Complex, Court
+from venues.forms import CourtForm
 from .models import Jugador, Propietario
 
 # Create your views here.
@@ -193,12 +194,43 @@ def gestion(request):
     user = request.user
     perfil_propietario = getattr(user, 'perfil_propietario', None)
 
+    if not perfil_propietario or not perfil_propietario.complex:
+        messages.error(request, 'No tienes un complejo asignado.')
+        return redirect('cuentas:home_propietario')
+
+    complex = perfil_propietario.complex
+
+    if request.method == 'POST':
+        if 'add_court' in request.POST:
+            form = CourtForm(request.POST)
+            if form.is_valid():
+                court = form.save(commit=False)
+                court.complex = complex
+                court.save()
+                messages.success(request, 'Cancha agregada exitosamente.')
+                return redirect('cuentas:gestion')
+        elif 'delete_court' in request.POST:
+            court_id = request.POST.get('court_id')
+            try:
+                court = Court.objects.get(id=court_id, complex=complex)
+                court.delete()
+                messages.success(request, 'Cancha eliminada exitosamente.')
+            except Court.DoesNotExist:
+                messages.error(request, 'Cancha no encontrada.')
+            return redirect('cuentas:gestion')
+    else:
+        form = CourtForm()
+
+    courts = complex.courts.all()
+
     nombre = user.first_name or user.username
     context = {
         'nombre': nombre,
         'page': 'Gestión',
+        'courts': courts,
+        'form': form,
     }
-    return render(request, 'cuentas/dashboard_base.html', context)
+    return render(request, 'cuentas/gestion.html', context)
 
 
 @login_required

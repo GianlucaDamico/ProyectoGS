@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page }} - CourtlyGPS</title>
+    <link rel="stylesheet" href="{% static 'core/explorar.css' %}">
+    <link rel="stylesheet" href="{% static 'cuentas/gestion.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="{% url 'core:home' %}" class="logo">
+                <span class="logo-icon">🏆</span>
+                <span class="logo-text">Courtly</span>
+            </a>
+            <div class="nav-links" style="display: flex; justify-content: space-around; flex: 1;">
+                <a href="{% url 'cuentas:home_propietario' %}">Control</a>
+                <a href="{% url 'cuentas:agenda' %}">Agenda</a>
+                <a href="{% url 'cuentas:configuration' %}">Configuracion</a>
+                <a href="{% url 'cuentas:gestion' %}">Gestion</a>
+                <a href="{% url 'cuentas:resenas' %}">Reseñas</a>
+                <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-register">Cerrar sesión</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section>
+            <div class="gestion-header">
+                <h2>{{ page }}</h2>
+                <button id="add-court-btn" class="btn-add">Agregar Cancha</button>
+            </div>
+
+            <div class="courts-grid">
+                {% for court in courts %}
+                    <div class="court-card">
+                        <h3>{{ court.name }}</h3>
+                        <p><strong>Deporte:</strong> {{ court.get_sport_display }}</p>
+                        <p><strong>Superficie:</strong> {{ court.get_surface_display }}</p>
+                        <p><strong>Iluminación:</strong> {% if court.has_lighting %}Sí{% else %}No{% endif %}</p>
+                        <p><strong>Precio base/hora:</strong> ${{ court.base_price_per_hour }}</p>
+                        <p><strong>Extra iluminación/hora:</strong> ${{ court.lighting_extra_per_hour }}</p>
+                        <form method="post" style="display:inline;" onsubmit="return confirmDelete()">
+                            {% csrf_token %}
+                            <input type="hidden" name="court_id" value="{{ court.id }}">
+                            <button type="submit" name="delete_court" class="btn-delete">Eliminar Cancha</button>
+                        </form>
+                    </div>
+                {% empty %}
+                    <p>No hay canchas en tu complejo.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal para agregar cancha -->
+    <div id="add-court-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Agregar Nueva Cancha</h3>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" name="add_court" class="btn-submit">Agregar Cancha</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Modal
+        var modal = document.getElementById("add-court-modal");
+        var btn = document.getElementById("add-court-btn");
+        var span = document.getElementsByClassName("close")[0];
+
+        btn.onclick = function() {
+            modal.style.display = "block";
+        }
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        function confirmDelete() {
+            return confirm("¿Estás seguro de que quieres eliminar esta cancha?");
+        }
+    </script>
+</body>
+</html>
