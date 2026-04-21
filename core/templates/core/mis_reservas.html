@@ -11,26 +11,23 @@
     <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-container">
-            <a href="{% url 'core:home' %}" class="logo">
-                <span class="logo-icon">🏆</span>
-                <span class="logo-text">Courtly</span>
-            </a>
-            <div class="nav-links nav-center">
-                <a href="{% url 'core:explorar_complejos' %}">Explorar Complejos</a>
+            <div class="logo">
+                <a href="{% url 'core:home' %}">
+                    <img src="{% static 'core/img/LOGO.png' %}" alt="Courtly" class="logo-img">
+                </a>
             </div>
-            <div class="nav-right">
             <div class="nav-links">
                 {% if user.is_authenticated %}
-                    <span class="user-greeting">Hola, {{ user.username }}</span>
+                        <span class="user-greeting">Hola, {{ user.username }}</span>
                         <a href="{% url 'cuentas:home_usuario' %}" class="btn-login">Mi cuenta</a>
                         <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit" class="btn-register">Cerrar sesión</button>
                         </form>
-                {% else %}
-                    <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>
-                    <a href="{% url 'cuentas:register' %}" class="btn-register">Registrarse</a>
-                {% endif %}
+                    {% else %}
+                        <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>
+                        <a href="{% url 'cuentas:register' %}" class="btn-register">Registrarse</a>
+                    {% endif %}
             </div>
         </div>
     </nav>

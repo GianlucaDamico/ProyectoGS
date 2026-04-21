@@ -16,6 +16,7 @@ body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #333; overf
 .hero-content { position: relative; z-index: 3; max-width: 850px; }
 .hero-title { font-size: 4.2rem; font-weight: 800; line-height: 1.1; margin-bottom: 25px; }
 .hero-subtitle { font-size: 1.6rem; margin-bottom: 45px; }
+.user-greeting { font-size: 1.2rem; color: #000000; padding-right: 20px;}
 
 /* Botón Hero Resaltado */
 .btn-primary { background: white; color: #667eea; padding: 20px 55px; border: none; border-radius: 50px; font-size: 1.2rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.4s ease; }
