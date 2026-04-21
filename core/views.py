@@ -261,3 +261,24 @@ def cambiar_estado_reserva(request, reserva_id):
         'nuevo_estado_code': reserva.status,
         'mensaje': f'La reserva ha sido actualizada a {reserva.get_status_display()}'
     })
+
+@login_required(login_url='cuentas:login')
+def notificaciones(request):
+    """Vista de notificaciones del usuario (placeholder)."""
+
+    now = timezone.now()
+    fechas_cercanas = now + timezone.timedelta(days=2)
+
+    notificaciones = Booking.objects.filter(
+        user = request.user
+    ).filter(
+        Q(status=Booking.Status.CONFIRMED, start__lte=fechas_cercanas) |
+        Q(status=Booking.Status.PENDING_PAYMENT)
+    ). select_related('court', 'court__complex').order_by('start')
+
+    context = {
+        'notificaciones': notificaciones,
+        'now': now,
+    }
+
+    return render(request, 'core/notificaciones.html', context)
