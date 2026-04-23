@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
+from django.db.models import Sum, Count
 import datetime
 from bookings.models import Booking
 from venues.models import Sport, Complex, Court
@@ -103,12 +104,60 @@ def home_propietario(request):
     perfil_propietario = getattr(user, 'perfil_propietario', None)
 
     nombre = user.first_name or user.username
-    if perfil_propietario:
-        # Aquí puedes agregar lógica específica para propietarios
+    if perfil_propietario and perfil_propietario.complex:
         complex = perfil_propietario.complex
+
+        today = timezone.now().date()
+        current_month = today.replace(day=1)
+        next_month = (current_month + datetime.timedelta(days=32)).replace(day=1)
+
+        # Canchas activas
+        canchas_activas = complex.courts.count()
+
+        # Reservas del día
+        reservas_dia = Booking.objects.filter(
+            court__complex=complex,
+            start__date=today
+        ).count()
+
+        # Ingresos del día (de reservas confirmadas o finalizadas)
+        ingresos_dia = Booking.objects.filter(
+            court__complex=complex,
+            start__date=today,
+            status__in=[Booking.Status.CONFIRMED, Booking.Status.FINISHED]
+        ).aggregate(Sum('total_price'))['total_price__sum'] or 0
+
+        # Reservas del mes
+        reservas_mes = Booking.objects.filter(
+            court__complex=complex,
+            start__gte=current_month,
+            start__lt=next_month
+        ).count()
+
+        # Ingresos del mes
+        ingresos_mes = Booking.objects.filter(
+            court__complex=complex,
+            start__gte=current_month,
+            start__lt=next_month,
+            status__in=[Booking.Status.CONFIRMED, Booking.Status.FINISHED]
+        ).aggregate(Sum('total_price'))['total_price__sum'] or 0
+
+        # Reservas pendientes
+        reservas_pendientes = Booking.objects.filter(
+            court__complex=complex,
+            start__gte=today,
+            status=Booking.Status.PENDING_PAYMENT
+        ).count()
+
         context = {
             'nombre': nombre,
             'complex': complex,
+            'canchas_activas': canchas_activas,
+            'reservas_dia': reservas_dia,
+            'ingresos_dia': ingresos_dia,
+            'reservas_mes': reservas_mes,
+            'ingresos_mes': ingresos_mes,
+            'reservas_pendientes': reservas_pendientes,
         }
     else:
         context = {

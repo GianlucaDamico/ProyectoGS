@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Propietario - CourtlyGPS</title>
     <link rel="stylesheet" href="{% static 'core/explorar.css' %}">
+    <link rel="stylesheet" href="{% static 'cuentas/home_propietario.css' %}">
 </head>
 <body>
     <!-- Navbar -->
@@ -31,14 +32,39 @@
 
     <main>
         <section>
-            <h2>Panel de Propietario</h2>
+            <h2>Panel de Control</h2>
             {% if complex %}
                 <p>Complejo: {{ complex.name }}</p>
-                <!-- Aquí puedes agregar más información sobre el complejo -->
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <h3>Canchas Activas</h3>
+                        <p class="metric-value">{{ canchas_activas }}</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Reservas Hoy</h3>
+                        <p class="metric-value">{{ reservas_dia }}</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Ingresos Hoy</h3>
+                        <p class="metric-value">${{ ingresos_dia }}</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Reservas Este Mes</h3>
+                        <p class="metric-value">{{ reservas_mes }}</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Ingresos Este Mes</h3>
+                        <p class="metric-value">${{ ingresos_mes }}</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Reservas Pendientes</h3>
+                        <p class="metric-value">{{ reservas_pendientes }}</p>
+                    </div>
+                </div>
             {% else %}
                 <p>No tienes un complejo asignado.</p>
             {% endif %}
-            <!-- Agrega más contenido específico para propietarios aquí -->
         </section>
     </main>
 </body>
