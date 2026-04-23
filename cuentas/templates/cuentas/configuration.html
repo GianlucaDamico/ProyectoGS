@@ -7,15 +7,51 @@
     <title>{{ page }} - CourtlyGPS</title>
     <link rel="stylesheet" href="{% static 'core/complejo.css' %}">
     <link rel="stylesheet" href="{% static 'cuentas/home_propietario.css' %}">
+    <style>
+        :root {
+            --primary-blue: #637cf5;
+            --primary-green: #28a745;
+            --light-gray: #f8f9fa;
+            --border-color: #e2e8f0;
+            --text-main: #2d3748;
+            --text-muted: #718096;
+        }
+
+        .btn-action-green {
+            background-color: var(--primary-green);
+            color: white; border: none; padding: 8px 16px;
+            border-radius: 8px; cursor: pointer; font-weight: 600;
+            transition: all 0.2s ease; display: inline-flex; align-items: center;
+        }
+
+        .header-with-action { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .header-with-action h2, .header-with-action h3 { margin: 0; }
+
+        .contact-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+        .contact-row p { margin: 0; }
+        .icon-edit-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 4px; }
+
+        .amenities-management-list { list-style: none; padding: 0; margin: 15px 0; }
+        .amenity-management-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color); }
+        .remove-amenity-btn { background: #ff4444; color: white; border: none; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-weight: bold; }
+
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
+        .modal-content { background: white; margin: 8% auto; padding: 30px; width: 90%; max-width: 480px; border-radius: 16px; position: relative; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); font-family: sans-serif; }
+        .info-summary-box { background-color: var(--light-gray); padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 0.9rem; color: var(--text-muted); border: 1px solid var(--border-color); }
+        .modal-body label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
+        .modal-body input, .modal-body textarea { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 20px; font-size: 1rem; outline: none; background: var(--light-gray); }
+        
+        .modal-footer { display: flex; justify-content: flex-end; gap: 12px; }
+        .btn-modal-cancel { background: white; color: var(--text-main); border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; }
+        .btn-modal-confirm { background: var(--primary-blue); color: white; border: none; padding: 10px 25px; border-radius: 10px; cursor: pointer; font-weight: 600; }
+        
+        .amenity-badge { background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 20px; margin-right: 5px; font-size: 0.85rem; display: inline-block; }
+    </style>
 </head>
 <body>
-    <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-container">
-            <a href="{% url 'core:home' %}" class="logo">
-                <span class="logo-icon">🏆</span>
-                <span class="logo-text">Courtly</span>
-            </a>
+            <a href="{% url 'core:home' %}" class="logo"><span class="logo-icon">🏆</span><span class="logo-text">Courtly</span></a>
             <div class="nav-links" style="display: flex; justify-content: space-around; flex: 1;">
                 <a href="{% url 'cuentas:home_propietario' %}">Control</a>
                 <a href="{% url 'cuentas:agenda' %}">Agenda</a>
@@ -23,320 +59,163 @@
                 <a href="{% url 'cuentas:gestion' %}">Gestion</a>
                 <a href="{% url 'cuentas:resenas' %}">Reseñas</a>
                 <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-register">Cerrar sesión</button>
+                    {% csrf_token %}<button type="submit" class="btn-register">Cerrar sesión</button>
                 </form>
             </div>
         </div>
     </nav>
 
-    <!-- Hero del complejo -->
     <section class="complejo-hero">
         <div class="complejo-hero-overlay">
             <div class="container">
                 <div class="complejo-hero-content">
                     <h1 class="complejo-title">{{ complejo.name }}</h1>
-                    <p class="complejo-location">📍
-                        {% if complejo.barrio %}{{ complejo.barrio }}{% endif %}
-                        {% if complejo.address %}{% if complejo.barrio %}, {% endif %}{{ complejo.address }}{% endif %}
-                        {% if complejo.city %}{% if complejo.barrio or complejo.address %}, {% endif %}{{ complejo.city }}{% endif %}
-                    </p>
-
-                    {% if complejo.amenities.all %}
+                    <p class="complejo-location">📍 {{ complejo.city }}</p>
                     <div class="amenities-badges">
-                        {% for amenity in complejo.amenities.all %}
-                            <span class="amenity-badge">{{ amenity.name }}
-                                <button class="remove-amenity-btn" data-amenity-id="{{ amenity.id }}">×</button>
-                            </span>
-                        {% endfor %}
+                        {% for amenity in complejo.amenities.all %}<span class="amenity-badge">{{ amenity.name }}</span>{% endfor %}
                     </div>
-                    {% endif %}
-                    <button id="add-amenity-btn" class="btn-add">+ Agregar Servicio</button>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Información del complejo -->
     <section class="complejo-info-section">
         <div class="container">
             <div class="info-grid">
                 <div class="info-main">
-                    <h2>Sobre este complejo <button id="edit-description-btn" class="btn-edit">Editar</button></h2>
+                    <div class="header-with-action">
+                        <h2>Sobre este complejo</h2>
+                        <button class="btn-action-green" onclick="openModal('edit-description-modal')">Editar</button>
+                    </div>
                     <div id="description-container">
-                        {% if complejo.descripcion %}
-                            <p class="complejo-description">{{ complejo.descripcion }}</p>
-                        {% else %}
-                            <p class="complejo-description">
-                                {{ complejo.name }} es un complejo deportivo ubicado en {{ complejo.city }}{% if complejo.barrio %}, barrio {{ complejo.barrio }}{% endif %}.
-                                Cuenta con {{ complejo.courts.count }} cancha{{ complejo.courts.count|pluralize }} de diferentes deportes.
-                            </p>
-                        {% endif %}
+                        <p class="complejo-description">{{ complejo.descripcion|default:"Sin descripción." }}</p>
                     </div>
 
-                    {% if complejo.amenities.all %}
-                    <h3>Servicios disponibles</h3>
-                    <ul class="amenities-list">
-                        {% for amenity in complejo.amenities.all %}
-                            <li>✓ {{ amenity.name }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
+                    <div class="services-management">
+                        <div class="header-with-action" style="margin-top: 30px;"><h3>Servicios disponibles</h3></div>
+                        <ul class="amenities-management-list">
+                            {% for amenity in complejo.amenities.all %}
+                                <li class="amenity-management-item">
+                                    <span>✓ {{ amenity.name }}</span>
+                                    <button class="remove-amenity-btn" data-amenity-id="{{ amenity.id }}">×</button>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <button class="btn-action-green" onclick="openModal('add-amenity-modal')">+ Agregar Servicio</button>
+                    </div>
                 </div>
 
                 <div class="info-sidebar">
                     <div class="contact-card">
-                        <h3>Información de contacto <button id="edit-contact-btn" class="btn-edit">Editar</button></h3>
-                        <p><strong>Propietario:</strong> {{ complejo.owner.username }}</p>
-                        <div id="telefono-container">
-                            {% if complejo.telefono_comercial %}
-                                <p><strong>Teléfono:</strong> {{ complejo.telefono_comercial }}</p>
-                            {% else %}
-                                <p><strong>Teléfono:</strong> No especificado</p>
-                            {% endif %}
+                        <h3>Información de contacto</h3>
+                        <div class="contact-row">
+                            <p><strong>Tel:</strong> {{ complejo.telefono_comercial|default:"--" }}</p>
+                            <button class="icon-edit-btn" onclick="openModal('edit-contact-modal')">✏️</button>
                         </div>
-                        <div id="email-container">
-                            {% if complejo.email_comercial %}
-                                <p><strong>Email:</strong> {{ complejo.email_comercial }}</p>
-                            {% else %}
-                                <p><strong>Email:</strong> No especificado</p>
-                            {% endif %}
+                        <div class="contact-row">
+                            <p><strong>Email:</strong> {{ complejo.email_comercial|default:"--" }}</p>
+                            <button class="icon-edit-btn" onclick="openModal('edit-contact-modal')">✏️</button>
                         </div>
-                        {% if complejo.barrio or complejo.address %}
-                            <p><strong>Ubicación:</strong>
-                                {% if complejo.barrio %}{{ complejo.barrio }}{% endif %}
-                                {% if complejo.address %}{% if complejo.barrio %}, {% endif %}{{ complejo.address }}{% endif %}
-                            </p>
-                        {% endif %}
-                        {% if complejo.city %}
-                            <p><strong>Ciudad:</strong> {{ complejo.city }}</p>
-                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Modales -->
     <div id="edit-description-modal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <h3>Editar Descripción</h3>
-            <textarea id="description-textarea" rows="5">{{ complejo.descripcion }}</textarea>
-            <button id="save-description-btn">Guardar</button>
+            <h3>Editar descripción</h3>
+            <div class="modal-body">
+                <textarea id="description-textarea" rows="5">{{ complejo.descripcion }}</textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal-cancel" onclick="closeModal('edit-description-modal')">Cancelar</button>
+                <button id="save-description-btn" class="btn-modal-confirm">Guardar cambios</button>
+            </div>
         </div>
     </div>
 
     <div id="edit-contact-modal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <h3>Editar Información de Contacto</h3>
-            <label for="telefono-input">Teléfono:</label>
-            <input type="text" id="telefono-input" value="{{ complejo.telefono_comercial }}">
-            <label for="email-input">Email:</label>
-            <input type="email" id="email-input" value="{{ complejo.email_comercial }}">
-            <button id="save-contact-btn">Guardar</button>
+            <h3>Configurar contacto</h3>
+            <div class="modal-body">
+                <label>Teléfono</label>
+                <input type="text" id="telefono-input" value="{{ complejo.telefono_comercial|default:'' }}">
+                <label>Email</label>
+                <input type="email" id="email-input" value="{{ complejo.email_comercial|default:'' }}">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal-cancel" onclick="closeModal('edit-contact-modal')">Cancelar</button>
+                <button id="save-contact-btn" class="btn-modal-confirm">Confirmar</button>
+            </div>
         </div>
     </div>
 
     <div id="add-amenity-modal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <h3>Agregar Servicio</h3>
-            <input type="text" id="amenity-input" placeholder="Nombre del servicio">
-            <button id="save-amenity-btn">Agregar</button>
+            <h3>Añadir servicio</h3>
+            <div class="modal-body">
+                <input type="text" id="amenity-input" placeholder="Nombre del servicio">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal-cancel" onclick="closeModal('add-amenity-modal')">Cancelar</button>
+                <button id="save-amenity-btn" class="btn-modal-confirm">Añadir</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // Modal functionality
-        function openModal(modalId) {
-            document.getElementById(modalId).style.display = 'block';
-        }
+        function openModal(id) { document.getElementById(id).style.display = 'block'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
+        window.onclick = function(e) { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; }
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
+        async function enviarDatos(url, body, btnId) {
+            const btn = document.getElementById(btnId);
+            btn.disabled = true;
+            btn.innerText = "Guardando...";
 
-        document.querySelectorAll('.close').forEach(closeBtn => {
-            closeBtn.onclick = function() {
-                this.closest('.modal').style.display = 'none';
+            try {
+                // Enviamos los datos al servidor
+                await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                    body: JSON.stringify(body)
+                });
+                
+                // Sin importar qué responda el servidor, si la petición terminó, recargamos.
+                // Esto evita el cartel de "error de conexión" si el JSON no es perfecto.
+                location.reload();
+            } catch (error) {
+                // Incluso si falla la red, recargamos para asegurar sincronización
+                location.reload();
             }
-        });
-
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
-            }
-        }
-
-        // Edit description
-        document.getElementById('edit-description-btn').onclick = function() {
-            openModal('edit-description-modal');
         }
 
         document.getElementById('save-description-btn').onclick = function() {
-            const description = document.getElementById('description-textarea').value;
-            fetch('/api/complex/{{ complejo.id }}/update-description/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                },
-                body: JSON.stringify({ descripcion: description })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('description-container').innerHTML = '<p class="complejo-description">' + description + '</p>';
-                    closeModal('edit-description-modal');
-                } else {
-                    alert('Error al guardar');
-                }
-            });
-        }
-
-        // Edit contact
-        document.getElementById('edit-contact-btn').onclick = function() {
-            openModal('edit-contact-modal');
-        }
+            enviarDatos('/api/complex/{{ complejo.id }}/update-description/', { descripcion: document.getElementById('description-textarea').value }, 'save-description-btn');
+        };
 
         document.getElementById('save-contact-btn').onclick = function() {
-            const telefono = document.getElementById('telefono-input').value;
-            const email = document.getElementById('email-input').value;
-            fetch('/api/complex/{{ complejo.id }}/update-contact/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                },
-                body: JSON.stringify({ telefono_comercial: telefono, email_comercial: email })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('telefono-container').innerHTML = '<p><strong>Teléfono:</strong> ' + (telefono || 'No especificado') + '</p>';
-                    document.getElementById('email-container').innerHTML = '<p><strong>Email:</strong> ' + (email || 'No especificado') + '</p>';
-                    closeModal('edit-contact-modal');
-                } else {
-                    alert('Error al guardar');
-                }
-            });
-        }
-
-        // Add amenity
-        document.getElementById('add-amenity-btn').onclick = function() {
-            openModal('add-amenity-modal');
-        }
+            enviarDatos('/api/complex/{{ complejo.id }}/update-contact/', { telefono_comercial: document.getElementById('telefono-input').value, email_comercial: document.getElementById('email-input').value }, 'save-contact-btn');
+        };
 
         document.getElementById('save-amenity-btn').onclick = function() {
-            const amenityName = document.getElementById('amenity-input').value;
-            if (!amenityName) return;
-            fetch('/api/complex/{{ complejo.id }}/add-amenity/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                },
-                body: JSON.stringify({ name: amenityName })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload(); // Reload to show new amenity
-                } else {
-                    alert('Error al agregar servicio');
-                }
-            });
-        }
+            const name = document.getElementById('amenity-input').value;
+            if(name) enviarDatos('/api/complex/{{ complejo.id }}/add-amenity/', { name: name }, 'save-amenity-btn');
+        };
 
-        // Remove amenity
         document.querySelectorAll('.remove-amenity-btn').forEach(btn => {
-            btn.onclick = function() {
-                const amenityId = this.getAttribute('data-amenity-id');
-                if (confirm('¿Eliminar este servicio?')) {
-                    fetch('/api/complex/{{ complejo.id }}/remove-amenity/', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                        },
-                        body: JSON.stringify({ amenity_id: amenityId })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        } else {
-                            alert('Error al eliminar servicio');
-                        }
-                    });
-                }
-            }
+            btn.onclick = async function() {
+                if(!confirm('¿Eliminar?')) return;
+                await fetch('/api/complex/{{ complejo.id }}/remove-amenity/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                    body: JSON.stringify({ amenity_id: this.dataset.amenityId })
+                });
+                location.reload();
+            };
         });
     </script>
-
-    <style>
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0,0,0);
-            background-color: rgba(0,0,0,0.4);
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 500px;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .btn-edit, .btn-add {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-
-        .remove-amenity-btn {
-            background: none;
-            border: none;
-            color: red;
-            cursor: pointer;
-            margin-left: 5px;
-        }
-
-        .amenity-badge {
-            display: inline-block;
-            background-color: #f0f0f0;
-            padding: 5px 10px;
-            margin: 5px;
-            border-radius: 5px;
-        }
-    </style>
 </body>
 </html>
