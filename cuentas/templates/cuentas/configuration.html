@@ -11,6 +11,8 @@
         :root {
             --primary-blue: #637cf5;
             --primary-green: #28a745;
+            --primary-red: #ff4444;
+            --primary-red-hover: #cc0000;
             --light-gray: #f8f9fa;
             --border-color: #e2e8f0;
             --text-main: #2d3748;
@@ -27,17 +29,21 @@
         .header-with-action { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
         .header-with-action h2, .header-with-action h3 { margin: 0; }
 
-        .contact-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+        .contact-row { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
         .contact-row p { margin: 0; }
-        .icon-edit-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 4px; }
+        .icon-edit-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 4px; transition: transform 0.2s; }
+        .icon-edit-btn:hover { transform: scale(1.2); }
 
         .amenities-management-list { list-style: none; padding: 0; margin: 15px 0; }
         .amenity-management-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color); }
-        .remove-amenity-btn { background: #ff4444; color: white; border: none; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-weight: bold; }
+        
+        .remove-amenity-btn { 
+            background: var(--primary-red); color: white; border: none; 
+            width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-weight: bold; 
+        }
 
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
         .modal-content { background: white; margin: 8% auto; padding: 30px; width: 90%; max-width: 480px; border-radius: 16px; position: relative; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); font-family: sans-serif; }
-        .info-summary-box { background-color: var(--light-gray); padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 0.9rem; color: var(--text-muted); border: 1px solid var(--border-color); }
         .modal-body label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
         .modal-body input, .modal-body textarea { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 20px; font-size: 1rem; outline: none; background: var(--light-gray); }
         
@@ -45,6 +51,10 @@
         .btn-modal-cancel { background: white; color: var(--text-main); border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; }
         .btn-modal-confirm { background: var(--primary-blue); color: white; border: none; padding: 10px 25px; border-radius: 10px; cursor: pointer; font-weight: 600; }
         
+        /* Botón de borrar rojo para el modal */
+        .btn-modal-delete { background: var(--primary-red); color: white; border: none; padding: 10px 25px; border-radius: 10px; cursor: pointer; font-weight: 600; }
+        .btn-modal-delete:hover { background: var(--primary-red-hover); }
+
         .amenity-badge { background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 20px; margin-right: 5px; font-size: 0.85rem; display: inline-block; }
     </style>
 </head>
@@ -70,7 +80,11 @@
             <div class="container">
                 <div class="complejo-hero-content">
                     <h1 class="complejo-title">{{ complejo.name }}</h1>
-                    <p class="complejo-location">📍 {{ complejo.city }}</p>
+                    <p class="complejo-location">📍
+                        {% if complejo.barrio %}{{ complejo.barrio }}{% endif %}
+                        {% if complejo.address %}{% if complejo.barrio %}, {% endif %}{{ complejo.address }}{% endif %}
+                        {% if complejo.city %}{% if complejo.barrio or complejo.address %}, {% endif %}{{ complejo.city }}{% endif %}
+                    </p>
                     <div class="amenities-badges">
                         {% for amenity in complejo.amenities.all %}<span class="amenity-badge">{{ amenity.name }}</span>{% endfor %}
                     </div>
@@ -88,7 +102,13 @@
                         <button class="btn-action-green" onclick="openModal('edit-description-modal')">Editar</button>
                     </div>
                     <div id="description-container">
-                        <p class="complejo-description">{{ complejo.descripcion|default:"Sin descripción." }}</p>
+                        {% if complejo.descripcion %}
+                            <p class="complejo-description">{{ complejo.descripcion }}</p>
+                        {% else %}
+                            <p class="complejo-description">
+                                {{ complejo.name }} es un complejo deportivo ubicado en {{ complejo.city }}.
+                            </p>
+                        {% endif %}
                     </div>
 
                     <div class="services-management">
@@ -107,20 +127,44 @@
 
                 <div class="info-sidebar">
                     <div class="contact-card">
-                        <h3>Información de contacto</h3>
+                        <h3 style="margin-bottom: 15px;">Información de contacto</h3>
+                        <p style="margin-bottom: 10px;"><strong>Propietario:</strong> {{ complejo.owner.username }}</p>
+                        
                         <div class="contact-row">
-                            <p><strong>Tel:</strong> {{ complejo.telefono_comercial|default:"--" }}</p>
+                            <p><strong>Teléfono:</strong> {{ complejo.telefono_comercial|default:"No especificado" }}</p>
                             <button class="icon-edit-btn" onclick="openModal('edit-contact-modal')">✏️</button>
                         </div>
+
                         <div class="contact-row">
-                            <p><strong>Email:</strong> {{ complejo.email_comercial|default:"--" }}</p>
+                            <p><strong>Email:</strong> {{ complejo.email_comercial|default:"No especificado" }}</p>
                             <button class="icon-edit-btn" onclick="openModal('edit-contact-modal')">✏️</button>
                         </div>
+
+                        {% if complejo.barrio or complejo.address %}
+                            <p style="margin-top: 10px;"><strong>Ubicación:</strong>
+                                {{ complejo.barrio|default:"" }} {{ complejo.address|default:"" }}
+                            </p>
+                        {% endif %}
+                        <p><strong>Ciudad:</strong> {{ complejo.city }}</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
+    <div id="delete-amenity-modal" class="modal">
+        <div class="modal-content">
+            <h3>Eliminar servicio</h3>
+            <div class="modal-body">
+                <p>¿Estás seguro de que quieres eliminar este servicio? Los cambios se aplicarán inmediatamente.</p>
+                <input type="hidden" id="amenity-id-to-delete">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal-cancel" onclick="closeModal('delete-amenity-modal')">Cancelar</button>
+                <button id="confirm-delete-btn" class="btn-modal-delete">Eliminar</button>
+            </div>
+        </div>
+    </div>
 
     <div id="edit-description-modal" class="modal">
         <div class="modal-content">
@@ -139,9 +183,9 @@
         <div class="modal-content">
             <h3>Configurar contacto</h3>
             <div class="modal-body">
-                <label>Teléfono</label>
+                <label>Teléfono comercial</label>
                 <input type="text" id="telefono-input" value="{{ complejo.telefono_comercial|default:'' }}">
-                <label>Email</label>
+                <label>Email de contacto</label>
                 <input type="email" id="email-input" value="{{ complejo.email_comercial|default:'' }}">
             </div>
             <div class="modal-footer">
@@ -173,25 +217,21 @@
         async function enviarDatos(url, body, btnId) {
             const btn = document.getElementById(btnId);
             btn.disabled = true;
-            btn.innerText = "Guardando...";
+            btn.innerText = (btnId === 'confirm-delete-btn') ? "Eliminando..." : "Guardando...";
 
             try {
-                // Enviamos los datos al servidor
                 await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
                     body: JSON.stringify(body)
                 });
-                
-                // Sin importar qué responda el servidor, si la petición terminó, recargamos.
-                // Esto evita el cartel de "error de conexión" si el JSON no es perfecto.
                 location.reload();
             } catch (error) {
-                // Incluso si falla la red, recargamos para asegurar sincronización
                 location.reload();
             }
         }
 
+        // Eventos
         document.getElementById('save-description-btn').onclick = function() {
             enviarDatos('/api/complex/{{ complejo.id }}/update-description/', { descripcion: document.getElementById('description-textarea').value }, 'save-description-btn');
         };
@@ -205,17 +245,18 @@
             if(name) enviarDatos('/api/complex/{{ complejo.id }}/add-amenity/', { name: name }, 'save-amenity-btn');
         };
 
+        // Borrado de servicio con Modal Rojo
         document.querySelectorAll('.remove-amenity-btn').forEach(btn => {
-            btn.onclick = async function() {
-                if(!confirm('¿Eliminar?')) return;
-                await fetch('/api/complex/{{ complejo.id }}/remove-amenity/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
-                    body: JSON.stringify({ amenity_id: this.dataset.amenityId })
-                });
-                location.reload();
+            btn.onclick = function() {
+                document.getElementById('amenity-id-to-delete').value = this.dataset.amenityId;
+                openModal('delete-amenity-modal');
             };
         });
+
+        document.getElementById('confirm-delete-btn').onclick = function() {
+            const amenityId = document.getElementById('amenity-id-to-delete').value;
+            enviarDatos('/api/complex/{{ complejo.id }}/remove-amenity/', { amenity_id: amenityId }, 'confirm-delete-btn');
+        };
     </script>
 </body>
 </html>
