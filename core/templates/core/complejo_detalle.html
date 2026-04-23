@@ -38,9 +38,13 @@
                 <div class="container">
                     <div class="complejo-hero-content">
                         <h1 class="complejo-title">{{ complejo.name }}</h1>
-                        <p class="complejo-location">📍 {{ complejo.city }}{% if complejo.address %}, {{ complejo.address }}{% endif %}</p>
+                        <p class="complejo-location">📍
+                            {% if complejo.barrio %}{{ complejo.barrio }}{% endif %}
+                            {% if complejo.address %}{% if complejo.barrio %}, {% endif %}{{ complejo.address }}{% endif %}
+                            {% if complejo.city %}{% if complejo.barrio or complejo.address %}, {% endif %}{{ complejo.city }}{% endif %}
+                        </p>
                         
-                        {% if complejo.amenities.exists %}
+                        {% if complejo.amenities.all %}
                         <div class="amenities-badges">
                             {% for amenity in complejo.amenities.all %}
                                 <span class="amenity-badge">{{ amenity.name }}</span>
@@ -58,13 +62,16 @@
                 <div class="info-grid">
                     <div class="info-main">
                         <h2>Sobre este complejo</h2>
-                        <p class="complejo-description">
-                            {{ complejo.name }} es un complejo deportivo ubicado en {{ complejo.city }}.
-                            Cuenta con {{ complejo.courts.count }} cancha{{ complejo.courts.count|pluralize }}
-                            de diferentes deportes.
-                        </p>
+                        {% if complejo.descripcion %}
+                            <p class="complejo-description">{{ complejo.descripcion }}</p>
+                        {% else %}
+                            <p class="complejo-description">
+                                {{ complejo.name }} es un complejo deportivo ubicado en {{ complejo.city }}{% if complejo.barrio %}, barrio {{ complejo.barrio }}{% endif %}.
+                                Cuenta con {{ complejo.courts.count }} cancha{{ complejo.courts.count|pluralize }} de diferentes deportes.
+                            </p>
+                        {% endif %}
                         
-                        {% if complejo.amenities.exists %}
+                        {% if complejo.amenities.all %}
                         <h3>Servicios disponibles</h3>
                         <ul class="amenities-list">
                             {% for amenity in complejo.amenities.all %}
@@ -78,13 +85,21 @@
                         <div class="contact-card">
                             <h3>Información de contacto</h3>
                             <p><strong>Propietario:</strong> {{ complejo.owner.username }}</p>
-                            {% if complejo.phone %}
-                                <p><strong>Teléfono:</strong> {{ complejo.phone }}</p>
+                            {% if complejo.telefono_comercial %}
+                                <p><strong>Teléfono:</strong> {{ complejo.telefono_comercial }}</p>
                             {% endif %}
-                            {% if complejo.email %}
-                                <p><strong>Email:</strong> {{ complejo.email }}</p>
+                            {% if complejo.email_comercial %}
+                                <p><strong>Email:</strong> {{ complejo.email_comercial }}</p>
                             {% endif %}
-                            <p><strong>Ubicación:</strong> {{ complejo.city }}</p>
+                            {% if complejo.barrio or complejo.address %}
+                                <p><strong>Ubicación:</strong>
+                                    {% if complejo.barrio %}{{ complejo.barrio }}{% endif %}
+                                    {% if complejo.address %}{% if complejo.barrio %}, {% endif %}{{ complejo.address }}{% endif %}
+                                </p>
+                            {% endif %}
+                            {% if complejo.city %}
+                                <p><strong>Ciudad:</strong> {{ complejo.city }}</p>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

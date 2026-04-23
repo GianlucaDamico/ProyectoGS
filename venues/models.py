@@ -75,8 +75,12 @@ class Complex(models.Model):
     barrio = models.CharField(max_length=100, blank=True)
     telefono_comercial = models.CharField(max_length=20, blank=True)
     email_comercial = models.EmailField(blank=True)
+    descripcion = models.TextField(blank=True)
     slug = models.SlugField(max_length=200, blank=True, unique=True, null = True)
     
+    @property
+    def address(self):
+        return ' '.join(part for part in [self.calle, self.altura] if part)
     
     # ManyToManyField crea una relación muchos-a-muchos
     # Un complejo puede tener muchas amenities, una amenity puede estar en muchos complejos
