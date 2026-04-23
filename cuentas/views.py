@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.utils import timezone
 from django.db import models
 from django.db.models import Sum, Count
+from django.views.decorators.csrf import csrf_exempt
 import datetime
 from bookings.models import Booking
 from venues.models import Sport, Complex, Court, Review
@@ -247,12 +248,19 @@ def configuration(request):
     user = request.user
     perfil_propietario = getattr(user, 'perfil_propietario', None)
 
+    if not perfil_propietario or not perfil_propietario.complex:
+        messages.error(request, 'No tienes un complejo asignado.')
+        return redirect('cuentas:home_propietario')
+
+    complex = perfil_propietario.complex
+
     nombre = user.first_name or user.username
     context = {
         'nombre': nombre,
         'page': 'Configuración',
+        'complejo': complex,
     }
-    return render(request, 'cuentas/dashboard_base.html', context)
+    return render(request, 'cuentas/configuration.html', context)
 
 
 @login_required
@@ -487,3 +495,85 @@ def register_propietario(request):
 
         messages.success(request, 'Registro de propietario completado. Puedes iniciar sesión.')
         return redirect('cuentas:login')
+
+
+@login_required
+@csrf_exempt
+def update_description(request, complex_id):
+    if request.method == 'POST':
+        import json
+        data = json.loads(request.body)
+        descripcion = data.get('descripcion', '')
+        try:
+            complex = request.user.perfil_propietario.complex
+            if complex.id != complex_id:
+                return JsonResponse({'success': False, 'error': 'No autorizado'})
+            complex.descripcion = descripcion
+            complex.save()
+            return JsonResponse({'success': True})
+        except:
+            return JsonResponse({'success': False})
+    return JsonResponse({'success': False})
+
+
+@login_required
+@csrf_exempt
+def update_contact(request, complex_id):
+    if request.method == 'POST':
+        import json
+        data = json.loads(request.body)
+        telefono = data.get('telefono_comercial', '')
+        email = data.get('email_comercial', '')
+        try:
+            complex = request.user.perfil_propietario.complex
+            if complex.id != complex_id:
+                return JsonResponse({'success': False, 'error': 'No autorizado'})
+            complex.telefono_comercial = telefono
+            complex.email_comercial = email
+            complex.save()
+            return JsonResponse({'success': True})
+        except:
+            return JsonResponse({'success': False})
+    return JsonResponse({'success': False})
+
+
+@login_required
+@csrf_exempt
+def add_amenity(request, complex_id):
+    if request.method == 'POST':
+        import json
+        data = json.loads(request.body)
+        name = data.get('name', '').strip()
+        if not name:
+            return JsonResponse({'success': False})
+        try:
+            complex = request.user.perfil_propietario.complex
+            if complex.id != complex_id:
+                return JsonResponse({'success': False, 'error': 'No autorizado'})
+            from venues.models import Amenity
+            amenity, created = Amenity.objects.get_or_create(name=name)
+            complex.amenities.add(amenity)
+            return JsonResponse({'success': True})
+        except:
+            return JsonResponse({'success': False})
+    return JsonResponse({'success': False})
+
+
+@login_required
+@csrf_exempt
+def remove_amenity(request, complex_id):
+    if request.method == 'POST':
+        import json
+        data = json.loads(request.body)
+        amenity_id = data.get('amenity_id')
+        try:
+            complex = request.user.perfil_propietario.complex
+            if complex.id != complex_id:
+                return JsonResponse({'success': False, 'error': 'No autorizado'})
+            from venues.models import Amenity
+            amenity = Amenity.objects.get(id=amenity_id)
+            complex.amenities.remove(amenity)
+            return JsonResponse({'success': True})
+        except:
+            return JsonResponse({'success': False})
+    return JsonResponse({'success': False})
