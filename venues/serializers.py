@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Amenity, Court, Complex
+from .models import Amenity, Court, Complex, Review
 
 class AmenitySerializer(serializers.ModelSerializer):
     """
@@ -125,3 +125,27 @@ class ComplexDetailSerializer(serializers.ModelSerializer):
             'courts'
         ]
         read_only_fields = ['id', 'owner']
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    """
+    Serializer para las reseñas de complejos.
+    """
+    user_name = serializers.CharField(source='user.first_name', read_only=True)
+    user_id = serializers.IntegerField(source='user.id', read_only=True)
+    rating_display = serializers.CharField(source='get_rating_display', read_only=True)
+    
+    class Meta:
+        model = Review
+        fields = [
+            'id',
+            'booking',
+            'complex',
+            'user_id',
+            'user_name',
+            'rating',
+            'rating_display',
+            'description',
+            'created_at'
+        ]
+        read_only_fields = ['id', 'booking', 'complex', 'user_id', 'user_name', 'created_at']

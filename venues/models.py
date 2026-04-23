@@ -137,3 +137,61 @@ class Court(models.Model):
     
     def __str__(self):
         return f"{self.complex.name} - {self.name} ({self.get_sport_display()})"
+
+
+class Review(models.Model):
+    """
+    Representa una reseña/valoración de un complejo deportivo.
+    Los usuarios pueden dejar una reseña después de completar una reserva.
+    """
+    
+    # Relación con la reserva que generó la reseña
+    booking = models.OneToOneField(
+        'bookings.Booking',
+        on_delete=models.CASCADE,
+        related_name='review',
+        help_text="Reserva asociada a esta reseña"
+    )
+    
+    # Relación con el complejo siendo reseñado
+    complex = models.ForeignKey(
+        Complex,
+        on_delete=models.CASCADE,
+        related_name='reviews',
+        help_text="Complejo que está siendo reseñado"
+    )
+    
+    # Usuario que realizó la reseña
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='reviews',
+        help_text="Usuario que escribió la reseña"
+    )
+    
+    # Calificación del 1 al 5
+    rating = models.IntegerField(
+        choices=[(i, f"{i} Estrellas") for i in range(1, 6)],
+        help_text="Calificación de 1 a 5 estrellas"
+    )
+    
+    # Descripción/comentario de la reseña
+    description = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Comentario detallado sobre la experiencia"
+    )
+    
+    # Fecha de creación
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        help_text="Fecha y hora de creación de la reseña"
+    )
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Reseña"
+        verbose_name_plural = "Reseñas"
+    
+    def __str__(self):
+        return f"Reseña de {self.user.first_name} para {self.complex.name} - {self.rating}★"

@@ -4,10 +4,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
+from django.db import models
 from django.db.models import Sum, Count
 import datetime
 from bookings.models import Booking
-from venues.models import Sport, Complex, Court
+from venues.models import Sport, Complex, Court, Review
 from venues.forms import CourtForm
 from .models import Jugador, Propietario
 
@@ -82,6 +83,21 @@ def home_usuario(request):
         start__lt=timezone.now(),
     ).count()
 
+    # Obtener reservas que pueden ser reseñadas (sin reseña)
+    # Dos casos: 1) Status FINISHED (marcadas manualmente) 2) Hora de fin ya pasó (automático)
+    resenas_pendientes = (
+        Booking.objects
+        .filter(user=user)
+        .filter(
+            # O bien está marcada como FINISHED, O bien la hora de fin ya pasó
+            models.Q(status=Booking.Status.FINISHED) | models.Q(end__lt=timezone.now())
+        )
+        .exclude(status=Booking.Status.CANCELLED)  # Excluir canceladas
+        .exclude(review__isnull=False)  # Excluir las que ya tienen reseña
+        .select_related('court__complex')
+        .order_by('-end')
+    )
+
     context = {
         'nombre': nombre,
         'deportes': Sport.choices,
@@ -92,7 +108,8 @@ def home_usuario(request):
         },
         'reservas_pendientes': reservas_pendientes,
         'reservas_historial': reservas_historial,
-        'notificaciones_count': 0,
+        'resenas_pendientes': resenas_pendientes,
+        'notificaciones_count': resenas_pendientes.count(),
         'partidos_proximos': partidos_proximos,
     }
     return render(request, 'cuentas/home_usuario.html', context)
@@ -284,15 +301,33 @@ def gestion(request):
 
 @login_required
 def resenas(request):
+    from django.db.models import Avg
     user = request.user
     perfil_propietario = getattr(user, 'perfil_propietario', None)
 
     nombre = user.first_name or user.username
+    
+    # Obtener las reseñas del complejo del propietario
+    resenas = []
+    promedio_calificacion = 0
+    if perfil_propietario and perfil_propietario.complex:
+        resenas = Review.objects.filter(
+            complex=perfil_propietario.complex
+        ).select_related('user').order_by('-created_at')
+        
+        # Calcular el promedio de calificación
+        promedio_data = Review.objects.filter(
+            complex=perfil_propietario.complex
+        ).aggregate(promedio=Avg('rating'))
+        promedio_calificacion = promedio_data['promedio'] or 0
+    
     context = {
         'nombre': nombre,
         'page': 'Reseñas',
+        'resenas': resenas,
+        'promedio_calificacion': promedio_calificacion,
     }
-    return render(request, 'cuentas/dashboard_base.html', context)
+    return render(request, 'cuentas/resenas.html', context)
 
 
 def register(request):

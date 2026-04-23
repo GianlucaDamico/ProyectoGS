@@ -1,0 +1,244 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reseñas - CourtlyGPS</title>
+    <link rel="stylesheet" href="{% static 'core/explorar.css' %}">
+    <style>
+        .reviews-container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .review-card {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.2s;
+        }
+
+        .review-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .review-user-info {
+            flex: 1;
+        }
+
+        .review-user-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .review-date {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .review-rating {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stars {
+            color: #ffc107;
+            font-size: 18px;
+            letter-spacing: 2px;
+        }
+
+        .rating-number {
+            background-color: #f0f0f0;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .review-description {
+            color: #555;
+            line-height: 1.6;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+
+        .empty-reviews {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-reviews-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .stats-section {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+        }
+
+        .avg-rating {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            background-color: #fff3cd;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .avg-rating-label {
+            font-weight: 500;
+            color: #856404;
+        }
+
+        .avg-rating-stars {
+            color: #ffc107;
+            font-size: 20px;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="{% url 'core:home' %}" class="logo">
+                <span class="logo-icon">🏆</span>
+                <span class="logo-text">Courtly</span>
+            </a>
+            <div class="nav-links" style="display: flex; justify-content: space-around; flex: 1;">
+                <a href="{% url 'cuentas:home_propietario' %}">Control</a>
+                <a href="{% url 'cuentas:agenda' %}">Agenda</a>
+                <a href="{% url 'cuentas:configuration' %}">Configuracion</a>
+                <a href="{% url 'cuentas:gestion' %}">Gestion</a>
+                <a href="{% url 'cuentas:resenas' %}">Reseñas</a>
+                <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-register">Cerrar sesión</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="reviews-container">
+            <h2>Reseñas de tu Complejo</h2>
+
+            {% if resenas %}
+                <!-- Estadísticas -->
+                <div class="stats-section">
+                    <div class="stat-card">
+                        <div class="stat-value">{{ resenas.count }}</div>
+                        <div class="stat-label">Total Reseñas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ promedio_calificacion|floatformat:1 }}</div>
+                        <div class="stat-label">Promedio</div>
+                    </div>
+                </div>
+
+                {% if resenas %}
+                    <div class="avg-rating">
+                        <span class="avg-rating-label">Calificación Promedio:</span>
+                        <span class="avg-rating-stars" id="avgStars"></span>
+                        <span class="rating-number" id="avgRating"></span>
+                    </div>
+                {% endif %}
+
+                <!-- Reseñas -->
+                {% for resena in resenas %}
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="review-user-info">
+                                <div class="review-user-name">{{ resena.user.first_name|default:resena.user.username }}</div>
+                                <div class="review-date">{{ resena.created_at|date:'d/m/Y H:i' }}</div>
+                            </div>
+                            <div class="review-rating">
+                                <span class="stars">{% for i in "12345" %}{% if i|add:0 <= resena.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
+                                <span class="rating-number">{{ resena.rating }}/5</span>
+                            </div>
+                        </div>
+                        {% if resena.description %}
+                            <div class="review-description">
+                                {{ resena.description }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-reviews">
+                    <div class="empty-reviews-icon">📊</div>
+                    <h3>Sin reseñas aún</h3>
+                    <p>Aún no has recibido reseñas de tus clientes. ¡Proporciona un excelente servicio!</p>
+                </div>
+            {% endif %}
+        </section>
+    </main>
+
+    <script>
+        // Calcular el promedio de reseñas
+        document.addEventListener('DOMContentLoaded', function() {
+            const reviewCards = document.querySelectorAll('.review-card');
+            if (reviewCards.length === 0) return;
+
+            let totalRating = 0;
+            let count = 0;
+
+            reviewCards.forEach(card => {
+                const ratingText = card.querySelector('.rating-number');
+                const rating = parseInt(ratingText.textContent.split('/')[0]);
+                totalRating += rating;
+                count++;
+            });
+
+            const average = (totalRating / count).toFixed(1);
+            const stars = '★'.repeat(Math.round(average)) + '☆'.repeat(5 - Math.round(average));
+
+            document.getElementById('avgRating').textContent = average + '/5';
+            document.getElementById('avgStars').textContent = stars;
+        });
+    </script>
+</body>
+</html>
