@@ -132,54 +132,65 @@ def home_propietario(request):
         current_year = today.year
         current_month_start = today.replace(day=1)
         
-        # Para obtener el próximo mes de forma segura
         if current_month_start.month == 12:
             next_month_start = current_month_start.replace(year=current_year + 1, month=1)
         else:
             next_month_start = current_month_start.replace(month=current_month_start.month + 1)
 
-        # 1. Tarjetas de métricas
+        # 1. Métricas Básicas
         canchas_activas = complex.courts.count()
         reservas_dia = Booking.objects.filter(court__complex=complex, start__date=today).count()
         ingresos_dia = Booking.objects.filter(
-            court__complex=complex,
-            start__date=today,
+            court__complex=complex, start__date=today,
             status__in=[Booking.Status.CONFIRMED, Booking.Status.FINISHED]
         ).aggregate(Sum('total_price'))['total_price__sum'] or 0
 
-        reservas_mes = Booking.objects.filter(
-            court__complex=complex, start__gte=current_month_start, start__lt=next_month_start
-        ).count()
-        
+        reservas_mes = Booking.objects.filter(court__complex=complex, start__gte=current_month_start, start__lt=next_month_start).count()
         ingresos_mes = Booking.objects.filter(
-            court__complex=complex,
-            start__gte=current_month_start,
-            start__lt=next_month_start,
+            court__complex=complex, start__gte=current_month_start, start__lt=next_month_start,
             status__in=[Booking.Status.CONFIRMED, Booking.Status.FINISHED]
         ).aggregate(Sum('total_price'))['total_price__sum'] or 0
 
-        reservas_pendientes = Booking.objects.filter(
-            court__complex=complex, start__gte=today, status=Booking.Status.PENDING_PAYMENT
-        ).count()
+        reservas_pendientes = Booking.objects.filter(court__complex=complex, start__gte=today, status=Booking.Status.PENDING_PAYMENT).count()
 
-        # 2. Lógica para la Gráfica de Ingresos Mensuales (Año actual)
-        ingresos_por_mes = Booking.objects.filter(
-            court__complex=complex,
-            start__year=current_year,
+        # 2. Comparativa Mes Anterior (Para el indicador +%)
+        last_month_start = (current_month_start - datetime.timedelta(days=1)).replace(day=1)
+        ingresos_mes_pasado = Booking.objects.filter(
+            court__complex=complex, start__gte=last_month_start, start__lt=current_month_start,
             status__in=[Booking.Status.CONFIRMED, Booking.Status.FINISHED]
-        ).annotate(
-            month=TruncMonth('start')
-        ).values('month').annotate(
-            total=Sum('total_price')
-        ).order_by('month')
+        ).aggregate(Sum('total_price'))['total_price__sum'] or 0
+
+        crecimiento_ingresos = 0
+        if ingresos_mes_pasado > 0:
+            crecimiento_ingresos = ((float(ingresos_mes) - float(ingresos_mes_pasado)) / float(ingresos_mes_pasado)) * 100
+
+        # 3. Gráfica Principal: Ingresos Mensuales
+        ingresos_por_mes = Booking.objects.filter(
+            court__complex=complex, start__year=current_year,
+            status__in=[Booking.Status.CONFIRMED, Booking.Status.FINISHED]
+        ).annotate(month=TruncMonth('start')).values('month').annotate(total=Sum('total_price')).order_by('month')
 
         meses_nombres = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
-        datos_grafica = [0] * 12 # Inicializamos los 12 meses en 0
-
+        datos_grafica = [0] * 12
         for item in ingresos_por_mes:
             if item['month']:
                 mes_index = item['month'].month - 1
-                datos_grafica[mes_index] = float(item['total']) # Convertimos Decimal a float para JSON
+                datos_grafica[mes_index] = float(item['total'])
+
+        # 4. Gráfica Secundaria: Reservas por Deporte
+        reservas_por_deporte = Booking.objects.filter(
+            court__complex=complex, start__gte=current_month_start, start__lt=next_month_start
+        ).values('court__sport').annotate(total=Count('id'))
+
+        nombres_deportes = [item['court__sport'] for item in reservas_por_deporte]
+        datos_deportes = [item['total'] for item in reservas_por_deporte]
+
+        # 5. Próximas Reservas
+        proximas_reservas = Booking.objects.filter(
+            court__complex=complex,
+            start__gte=timezone.now(),
+            status__in=[Booking.Status.CONFIRMED, Booking.Status.PENDING_PAYMENT]
+        ).order_by('start')[:5]
 
         context = {
             'nombre': nombre,
@@ -190,15 +201,16 @@ def home_propietario(request):
             'reservas_mes': reservas_mes,
             'ingresos_mes': ingresos_mes,
             'reservas_pendientes': reservas_pendientes,
+            'crecimiento_ingresos': round(crecimiento_ingresos, 1),
             'chart_labels': json.dumps(meses_nombres),
             'chart_data': json.dumps(datos_grafica),
+            'sports_labels': json.dumps(nombres_deportes),
+            'sports_data': json.dumps(datos_deportes),
             'current_year': current_year,
+            'proximas_reservas': proximas_reservas,
         }
     else:
-        context = {
-            'nombre': nombre,
-            'complex': None
-        }
+        context = {'nombre': nombre, 'complex': None}
     return render(request, 'cuentas/home_propietario.html', context)
 
 
