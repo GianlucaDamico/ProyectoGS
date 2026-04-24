@@ -4,157 +4,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page }} - CourtlyGPS</title>
-    <link rel="stylesheet" href="{% static 'core/complejo.css' %}">
-    <link rel="stylesheet" href="{% static 'cuentas/home_propietario.css' %}">
-    <style>
-        :root {
-            --primary-blue: #637cf5;
-            --primary-green: #28a745;
-            --primary-red: #ff4444;
-            --primary-red-hover: #cc0000;
-            --light-gray: #f8f9fa;
-            --border-color: #e2e8f0;
-            --text-main: #2d3748;
-            --text-muted: #718096;
-        }
-
-        .btn-action-green {
-            background-color: var(--primary-green);
-            color: white; border: none; padding: 8px 16px;
-            border-radius: 8px; cursor: pointer; font-weight: 600;
-            transition: all 0.2s ease; display: inline-flex; align-items: center;
-        }
-
-        .header-with-action { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
-        .header-with-action h2, .header-with-action h3 { margin: 0; }
-
-        .contact-row { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
-        .contact-row p { margin: 0; }
-        .icon-edit-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 4px; transition: transform 0.2s; }
-        .icon-edit-btn:hover { transform: scale(1.2); }
-
-        .amenities-management-list { list-style: none; padding: 0; margin: 15px 0; }
-        .amenity-management-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color); }
-        
-        .remove-amenity-btn { 
-            background: var(--primary-red); color: white; border: none; 
-            width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-weight: bold; 
-        }
-
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
-        .modal-content { background: white; margin: 8% auto; padding: 30px; width: 90%; max-width: 480px; border-radius: 16px; position: relative; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); font-family: sans-serif; }
-        .modal-body label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
-        .modal-body input, .modal-body textarea { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 20px; font-size: 1rem; outline: none; background: var(--light-gray); }
-        
-        .modal-footer { display: flex; justify-content: flex-end; gap: 12px; }
-        .btn-modal-cancel { background: white; color: var(--text-main); border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; }
-        .btn-modal-confirm { background: var(--primary-blue); color: white; border: none; padding: 10px 25px; border-radius: 10px; cursor: pointer; font-weight: 600; }
-        
-        /* Botón de borrar rojo para el modal */
-        .btn-modal-delete { background: var(--primary-red); color: white; border: none; padding: 10px 25px; border-radius: 10px; cursor: pointer; font-weight: 600; }
-        .btn-modal-delete:hover { background: var(--primary-red-hover); }
-
-        .amenity-badge { background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 20px; margin-right: 5px; font-size: 0.85rem; display: inline-block; }
-    </style>
-</head>
-<body>
+    <title>{{ page }} - Courtly</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'core/home.css' %}"> <link rel="stylesheet" href="{% static 'cuentas/configuration.css' %}"> </head>
+<body class="dashboard-body">
     <nav class="navbar">
         <div class="navbar-container">
-            <a href="{% url 'core:home' %}" class="logo"><span class="logo-icon">🏆</span><span class="logo-text">Courtly</span></a>
-            <div class="nav-links" style="display: flex; justify-content: space-around; flex: 1;">
-                <a href="{% url 'cuentas:home_propietario' %}">Control</a>
-                <a href="{% url 'cuentas:agenda' %}">Agenda</a>
-                <a href="{% url 'cuentas:configuration' %}">Configuracion</a>
-                <a href="{% url 'cuentas:gestion' %}">Gestion</a>
-                <a href="{% url 'cuentas:resenas' %}">Reseñas</a>
-                <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline;">
-                    {% csrf_token %}<button type="submit" class="btn-register">Cerrar sesión</button>
+            <div class="logo">
+                <a href="{% url 'core:home' %}">
+                    <span style="font-size: 1.5rem; font-weight: 800; color: #2c3e50;"><i class="fas fa-trophy" style="color: #667eea;"></i> Courtly</span>
+                </a>
+            </div>
+            <div class="nav-links owner-nav">
+                <a href="{% url 'cuentas:home_propietario' %}" class="nav-item">Control</a>
+                <a href="{% url 'cuentas:agenda' %}" class="nav-item">Agenda</a>
+                <a href="{% url 'cuentas:configuration' %}" class="nav-item active">Configuración</a>
+                <a href="{% url 'cuentas:gestion' %}" class="nav-item">Gestión</a>
+                <a href="{% url 'cuentas:resenas' %}" class="nav-item">Reseñas</a>
+                
+                <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline; margin-left: 15px;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-register"><i class="fas fa-sign-out-alt"></i> Salir</button>
                 </form>
             </div>
         </div>
     </nav>
 
-    <section class="complejo-hero">
-        <div class="complejo-hero-overlay">
-            <div class="container">
-                <div class="complejo-hero-content">
-                    <h1 class="complejo-title">{{ complejo.name }}</h1>
-                    <p class="complejo-location">📍
-                        {% if complejo.barrio %}{{ complejo.barrio }}{% endif %}
-                        {% if complejo.address %}{% if complejo.barrio %}, {% endif %}{{ complejo.address }}{% endif %}
-                        {% if complejo.city %}{% if complejo.barrio or complejo.address %}, {% endif %}{{ complejo.city }}{% endif %}
-                    </p>
-                    <div class="amenities-badges">
-                        {% for amenity in complejo.amenities.all %}<span class="amenity-badge">{{ amenity.name }}</span>{% endfor %}
-                    </div>
+    <main class="dashboard-main container">
+        
+        <section class="complejo-hero-card">
+            <div class="complejo-hero-content">
+                <h1 class="complejo-title"><i class="far fa-building"></i> {{ complejo.name }}</h1>
+                <p class="complejo-location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    {% if complejo.barrio %}{{ complejo.barrio }}{% endif %}
+                    {% if complejo.address %}{% if complejo.barrio %}, {% endif %}{{ complejo.address }}{% endif %}
+                    {% if complejo.city %}{% if complejo.barrio or complejo.address %}, {% endif %}<strong>{{ complejo.city }}</strong>{% endif %}
+                </p>
+                <div class="amenities-badges">
+                    {% for amenity in complejo.amenities.all %}
+                        <span class="amenity-badge"><i class="fas fa-check-circle"></i> {{ amenity.name }}</span>
+                    {% endfor %}
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="complejo-info-section">
-        <div class="container">
-            <div class="info-grid">
-                <div class="info-main">
+        <section class="config-grid">
+            
+            <div class="config-main-col">
+                
+                <div class="config-card">
                     <div class="header-with-action">
-                        <h2>Sobre este complejo</h2>
-                        <button class="btn-action-green" onclick="openModal('edit-description-modal')">Editar</button>
+                        <h2><i class="fas fa-info-circle text-primary"></i> Sobre este complejo</h2>
+                        <button class="btn-edit" onclick="openModal('edit-description-modal')"><i class="fas fa-pen"></i> Editar</button>
                     </div>
-                    <div id="description-container">
+                    <div id="description-container" class="card-body-content">
                         {% if complejo.descripcion %}
                             <p class="complejo-description">{{ complejo.descripcion }}</p>
                         {% else %}
-                            <p class="complejo-description">
-                                {{ complejo.name }} es un complejo deportivo ubicado en {{ complejo.city }}.
+                            <p class="complejo-description text-muted">
+                                {{ complejo.name }} es un complejo deportivo ubicado en {{ complejo.city }}. (Añade una descripción para atraer más clientes).
                             </p>
                         {% endif %}
                     </div>
+                </div>
 
-                    <div class="services-management">
-                        <div class="header-with-action" style="margin-top: 30px;"><h3>Servicios disponibles</h3></div>
+                <div class="config-card">
+                    <div class="header-with-action">
+                        <h2><i class="fas fa-concierge-bell text-primary"></i> Servicios disponibles</h2>
+                        <button class="btn-add-small" onclick="openModal('add-amenity-modal')"><i class="fas fa-plus"></i> Añadir</button>
+                    </div>
+                    <div class="card-body-content">
                         <ul class="amenities-management-list">
                             {% for amenity in complejo.amenities.all %}
                                 <li class="amenity-management-item">
-                                    <span>✓ {{ amenity.name }}</span>
-                                    <button class="remove-amenity-btn" data-amenity-id="{{ amenity.id }}">×</button>
+                                    <span><i class="fas fa-check text-success"></i> {{ amenity.name }}</span>
+                                    <button class="remove-amenity-btn" data-amenity-id="{{ amenity.id }}" title="Eliminar servicio">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
                                 </li>
+                            {% empty %}
+                                <li class="text-muted"><i class="fas fa-exclamation-circle"></i> No hay servicios configurados.</li>
                             {% endfor %}
                         </ul>
-                        <button class="btn-action-green" onclick="openModal('add-amenity-modal')">+ Agregar Servicio</button>
-                    </div>
-                </div>
-
-                <div class="info-sidebar">
-                    <div class="contact-card">
-                        <h3 style="margin-bottom: 15px;">Información de contacto</h3>
-                        <p style="margin-bottom: 10px;"><strong>Propietario:</strong> {{ complejo.owner.username }}</p>
-                        
-                        <div class="contact-row">
-                            <p><strong>Teléfono:</strong> {{ complejo.telefono_comercial|default:"No especificado" }}</p>
-                            <button class="icon-edit-btn" onclick="openModal('edit-contact-modal')">✏️</button>
-                        </div>
-
-                        <div class="contact-row">
-                            <p><strong>Email:</strong> {{ complejo.email_comercial|default:"No especificado" }}</p>
-                            <button class="icon-edit-btn" onclick="openModal('edit-contact-modal')">✏️</button>
-                        </div>
-
-                        {% if complejo.barrio or complejo.address %}
-                            <p style="margin-top: 10px;"><strong>Ubicación:</strong>
-                                {{ complejo.barrio|default:"" }} {{ complejo.address|default:"" }}
-                            </p>
-                        {% endif %}
-                        <p><strong>Ciudad:</strong> {{ complejo.city }}</p>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+
+            <div class="config-sidebar">
+                
+                <div class="config-card">
+                    <div class="header-with-action">
+                        <h2><i class="fas fa-address-book text-primary"></i> Contacto</h2>
+                        <button class="btn-edit-icon" onclick="openModal('edit-contact-modal')" title="Editar Contacto"><i class="fas fa-pen"></i></button>
+                    </div>
+                    <div class="contact-details">
+                        <div class="contact-row">
+                            <div class="contact-icon"><i class="fas fa-user"></i></div>
+                            <div class="contact-info">
+                                <small>Propietario</small>
+                                <p>{{ complejo.owner.username }}</p>
+                            </div>
+                        </div>
+                        <div class="contact-row">
+                            <div class="contact-icon"><i class="fas fa-phone-alt"></i></div>
+                            <div class="contact-info">
+                                <small>Teléfono</small>
+                                <p>{{ complejo.telefono_comercial|default:"No especificado" }}</p>
+                            </div>
+                        </div>
+                        <div class="contact-row">
+                            <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                            <div class="contact-info">
+                                <small>Email</small>
+                                <p>{{ complejo.email_comercial|default:"No especificado" }}</p>
+                            </div>
+                        </div>
+                        {% if complejo.barrio or complejo.address %}
+                        <div class="contact-row">
+                            <div class="contact-icon"><i class="fas fa-map-pin"></i></div>
+                            <div class="contact-info">
+                                <small>Dirección Física</small>
+                                <p>{{ complejo.barrio|default:"" }} {{ complejo.address|default:"" }}, {{ complejo.city }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
 
     <div id="delete-amenity-modal" class="modal">
         <div class="modal-content">
-            <h3>Eliminar servicio</h3>
+            <div class="modal-header">
+                <h3>Eliminar servicio</h3>
+                <span class="close" onclick="closeModal('delete-amenity-modal')">&times;</span>
+            </div>
             <div class="modal-body">
                 <p>¿Estás seguro de que quieres eliminar este servicio? Los cambios se aplicarán inmediatamente.</p>
                 <input type="hidden" id="amenity-id-to-delete">
@@ -168,9 +155,12 @@
 
     <div id="edit-description-modal" class="modal">
         <div class="modal-content">
-            <h3>Editar descripción</h3>
+            <div class="modal-header">
+                <h3>Editar descripción</h3>
+                <span class="close" onclick="closeModal('edit-description-modal')">&times;</span>
+            </div>
             <div class="modal-body">
-                <textarea id="description-textarea" rows="5">{{ complejo.descripcion }}</textarea>
+                <textarea id="description-textarea" rows="6" class="custom-input" placeholder="Escribe aquí la descripción de tu complejo...">{{ complejo.descripcion }}</textarea>
             </div>
             <div class="modal-footer">
                 <button class="btn-modal-cancel" onclick="closeModal('edit-description-modal')">Cancelar</button>
@@ -181,12 +171,15 @@
 
     <div id="edit-contact-modal" class="modal">
         <div class="modal-content">
-            <h3>Configurar contacto</h3>
+            <div class="modal-header">
+                <h3>Configurar contacto</h3>
+                <span class="close" onclick="closeModal('edit-contact-modal')">&times;</span>
+            </div>
             <div class="modal-body">
                 <label>Teléfono comercial</label>
-                <input type="text" id="telefono-input" value="{{ complejo.telefono_comercial|default:'' }}">
-                <label>Email de contacto</label>
-                <input type="email" id="email-input" value="{{ complejo.email_comercial|default:'' }}">
+                <input type="text" id="telefono-input" class="custom-input" value="{{ complejo.telefono_comercial|default:'' }}" placeholder="+34 XXX XXX XXX">
+                <label style="margin-top: 15px;">Email de contacto</label>
+                <input type="email" id="email-input" class="custom-input" value="{{ complejo.email_comercial|default:'' }}" placeholder="ejemplo@correo.com">
             </div>
             <div class="modal-footer">
                 <button class="btn-modal-cancel" onclick="closeModal('edit-contact-modal')">Cancelar</button>
@@ -197,27 +190,40 @@
 
     <div id="add-amenity-modal" class="modal">
         <div class="modal-content">
-            <h3>Añadir servicio</h3>
+            <div class="modal-header">
+                <h3>Añadir servicio</h3>
+                <span class="close" onclick="closeModal('add-amenity-modal')">&times;</span>
+            </div>
             <div class="modal-body">
-                <input type="text" id="amenity-input" placeholder="Nombre del servicio">
+                <label>Nombre del servicio (Ej: Vestuarios, Estacionamiento)</label>
+                <input type="text" id="amenity-input" class="custom-input" placeholder="Nombre del servicio">
             </div>
             <div class="modal-footer">
                 <button class="btn-modal-cancel" onclick="closeModal('add-amenity-modal')">Cancelar</button>
-                <button id="save-amenity-btn" class="btn-modal-confirm">Añadir</button>
+                <button id="save-amenity-btn" class="btn-modal-confirm">Añadir Servicio</button>
             </div>
         </div>
     </div>
 
     <script>
-        function openModal(id) { document.getElementById(id).style.display = 'block'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function openModal(id) { 
+            const modal = document.getElementById(id);
+            modal.style.display = 'block'; 
+            setTimeout(() => modal.classList.add('show'), 10);
+        }
+        function closeModal(id) { 
+            const modal = document.getElementById(id);
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
         
-        window.onclick = function(e) { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; }
+        window.onclick = function(e) { if (e.target.classList.contains('modal')) closeModal(e.target.id); }
 
         async function enviarDatos(url, body, btnId) {
             const btn = document.getElementById(btnId);
+            const originalText = btn.innerHTML;
             btn.disabled = true;
-            btn.innerText = (btnId === 'confirm-delete-btn') ? "Eliminando..." : "Guardando...";
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
 
             try {
                 await fetch(url, {
@@ -245,7 +251,6 @@
             if(name) enviarDatos('/api/complex/{{ complejo.id }}/add-amenity/', { name: name }, 'save-amenity-btn');
         };
 
-        // Borrado de servicio con Modal Rojo
         document.querySelectorAll('.remove-amenity-btn').forEach(btn => {
             btn.onclick = function() {
                 document.getElementById('amenity-id-to-delete').value = this.dataset.amenityId;
