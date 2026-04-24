@@ -1,3 +1,5 @@
+from urllib import request
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.models import User
@@ -6,8 +8,10 @@ from django.contrib import messages
 from django.utils import timezone
 from django.db import models
 from django.db.models import Sum, Count
+from django.db.models.functions import TruncMonth
 from django.views.decorators.csrf import csrf_exempt
 import datetime
+import json
 from bookings.models import Booking
 from venues.models import Sport, Complex, Court, Review
 from venues.forms import CourtForm
@@ -120,52 +124,62 @@ def home_usuario(request):
 def home_propietario(request):
     user = request.user
     perfil_propietario = getattr(user, 'perfil_propietario', None)
-
     nombre = user.first_name or user.username
+
     if perfil_propietario and perfil_propietario.complex:
         complex = perfil_propietario.complex
-
         today = timezone.now().date()
-        current_month = today.replace(day=1)
-        next_month = (current_month + datetime.timedelta(days=32)).replace(day=1)
+        current_year = today.year
+        current_month_start = today.replace(day=1)
+        
+        # Para obtener el próximo mes de forma segura
+        if current_month_start.month == 12:
+            next_month_start = current_month_start.replace(year=current_year + 1, month=1)
+        else:
+            next_month_start = current_month_start.replace(month=current_month_start.month + 1)
 
-        # Canchas activas
+        # 1. Tarjetas de métricas
         canchas_activas = complex.courts.count()
-
-        # Reservas del día
-        reservas_dia = Booking.objects.filter(
-            court__complex=complex,
-            start__date=today
-        ).count()
-
-        # Ingresos del día (de reservas confirmadas o finalizadas)
+        reservas_dia = Booking.objects.filter(court__complex=complex, start__date=today).count()
         ingresos_dia = Booking.objects.filter(
             court__complex=complex,
             start__date=today,
             status__in=[Booking.Status.CONFIRMED, Booking.Status.FINISHED]
         ).aggregate(Sum('total_price'))['total_price__sum'] or 0
 
-        # Reservas del mes
         reservas_mes = Booking.objects.filter(
-            court__complex=complex,
-            start__gte=current_month,
-            start__lt=next_month
+            court__complex=complex, start__gte=current_month_start, start__lt=next_month_start
         ).count()
-
-        # Ingresos del mes
+        
         ingresos_mes = Booking.objects.filter(
             court__complex=complex,
-            start__gte=current_month,
-            start__lt=next_month,
+            start__gte=current_month_start,
+            start__lt=next_month_start,
             status__in=[Booking.Status.CONFIRMED, Booking.Status.FINISHED]
         ).aggregate(Sum('total_price'))['total_price__sum'] or 0
 
-        # Reservas pendientes
         reservas_pendientes = Booking.objects.filter(
-            court__complex=complex,
-            start__gte=today,
-            status=Booking.Status.PENDING_PAYMENT
+            court__complex=complex, start__gte=today, status=Booking.Status.PENDING_PAYMENT
         ).count()
+
+        # 2. Lógica para la Gráfica de Ingresos Mensuales (Año actual)
+        ingresos_por_mes = Booking.objects.filter(
+            court__complex=complex,
+            start__year=current_year,
+            status__in=[Booking.Status.CONFIRMED, Booking.Status.FINISHED]
+        ).annotate(
+            month=TruncMonth('start')
+        ).values('month').annotate(
+            total=Sum('total_price')
+        ).order_by('month')
+
+        meses_nombres = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+        datos_grafica = [0] * 12 # Inicializamos los 12 meses en 0
+
+        for item in ingresos_por_mes:
+            if item['month']:
+                mes_index = item['month'].month - 1
+                datos_grafica[mes_index] = float(item['total']) # Convertimos Decimal a float para JSON
 
         context = {
             'nombre': nombre,
@@ -176,10 +190,14 @@ def home_propietario(request):
             'reservas_mes': reservas_mes,
             'ingresos_mes': ingresos_mes,
             'reservas_pendientes': reservas_pendientes,
+            'chart_labels': json.dumps(meses_nombres),
+            'chart_data': json.dumps(datos_grafica),
+            'current_year': current_year,
         }
     else:
         context = {
             'nombre': nombre,
+            'complex': None
         }
     return render(request, 'cuentas/home_propietario.html', context)
 

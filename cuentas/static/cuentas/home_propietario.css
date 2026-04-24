@@ -1,28 +1,146 @@
+/* ============ Estilos Base Panel ============ */
+.dashboard-body {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.dashboard-main {
+    padding: 40px 20px;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.section-heading {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.text-muted {
+    color: #666;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* ============ Navegación ============ */
+.owner-nav { display: flex; align-items: center; gap: 20px; }
+.nav-item { color: #666; text-decoration: none; font-weight: 600; padding: 8px 16px; border-radius: 50px; transition: all 0.3s ease; }
+.nav-item:hover { color: #667eea; background-color: #f0f4ff; }
+.nav-item.active { color: #fff; background-color: #667eea; }
+
+/* ============ Grilla de Métricas (Tarjetas) ============ */
 .metrics-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
 }
 
 .metric-card {
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: white;
+    border-radius: 25px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+    border: 1px solid #f0f2ff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.metric-card h3 {
-    margin: 0 0 10px 0;
-    color: #495057;
-    font-size: 1.1em;
+.metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.1);
+}
+
+.metric-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+}
+
+.metric-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.metric-info h3 {
+    margin: 0 0 5px 0;
+    color: #888;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
 }
 
 .metric-value {
-    font-size: 2em;
-    font-weight: bold;
-    color: #007bff;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #2c3e50;
+    margin: 0;
+    line-height: 1;
+}
+
+/* ============ Sección de Gráfica ============ */
+.chart-section {
+    width: 100%;
+}
+
+.chart-card {
+    background: white;
+    border-radius: 30px;
+    padding: 35px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    border: 1px solid #f0f2ff;
+}
+
+.chart-header {
+    margin-bottom: 25px;
+    border-bottom: 2px dashed #f0f2ff;
+    padding-bottom: 15px;
+}
+
+.chart-header h2 {
+    color: #2c3e50;
+    font-size: 1.5rem;
+    font-weight: 800;
     margin: 0;
 }
+
+.chart-header h2 i {
+    color: #667eea;
+    margin-right: 8px;
+}
+
+.canvas-container {
+    position: relative;
+    height: 400px;
+    width: 100%;
+}
+
+/* ============ Estado Vacío (Sin complejo) ============ */
+.empty-state-global {
+    width: 100%;
+    text-align: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 30px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+    border: 1px dashed #e0e6ff;
+}
+
+.empty-state-global i { font-size: 5rem; color: #e0e6ff; margin-bottom: 20px; }
+.empty-state-global h3 { font-size: 1.8rem; color: #2c3e50; margin-bottom: 10px; }
+.empty-state-global p { font-size: 1.1rem; color: #666; max-width: 500px; margin: 0 auto; }
