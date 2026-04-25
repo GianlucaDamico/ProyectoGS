@@ -1,12 +1,19 @@
+from urllib import request
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
+from django.db import models
+from django.db.models import Sum, Count
+from django.db.models.functions import TruncMonth
+from django.views.decorators.csrf import csrf_exempt
 import datetime
+import json
 from bookings.models import Booking
-from venues.models import Sport, Complex, Court
+from venues.models import Sport, Complex, Court, Review
 from venues.forms import CourtForm
 from .models import Jugador, Propietario
 
@@ -81,6 +88,21 @@ def home_usuario(request):
         start__lt=timezone.now(),
     ).count()
 
+    # Obtener reservas que pueden ser reseñadas (sin reseña)
+    # Dos casos: 1) Status FINISHED (marcadas manualmente) 2) Hora de fin ya pasó (automático)
+    resenas_pendientes = (
+        Booking.objects
+        .filter(user=user)
+        .filter(
+            # O bien está marcada como FINISHED, O bien la hora de fin ya pasó
+            models.Q(status=Booking.Status.FINISHED) | models.Q(end__lt=timezone.now())
+        )
+        .exclude(status=Booking.Status.CANCELLED)  # Excluir canceladas
+        .exclude(review__isnull=False)  # Excluir las que ya tienen reseña
+        .select_related('court__complex')
+        .order_by('-end')
+    )
+
     context = {
         'nombre': nombre,
         'deportes': Sport.choices,
@@ -91,7 +113,8 @@ def home_usuario(request):
         },
         'reservas_pendientes': reservas_pendientes,
         'reservas_historial': reservas_historial,
-        'notificaciones_count': 0,
+        'resenas_pendientes': resenas_pendientes,
+        'notificaciones_count': resenas_pendientes.count(),
         'partidos_proximos': partidos_proximos,
     }
     return render(request, 'cuentas/home_usuario.html', context)
@@ -101,19 +124,93 @@ def home_usuario(request):
 def home_propietario(request):
     user = request.user
     perfil_propietario = getattr(user, 'perfil_propietario', None)
-
     nombre = user.first_name or user.username
-    if perfil_propietario:
-        # Aquí puedes agregar lógica específica para propietarios
+
+    if perfil_propietario and perfil_propietario.complex:
         complex = perfil_propietario.complex
+        today = timezone.now().date()
+        current_year = today.year
+        current_month_start = today.replace(day=1)
+        
+        if current_month_start.month == 12:
+            next_month_start = current_month_start.replace(year=current_year + 1, month=1)
+        else:
+            next_month_start = current_month_start.replace(month=current_month_start.month + 1)
+
+        # 1. Métricas Básicas
+        canchas_activas = complex.courts.count()
+        reservas_dia = Booking.objects.filter(court__complex=complex, start__date=today).count()
+        ingresos_dia = Booking.objects.filter(
+            court__complex=complex, start__date=today,
+            status__in=[Booking.Status.CONFIRMED, Booking.Status.FINISHED]
+        ).aggregate(Sum('total_price'))['total_price__sum'] or 0
+
+        reservas_mes = Booking.objects.filter(court__complex=complex, start__gte=current_month_start, start__lt=next_month_start).count()
+        ingresos_mes = Booking.objects.filter(
+            court__complex=complex, start__gte=current_month_start, start__lt=next_month_start,
+            status__in=[Booking.Status.CONFIRMED, Booking.Status.FINISHED]
+        ).aggregate(Sum('total_price'))['total_price__sum'] or 0
+
+        reservas_pendientes = Booking.objects.filter(court__complex=complex, start__gte=today, status=Booking.Status.PENDING_PAYMENT).count()
+
+        # 2. Comparativa Mes Anterior (Para el indicador +%)
+        last_month_start = (current_month_start - datetime.timedelta(days=1)).replace(day=1)
+        ingresos_mes_pasado = Booking.objects.filter(
+            court__complex=complex, start__gte=last_month_start, start__lt=current_month_start,
+            status__in=[Booking.Status.CONFIRMED, Booking.Status.FINISHED]
+        ).aggregate(Sum('total_price'))['total_price__sum'] or 0
+
+        crecimiento_ingresos = 0
+        if ingresos_mes_pasado > 0:
+            crecimiento_ingresos = ((float(ingresos_mes) - float(ingresos_mes_pasado)) / float(ingresos_mes_pasado)) * 100
+
+        # 3. Gráfica Principal: Ingresos Mensuales
+        ingresos_por_mes = Booking.objects.filter(
+            court__complex=complex, start__year=current_year,
+            status__in=[Booking.Status.CONFIRMED, Booking.Status.FINISHED]
+        ).annotate(month=TruncMonth('start')).values('month').annotate(total=Sum('total_price')).order_by('month')
+
+        meses_nombres = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+        datos_grafica = [0] * 12
+        for item in ingresos_por_mes:
+            if item['month']:
+                mes_index = item['month'].month - 1
+                datos_grafica[mes_index] = float(item['total'])
+
+        # 4. Gráfica Secundaria: Reservas por Deporte
+        reservas_por_deporte = Booking.objects.filter(
+            court__complex=complex, start__gte=current_month_start, start__lt=next_month_start
+        ).values('court__sport').annotate(total=Count('id'))
+
+        nombres_deportes = [item['court__sport'] for item in reservas_por_deporte]
+        datos_deportes = [item['total'] for item in reservas_por_deporte]
+
+        # 5. Próximas Reservas
+        proximas_reservas = Booking.objects.filter(
+            court__complex=complex,
+            start__gte=timezone.now(),
+            status__in=[Booking.Status.CONFIRMED, Booking.Status.PENDING_PAYMENT]
+        ).order_by('start')[:5]
+
         context = {
             'nombre': nombre,
             'complex': complex,
+            'canchas_activas': canchas_activas,
+            'reservas_dia': reservas_dia,
+            'ingresos_dia': ingresos_dia,
+            'reservas_mes': reservas_mes,
+            'ingresos_mes': ingresos_mes,
+            'reservas_pendientes': reservas_pendientes,
+            'crecimiento_ingresos': round(crecimiento_ingresos, 1),
+            'chart_labels': json.dumps(meses_nombres),
+            'chart_data': json.dumps(datos_grafica),
+            'sports_labels': json.dumps(nombres_deportes),
+            'sports_data': json.dumps(datos_deportes),
+            'current_year': current_year,
+            'proximas_reservas': proximas_reservas,
         }
     else:
-        context = {
-            'nombre': nombre,
-        }
+        context = {'nombre': nombre, 'complex': None}
     return render(request, 'cuentas/home_propietario.html', context)
 
 
@@ -181,12 +278,19 @@ def configuration(request):
     user = request.user
     perfil_propietario = getattr(user, 'perfil_propietario', None)
 
+    if not perfil_propietario or not perfil_propietario.complex:
+        messages.error(request, 'No tienes un complejo asignado.')
+        return redirect('cuentas:home_propietario')
+
+    complex = perfil_propietario.complex
+
     nombre = user.first_name or user.username
     context = {
         'nombre': nombre,
         'page': 'Configuración',
+        'complejo': complex,
     }
-    return render(request, 'cuentas/dashboard_base.html', context)
+    return render(request, 'cuentas/configuration.html', context)
 
 
 @login_required
@@ -235,15 +339,33 @@ def gestion(request):
 
 @login_required
 def resenas(request):
+    from django.db.models import Avg
     user = request.user
     perfil_propietario = getattr(user, 'perfil_propietario', None)
 
     nombre = user.first_name or user.username
+    
+    # Obtener las reseñas del complejo del propietario
+    resenas = []
+    promedio_calificacion = 0
+    if perfil_propietario and perfil_propietario.complex:
+        resenas = Review.objects.filter(
+            complex=perfil_propietario.complex
+        ).select_related('user').order_by('-created_at')
+        
+        # Calcular el promedio de calificación
+        promedio_data = Review.objects.filter(
+            complex=perfil_propietario.complex
+        ).aggregate(promedio=Avg('rating'))
+        promedio_calificacion = promedio_data['promedio'] or 0
+    
     context = {
         'nombre': nombre,
         'page': 'Reseñas',
+        'resenas': resenas,
+        'promedio_calificacion': promedio_calificacion,
     }
-    return render(request, 'cuentas/dashboard_base.html', context)
+    return render(request, 'cuentas/resenas.html', context)
 
 
 def register(request):
@@ -403,3 +525,85 @@ def register_propietario(request):
 
         messages.success(request, 'Registro de propietario completado. Puedes iniciar sesión.')
         return redirect('cuentas:login')
+
+
+@login_required
+@csrf_exempt
+def update_description(request, complex_id):
+    if request.method == 'POST':
+        import json
+        data = json.loads(request.body)
+        descripcion = data.get('descripcion', '')
+        try:
+            complex = request.user.perfil_propietario.complex
+            if complex.id != complex_id:
+                return JsonResponse({'success': False, 'error': 'No autorizado'})
+            complex.descripcion = descripcion
+            complex.save()
+            return JsonResponse({'success': True})
+        except:
+            return JsonResponse({'success': False})
+    return JsonResponse({'success': False})
+
+
+@login_required
+@csrf_exempt
+def update_contact(request, complex_id):
+    if request.method == 'POST':
+        import json
+        data = json.loads(request.body)
+        telefono = data.get('telefono_comercial', '')
+        email = data.get('email_comercial', '')
+        try:
+            complex = request.user.perfil_propietario.complex
+            if complex.id != complex_id:
+                return JsonResponse({'success': False, 'error': 'No autorizado'})
+            complex.telefono_comercial = telefono
+            complex.email_comercial = email
+            complex.save()
+            return JsonResponse({'success': True})
+        except:
+            return JsonResponse({'success': False})
+    return JsonResponse({'success': False})
+
+
+@login_required
+@csrf_exempt
+def add_amenity(request, complex_id):
+    if request.method == 'POST':
+        import json
+        data = json.loads(request.body)
+        name = data.get('name', '').strip()
+        if not name:
+            return JsonResponse({'success': False})
+        try:
+            complex = request.user.perfil_propietario.complex
+            if complex.id != complex_id:
+                return JsonResponse({'success': False, 'error': 'No autorizado'})
+            from venues.models import Amenity
+            amenity, created = Amenity.objects.get_or_create(name=name)
+            complex.amenities.add(amenity)
+            return JsonResponse({'success': True})
+        except:
+            return JsonResponse({'success': False})
+    return JsonResponse({'success': False})
+
+
+@login_required
+@csrf_exempt
+def remove_amenity(request, complex_id):
+    if request.method == 'POST':
+        import json
+        data = json.loads(request.body)
+        amenity_id = data.get('amenity_id')
+        try:
+            complex = request.user.perfil_propietario.complex
+            if complex.id != complex_id:
+                return JsonResponse({'success': False, 'error': 'No autorizado'})
+            from venues.models import Amenity
+            amenity = Amenity.objects.get(id=amenity_id)
+            complex.amenities.remove(amenity)
+            return JsonResponse({'success': True})
+        except:
+            return JsonResponse({'success': False})
+    return JsonResponse({'success': False})

@@ -212,3 +212,114 @@ class ComplexViewSet(viewsets.ReadOnlyModelViewSet):
         stats = ComplexService.get_complex_stats(complex, days=days)
 
         return Response(stats)
+
+
+from rest_framework.views import APIView
+from .models import Review
+from bookings.models import Booking
+from .serializers import ReviewSerializer
+
+
+class CreateReviewView(APIView):
+    """
+    Endpoint para crear una reseña de un complejo.
+    
+    POST /api/reviews/create/
+    {
+        "booking_id": 123,
+        "rating": 5,
+        "description": "Excelente complejo..."
+    }
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def post(self, request):
+        try:
+            booking_id = request.data.get('booking_id')
+            rating = request.data.get('rating')
+            description = request.data.get('description', '')
+            
+            # Validaciones
+            if not booking_id or not rating:
+                return Response(
+                    {'error': 'booking_id y rating son requeridos'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            try:
+                booking = Booking.objects.get(id=booking_id)
+            except Booking.DoesNotExist:
+                return Response(
+                    {'error': 'Reserva no encontrada'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            
+            # Verificar que la reserva pertenece al usuario autenticado
+            if booking.user != request.user:
+                return Response(
+                    {'error': 'Esta reserva no pertenece al usuario autenticado'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            
+            # Verificar que la reserva no esté cancelada
+            if booking.status == Booking.Status.CANCELLED:
+                return Response(
+                    {'error': 'No se pueden hacer reseñas de reservas canceladas'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Verificar que la reserva puede ser reseñada
+            # Puede ser: 1) Status FINISHED (marcada manualmente) O 2) Hora de fin ya pasó
+            from django.utils import timezone
+            puede_ser_resenada = (
+                booking.status == Booking.Status.FINISHED or 
+                booking.end < timezone.now()
+            )
+            
+            if not puede_ser_resenada:
+                return Response(
+                    {'error': 'Solo se pueden hacer reseñas de reservas finalizadas o después de que termine la reserva'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Verificar que no exista ya una reseña para esta reserva
+            if Review.objects.filter(booking=booking).exists():
+                return Response(
+                    {'error': 'Ya existe una reseña para esta reserva'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Validar rating
+            try:
+                rating = int(rating)
+                if rating < 1 or rating > 5:
+                    return Response(
+                        {'error': 'El rating debe estar entre 1 y 5'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+            except (ValueError, TypeError):
+                return Response(
+                    {'error': 'El rating debe ser un número entre 1 y 5'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Crear la reseña
+            review = Review.objects.create(
+                booking=booking,
+                complex=booking.court.complex,
+                user=request.user,
+                rating=rating,
+                description=description
+            )
+            
+            serializer = ReviewSerializer(review)
+            return Response(
+                {'message': 'Reseña creada exitosamente', 'review': serializer.data},
+                status=status.HTTP_201_CREATED
+            )
+            
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )

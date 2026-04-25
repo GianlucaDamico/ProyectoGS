@@ -17,8 +17,17 @@
                 </a>
             </div>
             <div class="nav-links">
-                <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>
-                <a href="{% url 'cuentas:register' %}" class="btn-register">Registrarse</a>
+                {% if user.is_authenticated %}
+                        <span class="user-greeting">Hola, {{ user.username }}</span>
+                        <a href="{% url 'cuentas:home_usuario' %}" class="btn-login">Mi cuenta</a>
+                        <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-register">Cerrar sesión</button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>
+                        <a href="{% url 'cuentas:register' %}" class="btn-register">Registrarse</a>
+                    {% endif %}
             </div>
         </div>
     </nav>
@@ -31,7 +40,8 @@
         <div class="hero-content">
             <h1 class="hero-title">Encuentra tu cancha deportiva ideal</h1>
             <p class="hero-subtitle">Reserva canchas, campos y complejos deportivos en segundos</p>
-            <button class="btn-primary">Explorar canchas</button>
+            <button class="btn-primary" onclick="window.location.href='{% url 'core:explorar_complejos' %}'">Explorar canchas</button>
+
         </div>
     </section>
 

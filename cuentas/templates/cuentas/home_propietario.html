@@ -4,42 +4,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Propietario - CourtlyGPS</title>
-    <link rel="stylesheet" href="{% static 'core/explorar.css' %}">
+    <title>Panel de Control - Courtly</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{% static 'core/home.css' %}">
+    <link rel="stylesheet" href="{% static 'cuentas/home_propietario.css' %}">
 </head>
-<body>
-    <!-- Navbar -->
+<body class="dashboard-body">
     <nav class="navbar">
         <div class="navbar-container">
-            <a href="{% url 'core:home' %}" class="logo">
-                <span class="logo-icon">🏆</span>
-                <span class="logo-text">Courtly</span>
-            </a>
-            <div class="nav-links" style="display: flex; justify-content: space-around; flex: 1;">
-                <a href="{% url 'cuentas:home_propietario' %}">Control</a>
-                <a href="{% url 'cuentas:agenda' %}">Agenda</a>
-                <a href="{% url 'cuentas:configuration' %}">Configuracion</a>
-                <a href="{% url 'cuentas:gestion' %}">Gestion</a>
-                <a href="{% url 'cuentas:resenas' %}">Reseñas</a>
-                <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-register">Cerrar sesión</button>
+            <div class="logo">
+                <a href="{% url 'core:home' %}"><span style="font-size: 1.5rem; font-weight: 800; color: #2c3e50;"><i class="fas fa-trophy" style="color: #667eea;"></i> Courtly</span></a>
+            </div>
+            <div class="nav-links owner-nav">
+                <a href="{% url 'cuentas:home_propietario' %}" class="nav-item active">Control</a>
+                <a href="{% url 'cuentas:agenda' %}" class="nav-item">Agenda</a>
+                <a href="{% url 'cuentas:configuration' %}" class="nav-item">Configuración</a>
+                <a href="{% url 'cuentas:gestion' %}" class="nav-item">Gestión</a>
+                <a href="{% url 'cuentas:resenas' %}" class="nav-item">Reseñas</a>
+                <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline; margin-left: 15px;">
+                    {% csrf_token %}<button type="submit" class="btn-register"><i class="fas fa-sign-out-alt"></i> Salir</button>
                 </form>
             </div>
         </div>
     </nav>
 
-    <main>
-        <section>
-            <h2>Panel de Propietario</h2>
-            {% if complex %}
-                <p>Complejo: {{ complex.name }}</p>
-                <!-- Aquí puedes agregar más información sobre el complejo -->
-            {% else %}
-                <p>No tienes un complejo asignado.</p>
+    <main class="dashboard-main container">
+        <div class="dashboard-header">
+            <div>
+                <h1 class="section-heading">Hola, {{ nombre }} 👋</h1>
+                {% if complex %}
+                    <p class="text-muted"><i class="far fa-building"></i> Gestionando: <strong>{{ complex.name }}</strong></p>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if complex %}
+            <section class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon" style="color: #007bff; background: #e6f2ff;"><i class="fas fa-calendar-day"></i></div>
+                    <div class="metric-info"><h3>Reservas Hoy</h3><p class="metric-value">{{ reservas_dia }}</p></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon" style="color: #28a745; background: #e8fbf3;"><i class="fas fa-money-bill-wave"></i></div>
+                    <div class="metric-info"><h3>Ingresos Hoy</h3><p class="metric-value">${{ ingresos_dia }}</p></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon" style="color: #667eea; background: #f0f4ff;"><i class="far fa-calendar-alt"></i></div>
+                    <div class="metric-info"><h3>Reservas Mes</h3><p class="metric-value">{{ reservas_mes }}</p></div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon" style="color: #764ba2; background: #f3e8ff;"><i class="fas fa-chart-line"></i></div>
+                    <div class="metric-info">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <h3>Ingresos Mes</h3>
+                            {% if crecimiento_ingresos >= 0 %}
+                                <span class="trend-badge positive"><i class="fas fa-arrow-up"></i> {{ crecimiento_ingresos }}%</span>
+                            {% else %}
+                                <span class="trend-badge negative"><i class="fas fa-arrow-down"></i> {{ crecimiento_ingresos|default:"0" }}%</span>
+                            {% endif %}
+                        </div>
+                        <p class="metric-value">${{ ingresos_mes }}</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="charts-container">
+                <div class="chart-card main-chart">
+                    <div class="chart-header">
+                        <h2><i class="fas fa-chart-area"></i> Flujo de Ingresos ({{ current_year }})</h2>
+                    </div>
+                    <div class="canvas-container"><canvas id="incomeChart"></canvas></div>
+                </div>
+
+                <div class="chart-card side-chart">
+                    <div class="chart-header">
+                        <h2><i class="fas fa-chart-pie"></i> Reservas por Deporte</h2>
+                    </div>
+                    <div class="canvas-container-doughnut"><canvas id="sportsChart"></canvas></div>
+                </div>
+            </section>
+
+            <section class="upcoming-bookings">
+                <div class="chart-card">
+                    <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2><i class="fas fa-history"></i> Próximas Reservas</h2>
+                        <a href="{% url 'cuentas:agenda' %}" class="btn-link">Ver Agenda completa <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Cancha</th>
+                                    <th>Cliente</th>
+                                    <th>Fecha y Hora</th>
+                                    <th>Pago</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for r in proximas_reservas %}
+                                <tr>
+                                    <td><strong>{{ r.court.name }}</strong></td>
+                                    <td><i class="fas fa-user-circle text-muted"></i> {{ r.user.username|default:"Cliente" }}</td>
+                                    <td>{{ r.start|date:"d/m/Y - H:i" }}</td>
+                                    <td><strong>${{ r.total_price }}</strong></td>
+                                    <td>
+                                        {% if r.status == "confirmed" %}
+                                            <span class="status-pill confirmed">Confirmada</span>
+                                        {% else %}
+                                            <span class="status-pill pending">Pendiente</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted" style="padding: 30px;">
+                                        <i class="far fa-folder-open" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                                        No hay reservas próximas en este momento.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+        {% else %}
             {% endif %}
-            <!-- Agrega más contenido específico para propietarios aquí -->
-        </section>
     </main>
+
+    {% if complex %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Gráfica Lineal (Ingresos)
+            const ctxLine = document.getElementById('incomeChart').getContext('2d');
+            let gradient = ctxLine.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(102, 126, 234, 0.5)');
+            gradient.addColorStop(1, 'rgba(102, 126, 234, 0.0)');
+
+            new Chart(ctxLine, {
+                type: 'line',
+                data: {
+                    labels: {{ chart_labels|safe }},
+                    datasets: [{
+                        label: 'Ingresos Totales ($)',
+                        data: {{ chart_data|safe }},
+                        borderColor: '#667eea',
+                        backgroundColor: gradient,
+                        borderWidth: 3, fill: true, tension: 0.4,
+                        pointBackgroundColor: '#764ba2', pointRadius: 4,
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { beginAtZero: true, grid: { color: '#f0f2ff' } }
+                    }
+                }
+            });
+
+            // 2. Gráfica de Dona (Deportes)
+            const ctxDoughnut = document.getElementById('sportsChart').getContext('2d');
+            new Chart(ctxDoughnut, {
+                type: 'doughnut',
+                data: {
+                    labels: {{ sports_labels|safe }},
+                    datasets: [{
+                        data: {{ sports_data|safe }},
+                        backgroundColor: ['#667eea', '#764ba2', '#27ae60', '#f39c12', '#e74c3c'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    cutout: '70%', // Grosor de la dona
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: "'Segoe UI', sans-serif" } } }
+                    }
+                }
+            });
+        });
+    </script>
+    {% endif %}
 </body>
 </html>

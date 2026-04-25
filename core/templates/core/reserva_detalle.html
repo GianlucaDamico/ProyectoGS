@@ -13,8 +13,9 @@
     <nav class="navbar">
         <div class="navbar-container">
             <div class="logo">
-                <span class="logo-icon">🏆</span>
-                <span class="logo-text">Courtly</span>
+                <a href="{% url 'core:home' %}">
+                    <img src="{% static 'core/img/LOGO.png' %}" alt="Courtly" class="logo-img">
+                </a>
             </div>
             <div class="nav-links">
                 {% if user.is_authenticated %}
@@ -24,7 +25,6 @@
                             {% csrf_token %}
                             <button type="submit" class="btn-register">Cerrar sesión</button>
                         </form>
-                        
                     {% else %}
                         <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>
                         <a href="{% url 'cuentas:register' %}" class="btn-register">Registrarse</a>

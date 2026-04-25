@@ -4,96 +4,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page }} - CourtlyGPS</title>
-    <link rel="stylesheet" href="{% static 'core/explorar.css' %}">
-    <link rel="stylesheet" href="{% static 'cuentas/gestion.css' %}">
-</head>
-<body>
-    <!-- Navbar -->
+    <title>{{ page }} - Courtly</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'core/home.css' %}"> <link rel="stylesheet" href="{% static 'cuentas/gestion.css' %}"> </head>
+<body class="dashboard-body">
     <nav class="navbar">
         <div class="navbar-container">
-            <a href="{% url 'core:home' %}" class="logo">
-                <span class="logo-icon">🏆</span>
-                <span class="logo-text">Courtly</span>
-            </a>
-            <div class="nav-links" style="display: flex; justify-content: space-around; flex: 1;">
-                <a href="{% url 'cuentas:home_propietario' %}">Control</a>
-                <a href="{% url 'cuentas:agenda' %}">Agenda</a>
-                <a href="{% url 'cuentas:configuration' %}">Configuracion</a>
-                <a href="{% url 'cuentas:gestion' %}">Gestion</a>
-                <a href="{% url 'cuentas:resenas' %}">Reseñas</a>
-                <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline;">
+            <div class="logo">
+                <a href="{% url 'core:home' %}">
+                    <span style="font-size: 1.5rem; font-weight: 800; color: #2c3e50;"><i class="fas fa-trophy" style="color: #667eea;"></i> Courtly</span>
+                </a>
+            </div>
+            <div class="nav-links owner-nav">
+                <a href="{% url 'cuentas:home_propietario' %}" class="nav-item">Control</a>
+                <a href="{% url 'cuentas:agenda' %}" class="nav-item">Agenda</a>
+                <a href="{% url 'cuentas:configuration' %}" class="nav-item">Configuración</a>
+                <a href="{% url 'cuentas:gestion' %}" class="nav-item active">Gestión</a>
+                <a href="{% url 'cuentas:resenas' %}" class="nav-item">Reseñas</a>
+                
+                <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline; margin-left: 15px;">
                     {% csrf_token %}
-                    <button type="submit" class="btn-register">Cerrar sesión</button>
+                    <button type="submit" class="btn-register"><i class="fas fa-sign-out-alt"></i> Salir</button>
                 </form>
             </div>
         </div>
     </nav>
 
-    <main>
+    <main class="dashboard-main container">
         <section>
-            <div class="gestion-header">
-                <h2>{{ page }}</h2>
-                <button id="add-court-btn" class="btn-add">Agregar Cancha</button>
+            <div class="dashboard-header gestion-header">
+                <h2 class="section-heading">{{ page }}</h2>
+                <button id="add-court-btn" class="btn-add"><i class="fas fa-plus"></i> Agregar Cancha</button>
             </div>
 
             <div class="courts-grid">
                 {% for court in courts %}
                     <div class="court-card">
-                        <h3>{{ court.name }}</h3>
-                        <p><strong>Deporte:</strong> {{ court.get_sport_display }}</p>
-                        <p><strong>Superficie:</strong> {{ court.get_surface_display }}</p>
-                        <p><strong>Iluminación:</strong> {% if court.has_lighting %}Sí{% else %}No{% endif %}</p>
-                        <p><strong>Precio base/hora:</strong> ${{ court.base_price_per_hour }}</p>
-                        <p><strong>Extra iluminación/hora:</strong> ${{ court.lighting_extra_per_hour }}</p>
-                        <form method="post" style="display:inline;" onsubmit="return confirmDelete()">
+                        <div class="court-card-header">
+                            <h3>{{ court.name }}</h3>
+                            <div class="court-icon"><i class="fas fa-volleyball-ball"></i></div>
+                        </div>
+                        
+                        <div class="court-details">
+                            <p><i class="fas fa-running icon-detail"></i> <strong>Deporte:</strong> {{ court.get_sport_display }}</p>
+                            <p><i class="fas fa-layer-group icon-detail"></i> <strong>Superficie:</strong> {{ court.get_surface_display }}</p>
+                            <p><i class="far fa-lightbulb icon-detail"></i> <strong>Iluminación:</strong> 
+                                {% if court.has_lighting %}
+                                    <span class="badge-yes">Sí</span>
+                                {% else %}
+                                    <span class="badge-no">No</span>
+                                {% endif %}
+                            </p>
+                            
+                            <div class="price-section">
+                                <div class="price-item">
+                                    <small>Precio base/hora</small>
+                                    <span class="price-value">${{ court.base_price_per_hour }}</span>
+                                </div>
+                                <div class="price-item">
+                                    <small>Extra luz/hora</small>
+                                    <span class="price-value">${{ court.lighting_extra_per_hour }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form method="post" style="margin-top: 20px;" onsubmit="return confirmDelete()">
                             {% csrf_token %}
                             <input type="hidden" name="court_id" value="{{ court.id }}">
-                            <button type="submit" name="delete_court" class="btn-delete">Eliminar Cancha</button>
+                            <button type="submit" name="delete_court" class="btn-delete"><i class="far fa-trash-alt"></i> Eliminar Cancha</button>
                         </form>
                     </div>
                 {% empty %}
-                    <p>No hay canchas en tu complejo.</p>
+                    <div class="empty-state-global" style="grid-column: 1 / -1;">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <h3>Sin canchas registradas</h3>
+                        <p>Aún no tienes canchas en tu complejo. Añade la primera para empezar a recibir reservas.</p>
+                    </div>
                 {% endfor %}
             </div>
         </section>
     </main>
 
-    <!-- Modal para agregar cancha -->
     <div id="add-court-modal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <h3>Agregar Nueva Cancha</h3>
-            <form method="post">
+            <div class="modal-header">
+                <h3>Agregar Nueva Cancha</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form method="post" class="custom-form">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <button type="submit" name="add_court" class="btn-submit">Agregar Cancha</button>
+                <div class="modal-footer">
+                    <button type="submit" name="add_court" class="btn-submit">Guardar Cancha</button>
+                </div>
             </form>
         </div>
     </div>
 
     <script>
-        // Modal
+        // Modal logic
         var modal = document.getElementById("add-court-modal");
         var btn = document.getElementById("add-court-btn");
         var span = document.getElementsByClassName("close")[0];
 
         btn.onclick = function() {
             modal.style.display = "block";
+            // Pequeño timeout para la animación de entrada
+            setTimeout(() => modal.classList.add("show"), 10);
         }
 
-        span.onclick = function() {
-            modal.style.display = "none";
+        function closeModal() {
+            modal.classList.remove("show");
+            setTimeout(() => modal.style.display = "none", 300);
         }
+
+        span.onclick = closeModal;
 
         window.onclick = function(event) {
             if (event.target == modal) {
-                modal.style.display = "none";
+                closeModal();
             }
         }
 
         function confirmDelete() {
-            return confirm("¿Estás seguro de que quieres eliminar esta cancha?");
+            return confirm("¿Estás seguro de que quieres eliminar esta cancha de forma permanente?");
         }
     </script>
 </body>

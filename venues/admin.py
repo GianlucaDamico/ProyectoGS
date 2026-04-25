@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Amenity, Complex, Court
+from .models import Amenity, Complex, Court, Review
 
 
 @admin.register(Amenity)
@@ -40,3 +40,39 @@ class CourtAdmin(admin.ModelAdmin):
     list_display = ['name', 'complex', 'sport', 'surface', 'has_lighting', 'base_price_per_hour']
     list_filter = ['sport', 'surface', 'has_lighting']
     search_fields = ['name', 'complex__name']
+
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    """
+    Configuración del admin para Reviews (Reseñas).
+    """
+    list_display = ['get_user_name', 'complex', 'rating', 'created_at']
+    list_filter = ['rating', 'complex', 'created_at']
+    search_fields = ['user__first_name', 'user__username', 'complex__name', 'description']
+    readonly_fields = ['booking', 'complex', 'user', 'created_at']
+    
+    fieldsets = (
+        ('Información de la Reseña', {
+            'fields': ('booking', 'complex', 'user', 'rating', 'description')
+        }),
+        ('Metadata', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def get_user_name(self, obj):
+        """Mostrar el nombre del usuario en lugar del ID"""
+        return f"{obj.user.first_name} {obj.user.last_name}".strip() or obj.user.username
+    get_user_name.short_description = 'Usuario'
+    
+    def get_queryset(self, request):
+        """
+        Los superusuarios ven todo, los propietarios solo ven reseñas de sus complejos.
+        """
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        # Mostrar solo reseñas de complejos que posee
+        return qs.filter(complex__owner=request.user)
