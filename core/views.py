@@ -266,6 +266,23 @@ def cambiar_estado_reserva(request, reserva_id):
 def notificaciones(request):
     """Vista de notificaciones del usuario (placeholder)."""
 
+    reservas = Booking.objects.filter(user=request.user)
+    
+    # Actualización lógica de estados por tiempo
+    for reserva in reservas:
+        if reserva.status == Booking.Status.PENDING_PAYMENT and reserva.is_past():
+            reserva.status = Booking.Status.CANCELLED
+            reserva.save()
+        elif reserva.status == Booking.Status.CONFIRMED and reserva.is_past():
+            reserva.status = Booking.Status.FINISHED
+            reserva.save()
+        elif reserva.status == Booking.Status.CONFIRMED and reserva.is_active():
+            reserva.status = Booking.Status.IN_PROGRESS
+            reserva.save()
+        elif reserva.status == Booking.Status.IN_PROGRESS and reserva.is_past():
+            reserva.status = Booking.Status.FINISHED
+            reserva.save()
+
     now = timezone.now()
     fechas_cercanas = now + timezone.timedelta(days=2)
 

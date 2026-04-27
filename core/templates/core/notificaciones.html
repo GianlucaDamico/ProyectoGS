@@ -9,7 +9,63 @@
     </head>
 
     <body>  
-        
+
+        <section>
+            <div>
+                {% if notificaciones %}
+                    <div>
+                        {%  for notificacion in notificaciones %}
+                            <div>
+                                {% if notificacion.status == 'pending_payment' %}
+                                    <p>Tienes una reserva pendiente de pago.</p>
+                                {% else %}
+                                    <p>Tu reserva ha sido confirmada.</p>
+                                {% endif %}
+                            </div>
+
+                            <div>
+                                <h3> {{notificacion.court.name}} </h3>
+                                <p> {{notificacion.court.complex.name}} </p>
+                            </div>
+
+                            <div class = "info-content" >
+                                <div>
+                                    <label> Fecha </label>
+                                    <p> {{notificacion.start|date:"l, d \d\e F Y"}} </p>
+                                </div>
+                                <div>   
+                                    <label> Hora </label>
+                                    <p> {{notificacion.start|date:"H:i"}} - {{notificacion.end|date:"H:i"}} </p>
+                                </div>
+
+                                <div> 
+                                    <label> Duracion</label>
+                                    <p> {{notificacion.get_duration_minutes}} minutos </p>
+                                </div>
+                                <div> 
+                                    <label> Precio </label>
+                                    <p> ${{notificacion.total_price}} </p>
+                                </div>
+                                <div>
+                                <a href = "{% url 'core:reserva_detalle' notificacion.id %}" class="btn btn-detalle">Ver detalles</a>
+                                </div>
+                            </div>
+
+                        {% endfor %}
+                    </div>
+
+                {% else %}
+                    <div>
+                        <h2>No tienes notificaciones</h2>
+                        <p>Cuando recibas una notificación, aparecerá aquí.</p>
+                        <div>
+                            <a href="{% url 'core:explorar_complejos' %}" class="btn btn-primary">Ver complejos</a>
+                            <a href="{% url 'core:mis_reservas' %}" class="btn btn-secondary">Ver mis reservas</a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
 
     </body>
 
