@@ -1,6 +1,6 @@
 :root {
     --primary: #667eea; /* Azul corporativo Courtly */
-    --primary-light: #8295eb; /* Azul más claro para hovers y textos oscuros */
+    --primary-light: #8295eb; /* Azul más claro para hovers */
     --primary-dark: #4d5eb0; /* Azul oscuro para gradientes */
     --accent: #e74c3c; /* Rojo para notificaciones */
     --text: #1b1f2a;
@@ -51,7 +51,7 @@ body {
 }
 
 .logo-img { 
-    height: 70px; 
+    height: 91px; 
     width: auto; 
     object-fit: contain; 
 }
@@ -184,30 +184,55 @@ body {
 .btn-register { background: var(--primary); color: white; text-decoration: none; padding: 0.8rem 2rem; border-radius: 50px; font-weight: 600; transition: background 0.3s; }
 .btn-register:hover { background: var(--primary-light); }
 
-/* ============ Page Header (Azul corporativo) ============ */
+/* ============ Page Header con Imagen BANNER1 ============ */
 .page-header {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    background-image: url('../img/BANNER1.jpg'); /* Ojo: Si al final lo guardaste en minúscula, pon 'banner1.jpg' */
+    background-repeat: no-repeat;
+    background-position: center right;
+    background-size: cover;
+    background-color: var(--primary); /* Fondo de respaldo */
+    position: relative;
     color: white;
-    padding: 80px 20px 120px; 
+    padding: 100px 20px 150px;
     text-align: center;
+}
+
+/* Creamos la capa oscura/azul con transparencia sobre la imagen */
+.page-header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.85) 0%, rgba(77, 94, 176, 0.85) 100%);
+    z-index: 1;
+}
+
+/* Levantamos el contenedor de los textos para que estén por encima de la capa oscura */
+.page-header .container {
+    position: relative;
+    z-index: 2;
 }
 
 .page-header h1 {
     font-size: 2.8rem;
     margin-bottom: 10px;
     font-weight: 800;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
 .page-header p {
     font-size: 1.2rem;
-    opacity: 0.9;
+    opacity: 0.95;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.3);
 }
 
 /* ============ Sección de Filtros (Flotante) ============ */
 .filtros-section {
     background: transparent; 
     padding: 0 20px;
-    margin-top: -60px; 
+    margin-top: -65px; 
     position: relative;
     z-index: 10;
 }
@@ -348,7 +373,7 @@ body {
 /* ============ Footer ============ */
 .footer { background: #1e293b; color: white; padding: 60px 20px 20px; }
 .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 40px; }
-.footer-section h4 { font-size: 1.2rem; margin-bottom: 15px; color: var(--primary-light); /* Aquí estaba el moradito */ }
+.footer-section h4 { font-size: 1.2rem; margin-bottom: 15px; color: var(--primary-light); }
 .footer-section p { color: #94a3b8; line-height: 1.8; font-size: 0.95rem; }
 .footer-section ul { list-style: none; }
 .footer-section ul li { margin-bottom: 10px; }
