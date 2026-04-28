@@ -14,7 +14,7 @@ from django.http import JsonResponse
 import datetime
 import json
 from bookings.models import Booking
-from venues.models import Sport, Complex, Court, Review
+from venues.models import Sport, Complex, Court, Review, Surface
 from venues.forms import CourtForm
 from .models import Jugador, Propietario
 
@@ -334,6 +334,8 @@ def gestion(request):
         'page': 'Gestión',
         'courts': courts,
         'form': form,
+        'sport_choices': Sport.choices,
+        'surface_choices': Surface.choices,
     }
     return render(request, 'cuentas/gestion.html', context)
 
