@@ -468,6 +468,38 @@
                 cerrarModalResena();
             }
         }
+        // ... aquí tendrás la función getCookie ...
+        function getCookie(name) {
+            // (tu código actual)
+        }
+
+        document.addEventListener('click', function(event) {
+            const allDetails = document.querySelectorAll('details');
+            allDetails.forEach((details) => {
+                if (!details.contains(event.target)) {
+                    details.removeAttribute('open');
+                }
+                const summary = details.querySelector('summary');
+                if (summary && summary.contains(event.target)) {
+                    allDetails.forEach((otherDetails) => {
+                        if (otherDetails !== details) {
+                            otherDetails.removeAttribute('open');
+                        }
+                    });
+                }
+            });
+        });
+        // ================================
+
+        // ... después vendrá el código de abrirModalResena ...
+        function abrirModalResena(bookingId, complexName) {
+            // (tu código actual)
+        }
+        
+        // ... resto del script ...
+    </script>
+</body>
+</html>
     </script>
 </body>
 </html>
