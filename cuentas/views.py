@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from django.db import models
-from django.db.models import Sum, Count
+from django.db.models import Q, Sum, Count
 from django.db.models.functions import TruncMonth
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
@@ -60,6 +60,24 @@ def logout_usuario(request):
 @login_required
 def home_usuario(request):
     user = request.user
+
+    reservas = Booking.objects.filter(user=request.user)
+    
+    # Actualización lógica de estados por tiempo
+    for reserva in reservas:
+        if reserva.status == Booking.Status.PENDING_PAYMENT and reserva.is_past():
+            reserva.status = Booking.Status.CANCELLED
+            reserva.save()
+        elif reserva.status == Booking.Status.CONFIRMED and reserva.is_past():
+            reserva.status = Booking.Status.FINISHED
+            reserva.save()
+        elif reserva.status == Booking.Status.CONFIRMED and reserva.is_active():
+            reserva.status = Booking.Status.IN_PROGRESS
+            reserva.save()
+        elif reserva.status == Booking.Status.IN_PROGRESS and reserva.is_past():
+            reserva.status = Booking.Status.FINISHED
+            reserva.save()
+
     perfil_jugador = getattr(user, 'perfil_jugador', None)
 
     nombre = user.first_name or user.username
@@ -104,6 +122,18 @@ def home_usuario(request):
         .order_by('-end')
     )
 
+    now = timezone.now()
+    fechas_cercanas = now + timezone.timedelta(days=2)
+
+    notificaciones = Booking.objects.filter(
+        user = request.user
+    ).filter(
+        Q(status=Booking.Status.CONFIRMED, start__lte=fechas_cercanas) |
+        Q(status=Booking.Status.PENDING_PAYMENT)
+    ). select_related('court', 'court__complex').order_by('start')
+
+    notificaciones_count = notificaciones.count()
+
     context = {
         'nombre': nombre,
         'deportes': Sport.choices,
@@ -115,7 +145,9 @@ def home_usuario(request):
         'reservas_pendientes': reservas_pendientes,
         'reservas_historial': reservas_historial,
         'resenas_pendientes': resenas_pendientes,
-        'notificaciones_count': resenas_pendientes.count(),
+        'resenas_count': resenas_pendientes.count(),
+        'notificaciones': notificaciones,
+        'notificaciones_count': notificaciones_count,
         'partidos_proximos': partidos_proximos,
     }
     return render(request, 'cuentas/home_usuario.html', context)
