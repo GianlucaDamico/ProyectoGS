@@ -1,72 +1,171 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Notificaciones - Coutly</title>
-        <link rel="stylesheet" href="{% static 'css/notificaciones.css' %}">
-    </head>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificaciones - Courtly</title>
+    <link rel="stylesheet" href="{% static 'core/notificaciones.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="{% url 'core:home' %}" class="logo">
+                <span class="logo-icon">🏆</span>
+                <span class="logo-text">Courtly</span>
+            </a>
+            <div class="nav-links">
+                {% if user.is_authenticated %}
+                    <span class="user-greeting">Hola, {{ user.username }}</span>
+                    <a href="{% url 'core:mis_reservas' %}" class="btn-login">Mis Reservas</a>
+                    <a href="#" class="btn-register">Cerrar sesión</a>
+                {% else %}
+                    <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>
+                    <a href="{% url 'cuentas:register' %}" class="btn-register">Registrarse</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
 
-    <body>  
+    <!-- Header Hero Section -->
+    <section class="notificaciones-hero">
+        <div class="container">
+            <h1>📬 Notificaciones Pendientes</h1>
+            <p>Reservas que requieren tu atención inmediata</p>
+        </div>
+    </section>
 
-        <section>
-            <div>
-                {% if notificaciones %}
-                    <div>
-                        {%  for notificacion in notificaciones %}
-                            <div>
+    <!-- Lista de notificaciones -->
+    <section class="notificaciones-section">
+        <div class="container">
+            {% if notificaciones %}
+                <div class="notificaciones-grid">
+                    {% for notificacion in notificaciones %}
+                        <div class="notificacion-card {% if notificacion.status == 'pending_payment' %}payment-pending{% else %}upcoming-soon{% endif %}">
+                            <!-- Badge de tipo de notificación -->
+                            <div class="notificacion-badge">
                                 {% if notificacion.status == 'pending_payment' %}
-                                    <p>Tienes una reserva pendiente de pago.</p>
+                                    <span class="badge-icon">💳</span>
+                                    <span class="badge-text">Pago Pendiente</span>
                                 {% else %}
-                                    <p>Tu reserva ha sido confirmada.</p>
+                                    <span class="badge-icon">⏰</span>
+                                    <span class="badge-text">Próxima Reserva</span>
                                 {% endif %}
                             </div>
 
-                            <div>
-                                <h3> {{notificacion.court.name}} </h3>
-                                <p> {{notificacion.court.complex.name}} </p>
+                            <!-- Encabezado de la cancha -->
+                            <div class="notificacion-header">
+                                <h3 class="cancha-nombre">{{ notificacion.court.name }}</h3>
+                                <p class="complejo-nombre">{{ notificacion.court.complex.name }}</p>
                             </div>
 
-                            <div class = "info-content" >
-                                <div>
-                                    <label> Fecha </label>
-                                    <p> {{notificacion.start|date:"l, d \d\e F Y"}} </p>
-                                </div>
-                                <div>   
-                                    <label> Hora </label>
-                                    <p> {{notificacion.start|date:"H:i"}} - {{notificacion.end|date:"H:i"}} </p>
+                            <!-- Línea divisora -->
+                            <div class="divider"></div>
+
+                            <!-- Información detallada -->
+                            <div class="notificacion-info">
+                                <div class="info-item">
+                                    <span class="info-icon">📅</span>
+                                    <div class="info-content">
+                                        <label>Fecha</label>
+                                        <p>{{ notificacion.start|date:"l, d \d\e F Y" }}</p>
+                                    </div>
                                 </div>
 
-                                <div> 
-                                    <label> Duracion</label>
-                                    <p> {{notificacion.get_duration_minutes}} minutos </p>
+                                <div class="info-item">
+                                    <span class="info-icon">🕐</span>
+                                    <div class="info-content">
+                                        <label>Hora</label>
+                                        <p>{{ notificacion.start|time:"H:i" }} - {{ notificacion.end|time:"H:i" }}</p>
+                                    </div>
                                 </div>
-                                <div> 
-                                    <label> Precio </label>
-                                    <p> ${{notificacion.total_price}} </p>
+
+                                <div class="info-item">
+                                    <span class="info-icon">⏱️</span>
+                                    <div class="info-content">
+                                        <label>Duración</label>
+                                        <p>{{ notificacion.get_duration_minutes }} minutos</p>
+                                    </div>
                                 </div>
-                                <div>
-                                <a href = "{% url 'core:reserva_detalle' notificacion.id %}" class="btn btn-detalle">Ver detalles</a>
+
+                                <div class="info-item">
+                                    <span class="info-icon">💰</span>
+                                    <div class="info-content">
+                                        <label>Precio Total</label>
+                                        <p class="precio-destacado">${{ notificacion.total_price }}</p>
+                                    </div>
                                 </div>
                             </div>
 
-                        {% endfor %}
-                    </div>
+                            <!-- Mensaje específico según tipo -->
+                            <div class="notificacion-mensaje">
+                                {% if notificacion.status == 'pending_payment' %}
+                                    <div class="mensaje-pago">
+                                        <p>Esta reserva está pendiente de confirmación de pago.</p>
+                                        <p class="subtle">Por favor, completa el pago para garantizar tu reserva.</p>
+                                    </div>
+                                {% else %}
+                                    <div class="mensaje-proxima">
+                                        <p>Tu reserva está programada para <strong>muy pronto</strong>.</p>
+                                        <p class="subtle">Asegúrate de llegar con tiempo.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
 
-                {% else %}
-                    <div>
-                        <h2>No tienes notificaciones</h2>
-                        <p>Cuando recibas una notificación, aparecerá aquí.</p>
-                        <div>
-                            <a href="{% url 'core:explorar_complejos' %}" class="btn btn-primary">Ver complejos</a>
-                            <a href="{% url 'core:mis_reservas' %}" class="btn btn-secondary">Ver mis reservas</a>
+                            <!-- Botón de acción -->
+                            <div class="notificacion-footer">
+                                <a href="{% url 'core:reserva_detalle' notificacion.id %}" class="btn-detalle">
+                                    Ver Detalles →
+                                </a>
+                            </div>
                         </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <!-- Estado vacío -->
+                <div class="empty-state">
+                    <div class="empty-icon">✅</div>
+                    <h2>¡Todo al día!</h2>
+                    <p>No tienes notificaciones pendientes en este momento.</p>
+                    <p class="empty-subtitle">Todas tus reservas están confirmadas y sin acciones pendientes.</p>
+                    <div class="empty-actions">
+                        <a href="{% url 'core:explorar_complejos' %}" class="btn-primary">Explorar Canchas</a>
+                        <a href="{% url 'core:mis_reservas' %}" class="btn-secondary">Ver Mis Reservas</a>
                     </div>
-                {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>Courtly</h4>
+                <p>La mejor plataforma para reservar canchas deportivas. Conectamos jugadores con complejos en toda la región.</p>
             </div>
-        </section>
-
-    </body>
-
+            <div class="footer-section">
+                <h4>Enlaces Rápidos</h4>
+                <ul>
+                    <li><a href="{% url 'core:home' %}">Inicio</a></li>
+                    <li><a href="{% url 'core:explorar_complejos' %}">Explorar Canchas</a></li>
+                    <li><a href="{% url 'core:mis_reservas' %}">Mis Reservas</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Términos de servicio</a></li>
+                    <li><a href="#">Política de privacidad</a></li>
+                    <li><a href="#">Política de cookies</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Courtly. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+</body>
 </html>
