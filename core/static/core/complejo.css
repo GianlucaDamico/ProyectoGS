@@ -1746,8 +1746,8 @@ body {
 
 /* ============ Contenedor de la Imagen ============ */
 .hero-image-display {
-    width: 380px; /* Tamaño generoso para la vista pública */
-    height: 240px;
+    width: 500px; /* Tamaño generoso para la vista pública */
+    height: 303px;
     flex-shrink: 0; /* Evita que la imagen se aplaste si hay mucho texto */
     border-radius: 20px;
     overflow: hidden;
