@@ -137,20 +137,13 @@
                     {% for complejo in complejos %}
                         <div class="complejo-card" onclick="window.location.href='{{ complejo.get_absolute_url }}'">
                             <div class="complejo-image">
-                                <!-- Icono según el primer deporte -->
-                                {% with first_court=complejo.courts.first %}
-                                    {% if first_court %}
-                                        {% if first_court.sport == 'padel' %}⚾
-                                        {% elif first_court.sport == 'tenis' %}🎾
-                                        {% elif first_court.sport == 'futbol_sala' %}⚽
-                                        {% elif first_court.sport == 'basquetbol' %}🏀
-                                        {% elif first_court.sport == 'voleibol' %}🏐
-                                        {% else %}🏆
-                                        {% endif %}
-                                    {% else %}
-                                        🏆
-                                    {% endif %}
-                                {% endwith %}
+                                {% if complejo.imagen %}
+                                    <img src="{{ complejo.imagen.url }}" alt="Imagen de {{ complejo.name|default:'complejo' }}" style="width: 100%; height: 200px; object-fit: cover; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                                {% else %}
+                                    <div style="height: 200px; display: flex; align-items: center; justify-content: center; background: #eee;">
+                                        <span style="font-size: 3rem;">🏆</span>
+                                    </div>
+                                {% endif %}
                             </div>
                             
                             <div class="complejo-content">
