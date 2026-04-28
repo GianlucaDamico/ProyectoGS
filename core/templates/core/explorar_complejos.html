@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Explorar Complejos - Courtly</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'core/explorar.css' %}">
 </head>
 <body>
@@ -21,7 +22,7 @@
                     
                     <details class="notifications-menu">
                         <summary class="notifications-trigger" aria-label="Abrir notificaciones">
-                            <span class="bell-icon">&#128276;</span>
+                            <span class="bell-icon"><i class="fas fa-bell"></i></span>
                             {% if resenas_pendientes %}<span class="badge">{{ resenas_pendientes|length }}</span>{% endif %}
                         </summary>
                         <div class="notifications-dropdown">

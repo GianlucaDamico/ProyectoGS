@@ -1,9 +1,9 @@
 :root {
     --primary: #667eea;
-    --accent: #ffd580;
+    --accent: #e74c3c; /* Cambiado a rojo para las notificaciones */
     --text: #1b1f2a;
     --muted: #60708a;
-    --border: #d8dfeb;
+    --border: #e2e8f0;
     --shadow: 0 10px 24px rgba(18, 31, 53, 0.08);
 }
 
@@ -29,11 +29,11 @@ body {
 /* ============ Navbar y Elementos de Perfil/Notificaciones ============ */
 .navbar { 
     background: white; 
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04); /* Sombra más sutil */
     position: sticky; 
     top: 0; 
     z-index: 1000; 
-    min-height: 90px; 
+    min-height: 85px; 
     display: flex; 
     align-items: center; 
 }
@@ -49,7 +49,7 @@ body {
 }
 
 .logo-img { 
-    height: 91px; 
+    height: 90px; /* Tamaño ajustado para ser más elegante */
     width: auto; 
     object-fit: contain; 
 }
@@ -57,10 +57,10 @@ body {
 .nav-right {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
-/* Clases copiadas directamente de tu home_usuario.css */
+/* --- ESTÉTICA MEJORADA DE LOS BOTONES --- */
 .notifications-menu,
 .profile-menu {
     position: relative;
@@ -68,67 +68,113 @@ body {
 
 .notifications-trigger {
     list-style: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 4px;
-    border: 1px solid var(--border);
-    background: #ffffff;
+    width: 44px; /* Un poco más grande */
+    height: 44px;
+    border-radius: 50%; /* Círculo perfecto en lugar de cuadrado */
+    border: 1px solid transparent;
+    background: #f1f5f9; /* Gris muy clarito */
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     position: relative;
-}
-
-.notifications-trigger .badge {
-    position: absolute;
-    top: -7px;
-    right: -8px;
-    margin-left: 0;
+    transition: all 0.3s ease;
 }
 
 .notifications-trigger:hover {
-    background: #f0f0f0;
-}
-
-.notifications-trigger::-webkit-details-marker {
-    display: none;
+    background: #eef2ff; /* Morado claro al pasar el ratón */
 }
 
 .bell-icon {
-    font-size: 1rem;
+    font-size: 1.15rem;
+    color: #64748b; /* Gris oscuro elegante */
+    transition: color 0.3s ease;
+}
+
+.notifications-trigger:hover .bell-icon {
+    color: var(--primary); /* Se vuelve morado al hacer hover */
 }
 
 .badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    min-width: 20px;
-    height: 20px;
+    min-width: 22px;
+    height: 22px;
     border-radius: 999px;
-    font-size: 0.8rem;
-    background: var(--accent);
-    color: #1d1d1d;
-    padding: 0 6px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    background: var(--accent); /* Rojo notificación */
+    color: white;
+    border: 2px solid white; /* Borde blanco para separarlo de la campana */
 }
 
+.profile-trigger {
+    list-style: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 50px; /* Píldora perfectamente redonda */
+    height: 44px;
+    padding: 4px 16px 4px 6px; /* Padding asimétrico para acomodar el avatar */
+    transition: all 0.3s ease;
+}
+
+.profile-trigger:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.04); /* Sombra elegante */
+}
+
+.profile-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    background: var(--primary);
+}
+
+.profile-label {
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+/* (Ocultar la flechita por defecto de los details) */
+.notifications-trigger::-webkit-details-marker,
+.profile-trigger::-webkit-details-marker {
+    display: none;
+}
+
+/* --- MENÚS DESPLEGABLES --- */
 .notifications-dropdown {
     position: absolute;
     right: 0;
-    top: calc(100% + 8px);
-    width: 260px;
+    top: calc(100% + 12px);
+    width: 300px; /* Un poco más ancho */
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 14px; /* Bordes más suaves */
     background: #fff;
     box-shadow: var(--shadow);
-    padding: 12px;
+    padding: 16px;
     z-index: 30;
 }
 
 .dropdown-title {
-    margin: 0 0 8px;
-    font-size: 0.92rem;
+    margin: 0 0 12px;
+    font-size: 1rem;
     font-weight: 700;
+    color: var(--text);
 }
 
 .dropdown-empty {
@@ -137,58 +183,18 @@ body {
     font-size: 0.9rem;
 }
 
-.profile-trigger {
-    list-style: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    background: #ffffff;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    height: 40px;
-    padding: 4px 12px 4px 6px;
-}
-
-.profile-trigger:hover {
-    background: #f0f0f0;
-}
-
-.profile-trigger::-webkit-details-marker {
-    display: none;
-}
-
-.profile-avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 999px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #fff;
-    background: var(--primary);
-}
-
-.profile-label {
-    color: var(--text);
-    font-size: 0.9rem;
-    font-weight: 700;
-}
-
 .profile-dropdown {
     position: absolute;
     right: 0;
-    top: calc(100% + 8px);
-    min-width: 170px;
+    top: calc(100% + 12px);
+    min-width: 180px;
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 14px;
     background: #fff;
     box-shadow: var(--shadow);
-    padding: 6px;
+    padding: 8px;
     display: grid;
-    gap: 2px;
+    gap: 4px;
     z-index: 30;
 }
 
@@ -199,53 +205,68 @@ body {
     text-align: left;
     background: transparent;
     color: var(--text);
-    font-size: 0.92rem;
-    padding: 9px 10px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 10px 14px;
     cursor: pointer;
     text-decoration: none;
+    transition: background 0.2s, color 0.2s;
 }
 
 .profile-item:hover {
-    background: #eef2ff;
+    background: #f1f5f9;
+    color: var(--primary);
 }
 
 .logout-item {
-    color: #c63232;
-    font-weight: 700;
+    color: #ef4444;
 }
 
 .logout-item:hover {
-    background: #ffe9e9;
+    background: #fef2f2;
+    color: #dc2626;
 }
 
 .notification-item {
-    padding: 12px;
-    border-bottom: 1px solid #f0f0f0;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f5f9;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 15px;
 }
 
 .notification-item:last-child {
     border-bottom: none;
+    padding-bottom: 0;
 }
 
-.notification-text {
-    flex: 1;
+.notification-text strong {
+    color: var(--text);
+    font-size: 0.95rem;
+}
+
+.notification-text p {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 4px;
+    line-height: 1.4;
 }
 
 .notification-action {
-    padding: 6px 12px;
-    background-color: #007bff;
+    padding: 8px 14px;
+    background-color: var(--primary);
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background-color 0.2s;
 }
 
 .notification-action:hover {
-    background-color: #0056b3;
+    background-color: #5a6fe0;
 }
 
 /* Botones para invitados */
@@ -253,7 +274,7 @@ body {
     color: #667eea; 
     text-decoration: none; 
     font-weight: 600; 
-    margin-right: 10px; 
+    margin-right: 15px; 
 }
 .btn-register { 
     background: #667eea; 
@@ -262,14 +283,13 @@ body {
     padding: 0.8rem 2rem; 
     border-radius: 50px; 
     font-weight: 600; 
-    transition: 0.3s; 
+    transition: background 0.3s; 
 }
 .btn-register:hover {
     background: #5a6fe0;
 }
 
-
-/* ============ Hero (Mantenido) ============ */
+/* ============ Hero ============ */
 .hero { position: relative; height: 85vh; display: flex; align-items: center; overflow: hidden; color: white; padding: 0 80px; }
 #hero-video { position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%; z-index: 1; transform: translate(-50%, -50%); object-fit: cover; }
 .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(102, 126, 234, 0.55) 0%, rgba(118, 75, 162, 0.55) 100%); z-index: 2; }
