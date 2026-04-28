@@ -17,7 +17,7 @@ body {
     padding: 0 20px;
 }
 
-/* ============ Navbar (Solo Logo) ============ */
+/* ============ Navbar (Logo + Perfil Circular) ============ */
 .navbar { 
     background: white; 
     box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
@@ -35,7 +35,8 @@ body {
     margin: 0 auto; 
     padding: 0 30px; 
     display: flex; 
-    justify-content: flex-start; /* Alineado a la izquierda */
+    /* Cambiamos a space-between para separar el logo y el perfil a los extremos */
+    justify-content: space-between; 
     align-items: center; 
 }
 
@@ -45,6 +46,56 @@ body {
     object-fit: contain; 
 }
 
+/* Contenedor derecho para botones/perfil */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* --- Botón Circular de Perfil --- */
+.profile-circle-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: #667eea; /* Color morado/azul de Courtly */
+    color: white;
+    border: none;
+    font-size: 1.2rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(102, 126, 234, 0.3);
+    transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+
+.profile-circle-btn:hover {
+    background-color: #5a6fe0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+}
+
+/* --- Botones para usuarios no logueados --- */
+.btn-login { 
+    color: #667eea; 
+    text-decoration: none; 
+    font-weight: 600; 
+    margin-right: 10px; 
+}
+.btn-register { 
+    background: #667eea; 
+    color: white; 
+    text-decoration: none; 
+    padding: 0.8rem 2rem; 
+    border-radius: 50px; 
+    font-weight: 600; 
+    transition: 0.3s; 
+}
+.btn-register:hover {
+    background: #5a6fe0;
+}
 
 /* ============ Hero (Igual que antes) ============ */
 .hero { position: relative; height: 85vh; display: flex; align-items: center; overflow: hidden; color: white; padding: 0 80px; }

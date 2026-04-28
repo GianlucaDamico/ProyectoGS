@@ -15,6 +15,17 @@
                     <img src="{% static 'core/img/LOGO.png' %}" alt="Courtly" class="logo-img">
                 </a>
             </div>
+
+            <div class="nav-right">
+                {% if user.is_authenticated %}
+                    <button class="profile-circle-btn" title="Perfil">
+                        {{ user.username|make_list|first|upper }}
+                    </button>
+                {% else %}
+                    <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>
+                    <a href="{% url 'cuentas:register' %}" class="btn-register">Registrarse</a>
+                {% endif %}
+            </div>
         </div>
     </nav>
 
