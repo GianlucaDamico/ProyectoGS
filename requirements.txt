@@ -4,3 +4,4 @@ python-decouple==3.8
 gunicorn==21.2.0
 djangorestframework==3.14.0
 django-filter==24.3
+Pillow==12.2.0
