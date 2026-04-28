@@ -197,6 +197,14 @@ body {
     font-size: 80px;
 }
 
+.complejo-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
 .complejo-content {
     padding: 20px;
     flex-grow: 1;
