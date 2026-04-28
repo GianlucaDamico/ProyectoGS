@@ -77,7 +77,13 @@ class Complex(models.Model):
     email_comercial = models.EmailField(blank=True)
     descripcion = models.TextField(blank=True)
     slug = models.SlugField(max_length=200, blank=True, unique=True, null = True)
-    
+    imagen = models.ImageField(
+        upload_to='complejos/', 
+        default='complejos/default_complejo.png', 
+        null=True, 
+        blank=True
+    )
+
     @property
     def address(self):
         return ' '.join(part for part in [self.calle, self.altura] if part)

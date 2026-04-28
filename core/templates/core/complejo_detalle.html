@@ -37,21 +37,33 @@
         <section class="complejo-hero">
             <div class="complejo-hero-overlay">
                 <div class="container">
-                    <div class="complejo-hero-content">
-                        <h1 class="complejo-title">{{ complejo.name }}</h1>
-                        <p class="complejo-location">📍
-                            {% if complejo.barrio %}{{ complejo.barrio }}{% endif %}
-                            {% if complejo.address %}{% if complejo.barrio %}, {% endif %}{{ complejo.address }}{% endif %}
-                            {% if complejo.city %}{% if complejo.barrio or complejo.address %}, {% endif %}{{ complejo.city }}{% endif %}
-                        </p>
-                        
-                        {% if complejo.amenities.all %}
-                        <div class="amenities-badges">
-                            {% for amenity in complejo.amenities.all %}
-                                <span class="amenity-badge">{{ amenity.name }}</span>
-                            {% endfor %}
+                    <div class="hero-split">
+                        <div class="complejo-hero-content">
+                            <h1 class="complejo-title">{{ complejo.name }}</h1>
+                            <p class="complejo-location">📍
+                                {% if complejo.barrio %}{{ complejo.barrio }}{% endif %}
+                                {% if complejo.address %}{% if complejo.barrio %}, {% endif %}{{ complejo.address }}{% endif %}
+                                {% if complejo.city %}{% if complejo.barrio or complejo.address %}, {% endif %}{{ complejo.city }}{% endif %}
+                            </p>
+                            
+                            {% if complejo.amenities.all %}
+                            <div class="amenities-badges">
+                                {% for amenity in complejo.amenities.all %}
+                                    <span class="amenity-badge">{{ amenity.name }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                         </div>
-                        {% endif %}
+
+                        <div class="hero-image-display">
+                            {% if complejo.imagen %}
+                                <img src="{{ complejo.imagen.url }}" alt="Foto de {{ complejo.name }}">
+                            {% else %}
+                                <div class="no-image-placeholder">
+                                    <span>🏆</span>
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -390,23 +390,135 @@ details[open] .profile-dropdown {
 .resultados-header h2 { font-size: 1.8rem; color: #1e293b; margin-bottom: 5px; font-weight: 800; }
 .resultados-count { font-size: 1.05rem; color: #64748b; }
 
-/* Grid de Complejos */
-.complejos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; margin-bottom: 40px; }
-.complejo-card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; display: flex; flex-direction: column; border: 1px solid #f1f5f9;}
-.complejo-card:hover { transform: translateY(-6px); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); }
-.complejo-image { width: 100%; height: 160px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); display: flex; align-items: center; justify-content: center; font-size: 70px; }
-.complejo-content { padding: 20px; flex-grow: 1; }
-.complejo-content h3 { font-size: 1.3rem; color: #1e293b; margin-bottom: 8px; font-weight: 700; }
-.complejo-ubicacion { color: #64748b; font-size: 0.95rem; margin-bottom: 15px; }
-.complejo-stats { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
-.stat-item { font-size: 0.9rem; color: #475569; font-weight: 600; }
-.complejo-amenities { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 15px; }
-.amenity-tag { background: #f8fafc; color: #64748b; padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; border: 1px solid #e2e8f0; }
-.complejo-deportes { display: flex; flex-wrap: wrap; gap: 6px; }
-.deporte-badge { background: #f0f4ff; color: var(--primary); padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; }
-.complejo-footer { padding: 15px 20px; background: #f8fafc; border-top: 1px solid #f1f5f9; }
-.ver-mas { color: var(--primary); font-weight: 700; font-size: 0.95rem; }
+.resultados-header {
+    margin-bottom: 40px;
+}
 
+.resultados-header h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.resultados-count {
+    font-size: 1.1rem;
+    color: #666;
+}
+
+/* ============ Grid de Complejos ============ */
+.complejos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.complejo-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+}
+
+.complejo-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.complejo-image {
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 80px;
+}
+
+.complejo-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+.complejo-content {
+    padding: 20px;
+    flex-grow: 1;
+}
+
+.complejo-content h3 {
+    font-size: 1.4rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.complejo-ubicacion {
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+}
+
+.complejo-stats {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    font-size: 0.9rem;
+    color: #555;
+    font-weight: 500;
+}
+
+.complejo-amenities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 15px;
+}
+
+.amenity-tag {
+    background: #f0f3ff;
+    color: #667eea;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.complejo-deportes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.deporte-badge {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.complejo-footer {
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #eee;
+}
+
+.ver-mas {
+    color: #667eea;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
 /* ============ Sin Resultados ============ */
 .no-resultados { text-align: center; padding: 60px 20px; }
 

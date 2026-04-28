@@ -34,18 +34,39 @@
     <main class="dashboard-main container">
         
         <section class="complejo-hero-card">
-            <div class="complejo-hero-content">
-                <h1 class="complejo-title"><i class="far fa-building"></i> {{ complejo.name }}</h1>
-                <p class="complejo-location">
-                    <i class="fas fa-map-marker-alt"></i>
-                    {% if complejo.barrio %}{{ complejo.barrio }}{% endif %}
-                    {% if complejo.address %}{% if complejo.barrio %}, {% endif %}{{ complejo.address }}{% endif %}
-                    {% if complejo.city %}{% if complejo.barrio or complejo.address %}, {% endif %}<strong>{{ complejo.city }}</strong>{% endif %}
-                </p>
-                <div class="amenities-badges">
-                    {% for amenity in complejo.amenities.all %}
-                        <span class="amenity-badge"><i class="fas fa-check-circle"></i> {{ amenity.name }}</span>
-                    {% endfor %}
+            <div class="hero-split">
+                <div class="complejo-hero-content">
+                    <h1 class="complejo-title"><i class="far fa-building"></i> {{ complejo.name }}</h1>
+                    <p class="complejo-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        {% if complejo.barrio %}{{ complejo.barrio }}{% endif %}
+                        {% if complejo.address %}{% if complejo.barrio %}, {% endif %}{{ complejo.address }}{% endif %}
+                        {% if complejo.city %}{% if complejo.barrio or complejo.address %}, {% endif %}<strong>{{ complejo.city }}</strong>{% endif %}
+                    </p>
+                    <div class="amenities-badges">
+                        {% for amenity in complejo.amenities.all %}
+                            <span class="amenity-badge"><i class="fas fa-check-circle"></i> {{ amenity.name }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="hero-image-upload">
+                    <div class="image-wrapper" id="hero-image-wrapper">
+                        {% if complejo.imagen %}
+                            <img src="{{ complejo.imagen.url }}" alt="Imagen complejo" id="current-hero-image">
+                        {% else %}
+                            <div class="no-image-placeholder">
+                                <i class="fas fa-image" style="font-size: 2rem; margin-bottom: 8px;"></i>
+                                <span>Sin imagen</span>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="image-overlay" onclick="document.getElementById('image-upload-input').click()">
+                            <i class="fas fa-camera" style="font-size: 1.5rem; margin-bottom: 5px;"></i>
+                            <span>Cambiar foto</span>
+                        </div>
+                    </div>
+                    <input type="file" id="image-upload-input" accept="image/png, image/jpeg" style="display: none;" onchange="uploadImage(this)">
                 </div>
             </div>
         </section>
@@ -263,6 +284,39 @@
             const amenityId = document.getElementById('amenity-id-to-delete').value;
             enviarDatos('/api/complex/{{ complejo.id }}/remove-amenity/', { amenity_id: amenityId }, 'confirm-delete-btn');
         };
+
+        async function uploadImage(input) {
+            if (!input.files || !input.files[0]) return;
+            
+            const file = input.files[0];
+            const formData = new FormData();
+            formData.append('imagen', file); 
+
+            const wrapper = document.getElementById('hero-image-wrapper');
+            wrapper.style.opacity = '0.5'; // Feedback visual de carga
+
+            try {
+                const response = await fetch('/api/complex/{{ complejo.id }}/update-image/', {
+                    method: 'POST',
+                    headers: { 
+                        'X-CSRFToken': '{{ csrf_token }}' 
+                        // Nota: No incluimos 'Content-Type', el navegador lo auto-configura con el 'boundary' adecuado para archivos
+                    },
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    location.reload(); // Recarga la página para mostrar la imagen actualizada
+                } else {
+                    alert('Error al actualizar la imagen.');
+                    wrapper.style.opacity = '1';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Hubo un problema de conexión.');
+                wrapper.style.opacity = '1';
+            }
+        }
     </script>
 </body>
 </html>
