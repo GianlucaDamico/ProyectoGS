@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="{% static 'core/explorar.css' %}">
 </head>
 <body>
-    <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-container">
             <div class="logo">
@@ -16,23 +15,9 @@
                     <img src="{% static 'core/img/LOGO.png' %}" alt="Courtly" class="logo-img">
                 </a>
             </div>
-            <div class="nav-links">
-                {% if user.is_authenticated %}
-                        <span class="user-greeting">Hola, {{ user.username }}</span>
-                        <a href="{% url 'cuentas:home_usuario' %}" class="btn-login">Mi cuenta</a>
-                        <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn-register">Cerrar sesión</button>
-                        </form>
-                    {% else %}
-                        <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>
-                        <a href="{% url 'cuentas:register' %}" class="btn-register">Registrarse</a>
-                    {% endif %}
-            </div>
         </div>
     </nav>
 
-    <!-- Header de la página -->
     <section class="page-header">
         <div class="container">
             <h1>Explorar Complejos Deportivos</h1>
@@ -40,11 +25,9 @@
         </div>
     </section>
     
-        <!-- Sección de búsqueda y filtros -->
-    <section class="filtros-section">
+        <section class="filtros-section">
         <div class="container">
             <form method="GET" class="filtros-form" id="filtrosForm">
-                <!-- Búsqueda -->
                 <div class="filtro-item search-box">
                     <label for="q">🔍 Buscar</label>
                     <input 
@@ -56,7 +39,6 @@
                     >
                 </div>
 
-                <!-- Filtro por ciudad -->
                 <div class="filtro-item">
                     <label for="ciudad">📍 Ciudad</label>
                     <select name="ciudad" id="ciudad" onchange="this.form.submit()">
@@ -70,7 +52,6 @@
                     </select>
                 </div>
 
-                <!-- Filtro por deporte -->
                 <div class="filtro-item">
                     <label for="deporte">🏐 Deporte</label>
                     <select name="deporte" id="deporte" onchange="this.form.submit()">
@@ -84,7 +65,6 @@
                     </select>
                 </div>
 
-                <!-- Ordenamiento -->
                 <div class="filtro-item">
                     <label for="orden">📊 Ordenar por</label>
                     <select name="orden" id="orden" onchange="this.form.submit()">
@@ -100,7 +80,6 @@
                     </select>
                 </div>
 
-                <!-- Botones -->
                 <div class="filtro-actions">
                     <button type="submit" class="btn-buscar">Buscar</button>
                     {% if query or ciudad_filtro or deporte_filtro %}
@@ -113,10 +92,8 @@
         </div>
     </section>
 
-        <!-- Resultados -->
-    <section class="resultados-section">
+        <section class="resultados-section">
         <div class="container">
-            <!-- Header de resultados -->
             <div class="resultados-header">
                 <h2>
                     {% if query or ciudad_filtro or deporte_filtro %}
@@ -130,13 +107,11 @@
                 </p>
             </div>
 
-            <!-- Grid de complejos -->
             {% if complejos %}
                 <div class="complejos-grid">
                     {% for complejo in complejos %}
                         <div class="complejo-card" onclick="window.location.href='{{ complejo.get_absolute_url }}'">
                             <div class="complejo-image">
-                                <!-- Icono según el primer deporte -->
                                 {% with first_court=complejo.courts.first %}
                                     {% if first_court %}
                                         {% if first_court.sport == 'padel' %}⚾
@@ -195,7 +170,6 @@
                     {% endfor %}
                 </div>
 
-                <!-- Paginación -->
                 {% if page_obj.has_other_pages %}
                     <div class="pagination">
                         {% if page_obj.has_previous %}
@@ -227,7 +201,6 @@
                 {% endif %}
 
             {% else %}
-                <!-- Sin resultados -->
                 <div class="no-resultados">
                     <div class="no-resultados-icon">🔍</div>
                     <h3>No se encontraron complejos</h3>
@@ -240,7 +213,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-section">
