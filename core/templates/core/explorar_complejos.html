@@ -18,9 +18,44 @@
 
             <div class="nav-right">
                 {% if user.is_authenticated %}
-                    <button class="profile-circle-btn" title="Perfil">
-                        {{ user.username|make_list|first|upper }}
-                    </button>
+                    
+                    <details class="notifications-menu">
+                        <summary class="notifications-trigger" aria-label="Abrir notificaciones">
+                            <span class="bell-icon">&#128276;</span>
+                            {% if resenas_pendientes %}<span class="badge">{{ resenas_pendientes|length }}</span>{% endif %}
+                        </summary>
+                        <div class="notifications-dropdown">
+                            <p class="dropdown-title">Notificaciones</p>
+                            {% if resenas_pendientes %}
+                                {% for reserva in resenas_pendientes %}
+                                    <div class="notification-item">
+                                        <div class="notification-text">
+                                            <strong>{{ reserva.court.complex.name }}</strong>
+                                            <p>Tu partida en {{ reserva.court.name }} terminó. ¡Deja una reseña!</p>
+                                        </div>
+                                        <button class="notification-action" onclick="abrirModalResena({{ reserva.id }})">Reseñar</button>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p class="dropdown-empty">No tenes notificaciones nuevas.</p>
+                            {% endif %}
+                        </div>
+                    </details>
+
+                    <details class="profile-menu">
+                        <summary class="profile-trigger" aria-label="Abrir menu de perfil">
+                            <span class="profile-avatar">{{ user.username|slice:":1"|upper }}</span>
+                            <span class="profile-label">Perfil</span>
+                        </summary>
+                        <div class="profile-dropdown">
+                            <a href="{% url 'cuentas:home_usuario' %}" class="profile-item">Mi perfil</a>
+                            <form method="post" action="{% url 'cuentas:logout_usuario' %}" style="margin: 0;">
+                                {% csrf_token %}
+                                <button type="submit" class="profile-item logout-item">Cerrar sesión</button>
+                            </form>
+                        </div>
+                    </details>
+
                 {% else %}
                     <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>
                     <a href="{% url 'cuentas:register' %}" class="btn-register">Registrarse</a>
