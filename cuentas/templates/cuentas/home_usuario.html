@@ -6,6 +6,205 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Usuario - CourtlyGPS</title>
     <link rel="stylesheet" href="{% static 'cuentas/home_usuario.css' %}">
+    <style>
+        /* Estilos para el modal de reseña */
+        .review-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .review-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .review-modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 90%;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .review-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .review-modal-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #333;
+        }
+
+        .close-modal {
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+            border: none;
+            background: none;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            color: #000;
+        }
+
+        .review-modal-body {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .star {
+            font-size: 32px;
+            cursor: pointer;
+            color: #ddd;
+            transition: color 0.2s;
+        }
+
+        .star:hover,
+        .star.active {
+            color: #ffc107;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        .review-modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-cancel, .btn-submit {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-cancel {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-cancel:hover {
+            background-color: #e0e0e0;
+        }
+
+        .btn-submit {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-submit:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .notification-item {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-text {
+            flex: 1;
+        }
+
+        .notification-action {
+            padding: 6px 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .notification-action:hover {
+            background-color: #0056b3;
+        }
+
+        .rating-display {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
 </head>
 <body>
     <header class="site-header">
@@ -22,11 +221,23 @@
                 <details class="notifications-menu">
                     <summary class="notifications-trigger" aria-label="Abrir notificaciones">
                         <span class="bell-icon">&#128276;</span>
-                        {% if notificaciones_count %}<span class="badge">{{ notificaciones_count }}</span>{% endif %}
+                        {% if resenas_pendientes %}<span class="badge">{{ resenas_pendientes|length }}</span>{% endif %}
                     </summary>
                     <div class="notifications-dropdown">
                         <p class="dropdown-title">Notificaciones</p>
-                        <p class="dropdown-empty">No tenes notificaciones nuevas.</p>
+                        {% if resenas_pendientes %}
+                            {% for reserva in resenas_pendientes %}
+                                <div class="notification-item">
+                                    <div class="notification-text">
+                                        <strong>{{ reserva.court.complex.name }}</strong>
+                                        <p>Tu partida en {{ reserva.court.name }} terminó. ¡Deja una reseña!</p>
+                                    </div>
+                                    <button class="notification-action" onclick="abrirModalResena({{ reserva.id }})">Reseñar</button>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="dropdown-empty">No tenes notificaciones nuevas.</p>
+                        {% endif %}
                     </div>
                 </details>
                 <details class="profile-menu">
@@ -117,8 +328,163 @@
         </section>
     </main>
 
+    <!-- Modal para crear reseña -->
+    <div id="reviewModal" class="review-modal">
+        <div class="review-modal-content">
+            <div class="review-modal-header">
+                <h2>Dejar una reseña</h2>
+                <button class="close-modal" onclick="cerrarModalResena()">&times;</button>
+            </div>
+            <div class="review-modal-body">
+                <div class="form-group">
+                    <label>Complejo: <strong id="complexName"></strong></label>
+                </div>
+                <div class="form-group">
+                    <label>Calificación</label>
+                    <div class="star-rating" id="starRating">
+                        <span class="star" onclick="seleccionarEstrella(1)">★</span>
+                        <span class="star" onclick="seleccionarEstrella(2)">★</span>
+                        <span class="star" onclick="seleccionarEstrella(3)">★</span>
+                        <span class="star" onclick="seleccionarEstrella(4)">★</span>
+                        <span class="star" onclick="seleccionarEstrella(5)">★</span>
+                    </div>
+                    <div class="rating-display" id="ratingDisplay"></div>
+                </div>
+                <div class="form-group">
+                    <label for="reviewDescription">Descripción (opcional)</label>
+                    <textarea id="reviewDescription" placeholder="Cuéntanos tu experiencia..."></textarea>
+                </div>
+            </div>
+            <div class="review-modal-footer">
+                <button class="btn-cancel" onclick="cerrarModalResena()">Cancelar</button>
+                <button class="btn-submit" onclick="enviarResena()" id="submitReviewBtn">Enviar reseña</button>
+            </div>
+        </div>
+    </div>
+
     <footer class="site-footer">
         <p>2026 CourtlyGPS. Todos los derechos reservados.</p>
     </footer>
+
+    <script>
+        let currentBookingId = null;
+        let selectedRating = 0;
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                          document.querySelector('input[name=csrfmiddlewaretoken]')?.value ||
+                          getCookie('csrftoken');
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function abrirModalResena(bookingId) {
+            currentBookingId = bookingId;
+            selectedRating = 0;
+            
+            // Obtener datos de la reserva
+            const notificationItems = document.querySelectorAll('.notification-item');
+            let complexName = 'Complejo';
+            
+            for (let item of notificationItems) {
+                const button = item.querySelector('.notification-action');
+                if (button && parseInt(button.getAttribute('onclick').match(/\d+/)[0]) === bookingId) {
+                    complexName = item.querySelector('strong').textContent;
+                    break;
+                }
+            }
+            
+            document.getElementById('complexName').textContent = complexName;
+            document.getElementById('reviewDescription').value = '';
+            
+            // Resetear estrellas
+            document.querySelectorAll('.star').forEach(star => {
+                star.classList.remove('active');
+            });
+            document.getElementById('ratingDisplay').textContent = '';
+            
+            document.getElementById('reviewModal').classList.add('active');
+        }
+
+        function cerrarModalResena() {
+            document.getElementById('reviewModal').classList.remove('active');
+            currentBookingId = null;
+            selectedRating = 0;
+        }
+
+        function seleccionarEstrella(rating) {
+            selectedRating = rating;
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+            document.getElementById('ratingDisplay').textContent = rating + ' estrellas';
+        }
+
+        function enviarResena() {
+            if (!currentBookingId || selectedRating === 0) {
+                alert('Por favor selecciona una calificación');
+                return;
+            }
+
+            const description = document.getElementById('reviewDescription').value;
+            const submitBtn = document.getElementById('submitReviewBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
+
+            fetch('/api/reviews/create/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({
+                    booking_id: currentBookingId,
+                    rating: selectedRating,
+                    description: description
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert('¡Reseña enviada exitosamente!');
+                    cerrarModalResena();
+                    location.reload();
+                } else if (data.error) {
+                    alert('Error: ' + data.error);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Enviar reseña';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Ocurrió un error al enviar la reseña');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Enviar reseña';
+            });
+        }
+
+        // Cerrar modal al hacer click fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('reviewModal');
+            if (event.target === modal) {
+                cerrarModalResena();
+            }
+        }
+    </script>
 </body>
 </html>

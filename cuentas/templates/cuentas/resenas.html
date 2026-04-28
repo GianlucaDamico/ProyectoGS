@@ -1,0 +1,138 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reseñas - Propietario</title>
+    <link rel="icon" type="image/png" href="{% static 'core/img/logoicono.png' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'core/home.css' %}"> <link rel="stylesheet" href="{% static 'cuentas/resenas.css' %}"> </head>
+<body class="dashboard-body">
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo">
+                <a href="{% url 'cuentas:home_propietario' %}">
+                    <img src="{% static 'core/img/LOGO.png' %}" alt="Courtly" class="logo-img">
+                </a>
+            </div>
+            <div class="nav-links owner-nav">
+                <a href="{% url 'cuentas:home_propietario' %}" class="nav-item">Control</a>
+                <a href="{% url 'cuentas:agenda' %}" class="nav-item">Agenda</a>
+                <a href="{% url 'cuentas:configuration' %}" class="nav-item">Configuración</a>
+                <a href="{% url 'cuentas:gestion' %}" class="nav-item">Gestión</a>
+                <a href="{% url 'cuentas:resenas' %}" class="nav-item active">Reseñas</a>
+                
+                <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline; margin-left: 15px;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-register"><i class="fas fa-sign-out-alt"></i> Salir</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <main class="dashboard-main container">
+        <section class="reviews-container">
+            <div class="dashboard-header">
+                <h2 class="section-heading">Reseñas de tu Complejo</h2>
+            </div>
+
+            {% if resenas %}
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-comment-dots"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-value">{{ resenas.count }}</div>
+                            <div class="stat-label">Total Reseñas</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-star-half-alt"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-value">{{ promedio_calificacion|floatformat:1 }}</div>
+                            <div class="stat-label">Promedio General</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="avg-rating-banner">
+                    <div class="avg-text">
+                        <i class="fas fa-award"></i>
+                        <span class="avg-rating-label">Calificación Dinámica:</span>
+                    </div>
+                    <div class="avg-score">
+                        <span class="avg-rating-stars" id="avgStars"></span>
+                        <span class="rating-number-badge" id="avgRating"></span>
+                    </div>
+                </div>
+
+                <div class="reviews-list">
+                    {% for resena in resenas %}
+                        <div class="review-card">
+                            <div class="review-header">
+                                <div class="review-user-info">
+                                    <div class="review-avatar">
+                                        <i class="fas fa-user-circle"></i>
+                                    </div>
+                                    <div>
+                                        <div class="review-user-name">{{ resena.user.first_name|default:resena.user.username }}</div>
+                                        <div class="review-date"><i class="far fa-clock"></i> {{ resena.created_at|date:'d/m/Y H:i' }}</div>
+                                    </div>
+                                </div>
+                                <div class="review-rating">
+                                    <span class="stars">{% for i in "12345" %}{% if i|add:0 <= resena.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
+                                    <span class="rating-number-badge">{{ resena.rating }}/5</span>
+                                </div>
+                            </div>
+                            {% if resena.description %}
+                                <div class="review-description">
+                                    <p>{{ resena.description }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state-global">
+                    <i class="far fa-star"></i>
+                    <h3>Sin reseñas aún</h3>
+                    <p>Aún no has recibido reseñas de tus clientes. ¡Proporciona un excelente servicio para empezar a destacar!</p>
+                </div>
+            {% endif %}
+        </section>
+    </main>
+
+    <script>
+        // Calcular el promedio de reseñas (Mantenemos tu lógica, adaptada a los nuevos selectores)
+        document.addEventListener('DOMContentLoaded', function() {
+            const reviewCards = document.querySelectorAll('.review-card');
+            if (reviewCards.length === 0) return;
+
+            let totalRating = 0;
+            let count = 0;
+
+            reviewCards.forEach(card => {
+                const ratingText = card.querySelector('.rating-number-badge');
+                if(ratingText) {
+                    const rating = parseInt(ratingText.textContent.split('/')[0]);
+                    if(!isNaN(rating)) {
+                        totalRating += rating;
+                        count++;
+                    }
+                }
+            });
+
+            if(count > 0) {
+                const average = (totalRating / count).toFixed(1);
+                const stars = '★'.repeat(Math.round(average)) + '☆'.repeat(5 - Math.round(average));
+
+                const avgRatingEl = document.getElementById('avgRating');
+                const avgStarsEl = document.getElementById('avgStars');
+                
+                if(avgRatingEl) avgRatingEl.textContent = average + '/5';
+                if(avgStarsEl) avgStarsEl.textContent = stars;
+            }
+        });
+    </script>
+</body>
+</html>

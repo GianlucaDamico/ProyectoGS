@@ -161,3 +161,6 @@ REST_FRAMEWORK = {
     # Formato de fechas: ISO 8601 es el estándar para APIs REST
     'DATETIME_FORMAT': '%Y-%m-%dT%H:%M:%S%z',
 }
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

@@ -1,16 +1,17 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión - CourtlyGPS</title>
-    {% load static %}
+    <title> Iniciar Sesión</title>
+    <link rel="icon" type="image/png" href="{% static 'core/img/logoicono.png' %}">
     <link rel="stylesheet" href="{% static 'cuentas/login.css' %}">
 </head>
 <body>
     <div class="login-container">
         <div class="login-header">
-            <h1>CourtlyGPS</h1>
+            <img src="{% static 'core/img/logotexto.png' %}" alt="Courtly" class="logo-img">
             <p>Ingresa a tu cuenta</p>
         </div>
 

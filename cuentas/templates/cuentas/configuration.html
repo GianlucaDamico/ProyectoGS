@@ -1,0 +1,322 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page }} - Propietario</title>
+    <link rel="icon" type="image/png" href="{% static 'core/img/logoicono.png' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'core/home.css' %}"> <link rel="stylesheet" href="{% static 'cuentas/configuration.css' %}"> </head>
+<body class="dashboard-body">
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo">
+                <a href="{% url 'cuentas:home_propietario' %}">
+                    <img src="{% static 'core/img/LOGO.png' %}" alt="Courtly" class="logo-img">
+                </a>
+            </div>
+            <div class="nav-links owner-nav">
+                <a href="{% url 'cuentas:home_propietario' %}" class="nav-item">Control</a>
+                <a href="{% url 'cuentas:agenda' %}" class="nav-item">Agenda</a>
+                <a href="{% url 'cuentas:configuration' %}" class="nav-item active">Configuración</a>
+                <a href="{% url 'cuentas:gestion' %}" class="nav-item">Gestión</a>
+                <a href="{% url 'cuentas:resenas' %}" class="nav-item">Reseñas</a>
+                
+                <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline; margin-left: 15px;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-register"><i class="fas fa-sign-out-alt"></i> Salir</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <main class="dashboard-main container">
+        
+        <section class="complejo-hero-card">
+            <div class="hero-split">
+                <div class="complejo-hero-content">
+                    <h1 class="complejo-title"><i class="far fa-building"></i> {{ complejo.name }}</h1>
+                    <p class="complejo-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        {% if complejo.barrio %}{{ complejo.barrio }}{% endif %}
+                        {% if complejo.address %}{% if complejo.barrio %}, {% endif %}{{ complejo.address }}{% endif %}
+                        {% if complejo.city %}{% if complejo.barrio or complejo.address %}, {% endif %}<strong>{{ complejo.city }}</strong>{% endif %}
+                    </p>
+                    <div class="amenities-badges">
+                        {% for amenity in complejo.amenities.all %}
+                            <span class="amenity-badge"><i class="fas fa-check-circle"></i> {{ amenity.name }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="hero-image-upload">
+                    <div class="image-wrapper" id="hero-image-wrapper">
+                        {% if complejo.imagen %}
+                            <img src="{{ complejo.imagen.url }}" alt="Imagen complejo" id="current-hero-image">
+                        {% else %}
+                            <div class="no-image-placeholder">
+                                <i class="fas fa-image" style="font-size: 2rem; margin-bottom: 8px;"></i>
+                                <span>Sin imagen</span>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="image-overlay" onclick="document.getElementById('image-upload-input').click()">
+                            <i class="fas fa-camera" style="font-size: 1.5rem; margin-bottom: 5px;"></i>
+                            <span>Cambiar foto</span>
+                        </div>
+                    </div>
+                    <input type="file" id="image-upload-input" accept="image/png, image/jpeg" style="display: none;" onchange="uploadImage(this)">
+                </div>
+            </div>
+        </section>
+
+        <section class="config-grid">
+            
+            <div class="config-main-col">
+                
+                <div class="config-card">
+                    <div class="header-with-action">
+                        <h2><i class="fas fa-info-circle text-primary"></i> Sobre este complejo</h2>
+                        <button class="btn-edit" onclick="openModal('edit-description-modal')"><i class="fas fa-pen"></i> Editar</button>
+                    </div>
+                    <div id="description-container" class="card-body-content">
+                        {% if complejo.descripcion %}
+                            <p class="complejo-description">{{ complejo.descripcion }}</p>
+                        {% else %}
+                            <p class="complejo-description text-muted">
+                                {{ complejo.name }} es un complejo deportivo ubicado en {{ complejo.city }}. (Añade una descripción para atraer más clientes).
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="config-card">
+                    <div class="header-with-action">
+                        <h2><i class="fas fa-concierge-bell text-primary"></i> Servicios disponibles</h2>
+                        <button class="btn-add-small" onclick="openModal('add-amenity-modal')"><i class="fas fa-plus"></i> Añadir</button>
+                    </div>
+                    <div class="card-body-content">
+                        <ul class="amenities-management-list">
+                            {% for amenity in complejo.amenities.all %}
+                                <li class="amenity-management-item">
+                                    <span><i class="fas fa-check text-success"></i> {{ amenity.name }}</span>
+                                    <button class="remove-amenity-btn" data-amenity-id="{{ amenity.id }}" title="Eliminar servicio">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </li>
+                            {% empty %}
+                                <li class="text-muted"><i class="fas fa-exclamation-circle"></i> No hay servicios configurados.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-sidebar">
+                
+                <div class="config-card">
+                    <div class="header-with-action">
+                        <h2><i class="fas fa-address-book text-primary"></i> Contacto</h2>
+                        <button class="btn-edit-icon" onclick="openModal('edit-contact-modal')" title="Editar Contacto"><i class="fas fa-pen"></i></button>
+                    </div>
+                    <div class="contact-details">
+                        <div class="contact-row">
+                            <div class="contact-icon"><i class="fas fa-user"></i></div>
+                            <div class="contact-info">
+                                <small>Propietario</small>
+                                <p>{{ complejo.owner.username }}</p>
+                            </div>
+                        </div>
+                        <div class="contact-row">
+                            <div class="contact-icon"><i class="fas fa-phone-alt"></i></div>
+                            <div class="contact-info">
+                                <small>Teléfono</small>
+                                <p>{{ complejo.telefono_comercial|default:"No especificado" }}</p>
+                            </div>
+                        </div>
+                        <div class="contact-row">
+                            <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                            <div class="contact-info">
+                                <small>Email</small>
+                                <p>{{ complejo.email_comercial|default:"No especificado" }}</p>
+                            </div>
+                        </div>
+                        {% if complejo.barrio or complejo.address %}
+                        <div class="contact-row">
+                            <div class="contact-icon"><i class="fas fa-map-pin"></i></div>
+                            <div class="contact-info">
+                                <small>Dirección Física</small>
+                                <p>{{ complejo.barrio|default:"" }} {{ complejo.address|default:"" }}, {{ complejo.city }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <div id="delete-amenity-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Eliminar servicio</h3>
+                <span class="close" onclick="closeModal('delete-amenity-modal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que quieres eliminar este servicio? Los cambios se aplicarán inmediatamente.</p>
+                <input type="hidden" id="amenity-id-to-delete">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal-cancel" onclick="closeModal('delete-amenity-modal')">Cancelar</button>
+                <button id="confirm-delete-btn" class="btn-modal-delete">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="edit-description-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar descripción</h3>
+                <span class="close" onclick="closeModal('edit-description-modal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <textarea id="description-textarea" rows="6" class="custom-input" placeholder="Escribe aquí la descripción de tu complejo...">{{ complejo.descripcion }}</textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal-cancel" onclick="closeModal('edit-description-modal')">Cancelar</button>
+                <button id="save-description-btn" class="btn-modal-confirm">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="edit-contact-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Configurar contacto</h3>
+                <span class="close" onclick="closeModal('edit-contact-modal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <label>Teléfono comercial</label>
+                <input type="text" id="telefono-input" class="custom-input" value="{{ complejo.telefono_comercial|default:'' }}" placeholder="+34 XXX XXX XXX">
+                <label style="margin-top: 15px;">Email de contacto</label>
+                <input type="email" id="email-input" class="custom-input" value="{{ complejo.email_comercial|default:'' }}" placeholder="ejemplo@correo.com">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal-cancel" onclick="closeModal('edit-contact-modal')">Cancelar</button>
+                <button id="save-contact-btn" class="btn-modal-confirm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="add-amenity-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Añadir servicio</h3>
+                <span class="close" onclick="closeModal('add-amenity-modal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <label>Nombre del servicio (Ej: Vestuarios, Estacionamiento)</label>
+                <input type="text" id="amenity-input" class="custom-input" placeholder="Nombre del servicio">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal-cancel" onclick="closeModal('add-amenity-modal')">Cancelar</button>
+                <button id="save-amenity-btn" class="btn-modal-confirm">Añadir Servicio</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(id) { 
+            const modal = document.getElementById(id);
+            modal.style.display = 'block'; 
+            setTimeout(() => modal.classList.add('show'), 10);
+        }
+        function closeModal(id) { 
+            const modal = document.getElementById(id);
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+        
+        window.onclick = function(e) { if (e.target.classList.contains('modal')) closeModal(e.target.id); }
+
+        async function enviarDatos(url, body, btnId) {
+            const btn = document.getElementById(btnId);
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                    body: JSON.stringify(body)
+                });
+                location.reload();
+            } catch (error) {
+                location.reload();
+            }
+        }
+
+        // Eventos
+        document.getElementById('save-description-btn').onclick = function() {
+            enviarDatos('/api/complex/{{ complejo.id }}/update-description/', { descripcion: document.getElementById('description-textarea').value }, 'save-description-btn');
+        };
+
+        document.getElementById('save-contact-btn').onclick = function() {
+            enviarDatos('/api/complex/{{ complejo.id }}/update-contact/', { telefono_comercial: document.getElementById('telefono-input').value, email_comercial: document.getElementById('email-input').value }, 'save-contact-btn');
+        };
+
+        document.getElementById('save-amenity-btn').onclick = function() {
+            const name = document.getElementById('amenity-input').value;
+            if(name) enviarDatos('/api/complex/{{ complejo.id }}/add-amenity/', { name: name }, 'save-amenity-btn');
+        };
+
+        document.querySelectorAll('.remove-amenity-btn').forEach(btn => {
+            btn.onclick = function() {
+                document.getElementById('amenity-id-to-delete').value = this.dataset.amenityId;
+                openModal('delete-amenity-modal');
+            };
+        });
+
+        document.getElementById('confirm-delete-btn').onclick = function() {
+            const amenityId = document.getElementById('amenity-id-to-delete').value;
+            enviarDatos('/api/complex/{{ complejo.id }}/remove-amenity/', { amenity_id: amenityId }, 'confirm-delete-btn');
+        };
+
+        async function uploadImage(input) {
+            if (!input.files || !input.files[0]) return;
+            
+            const file = input.files[0];
+            const formData = new FormData();
+            formData.append('imagen', file); 
+
+            const wrapper = document.getElementById('hero-image-wrapper');
+            wrapper.style.opacity = '0.5'; // Feedback visual de carga
+
+            try {
+                const response = await fetch('/api/complex/{{ complejo.id }}/update-image/', {
+                    method: 'POST',
+                    headers: { 
+                        'X-CSRFToken': '{{ csrf_token }}' 
+                        // Nota: No incluimos 'Content-Type', el navegador lo auto-configura con el 'boundary' adecuado para archivos
+                    },
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    location.reload(); // Recarga la página para mostrar la imagen actualizada
+                } else {
+                    alert('Error al actualizar la imagen.');
+                    wrapper.style.opacity = '1';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Hubo un problema de conexión.');
+                wrapper.style.opacity = '1';
+            }
+        }
+    </script>
+</body>
+</html>

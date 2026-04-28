@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import AmenityViewSet, CourtViewSet, ComplexViewSet
+from .views import AmenityViewSet, CourtViewSet, ComplexViewSet, CreateReviewView
 
 # Creamos un router
 router = DefaultRouter()
@@ -25,4 +25,5 @@ router.register(r'complexes', ComplexViewSet, basename='complex')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('reviews/create/', CreateReviewView.as_view(), name='create-review'),
 ]

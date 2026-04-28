@@ -4,56 +4,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page }} - CourtlyGPS</title>
-    <link rel="stylesheet" href="{% static 'core/explorar.css' %}">
-    <link rel="stylesheet" href="{% static 'cuentas/agenda.css' %}">
+    <title>{{ page }} - Propietario</title>
+    <link rel="icon" type="image/png" href="{% static 'core/img/logoicono.png' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'core/home.css' %}"> <link rel="stylesheet" href="{% static 'cuentas/agenda.css' %}">
 </head>
-<body>
-    <!-- Navbar -->
+<body class="dashboard-body">
     <nav class="navbar">
         <div class="navbar-container">
-            <a href="{% url 'core:home' %}" class="logo">
-                <span class="logo-icon">🏆</span>
-                <span class="logo-text">Courtly</span>
-            </a>
-            <div class="nav-links" style="display: flex; justify-content: space-around; flex: 1;">
-                <a href="{% url 'cuentas:home_propietario' %}">Control</a>
-                <a href="{% url 'cuentas:agenda' %}">Agenda</a>
-                <a href="{% url 'cuentas:configuration' %}">Configuracion</a>
-                <a href="{% url 'cuentas:gestion' %}">Gestion</a>
-                <a href="{% url 'cuentas:resenas' %}">Reseñas</a>
-                <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline;">
+            <div class="logo">
+                <a href="{% url 'cuentas:home_propietario' %}">
+                    <img src="{% static 'core/img/LOGO.png' %}" alt="Courtly" class="logo-img">
+                </a>
+            </div>
+            <div class="nav-links owner-nav">
+                <a href="{% url 'cuentas:home_propietario' %}" class="nav-item">Control</a>
+                <a href="{% url 'cuentas:agenda' %}" class="nav-item active">Agenda</a>
+                <a href="{% url 'cuentas:configuration' %}" class="nav-item">Configuración</a>
+                <a href="{% url 'cuentas:gestion' %}" class="nav-item">Gestión</a>
+                <a href="{% url 'cuentas:resenas' %}" class="nav-item">Reseñas</a>
+                
+                <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline; margin-left: 15px;">
                     {% csrf_token %}
-                    <button type="submit" class="btn-register">Cerrar sesión</button>
+                    <button type="submit" class="btn-register"><i class="fas fa-sign-out-alt"></i> Salir</button>
                 </form>
             </div>
         </div>
     </nav>
 
-    <main>
-        <section>
-            <h2>{{ page }}</h2>
-            <div class="agenda-container">
-                <div class="date-selector">
-                    <label for="date">Seleccionar fecha:</label>
+    <main class="dashboard-main container">
+        <section class="agenda-section">
+            
+            <div class="dashboard-header">
+                <h2 class="section-heading">{{ page }}</h2>
+                
+                <div class="date-selector-card">
+                    <label for="date"><i class="far fa-calendar-alt"></i> Fecha:</label>
                     <input type="date" id="date" name="date" value="{{ selected_date|date:'Y-m-d' }}" onchange="changeDate(this.value)">
                 </div>
+            </div>
+
+            <div class="agenda-container">
                 <div class="agenda-grid">
                     {% for court_data in agenda_data %}
                         <div class="court-column">
-                            <div class="court-header">{{ court_data.court.name }}</div>
-                            {% for booking in court_data.bookings %}
-                                <div class="booking-item">
-                                    <div class="booking-time">{{ booking.hora }}</div>
-                                    <div class="booking-user">{{ booking.usuario }}</div>
-                                    <div class="booking-phone">{{ booking.telefono }}</div>
-                                </div>
-                            {% empty %}
-                                <p>No hay reservas para este día.</p>
-                            {% endfor %}
+                            <div class="court-header">
+                                <h3>{{ court_data.court.name }}</h3>
+                            </div>
+                            
+                            <div class="court-bookings">
+                                {% for booking in court_data.bookings %}
+                                    <div class="booking-item">
+                                        <div class="booking-time">
+                                            <i class="far fa-clock"></i> {{ booking.hora }}
+                                        </div>
+                                        <div class="booking-details">
+                                            <div class="booking-user">
+                                                <i class="far fa-user"></i> {{ booking.usuario }}
+                                            </div>
+                                            <div class="booking-phone">
+                                                <i class="fas fa-phone-alt"></i> {{ booking.telefono }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% empty %}
+                                    <div class="empty-state">
+                                        <i class="far fa-folder-open"></i>
+                                        <p>No hay reservas para este día.</p>
+                                    </div>
+                                {% endfor %}
+                            </div>
                         </div>
                     {% empty %}
-                        <p>No hay canchas en tu complejo.</p>
+                        <div class="empty-state-global">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <p>No hay canchas registradas en tu complejo.</p>
+                        </div>
                     {% endfor %}
                 </div>
             </div>
