@@ -45,7 +45,7 @@
                             <h3>{{ court.name }}</h3>
                             <div class="court-icon"><i class="fas fa-volleyball-ball"></i></div>
                         </div>
-                        
+                        <img src="{{ court.imagen.url }}" alt="Cancha de {{ court.sport }}" class="img-court">
                         <div class="court-details">
                             <p><i class="fas fa-running icon-detail"></i> <strong>Deporte:</strong> {{ court.get_sport_display }}</p>
                             <p><i class="fas fa-layer-group icon-detail"></i> <strong>Superficie:</strong> {{ court.get_surface_display }}</p>
