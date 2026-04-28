@@ -26,11 +26,16 @@
     margin: 0;
 }
 
-/* ============ Navegación Propietario (Reutilizada) ============ */
+/* ============ Navegación Propietario ============ */
 .owner-nav {
     display: flex;
     align-items: center;
     gap: 20px;
+}
+.logo-img { 
+    height: 91px;
+    width: auto; 
+    object-fit: contain; 
 }
 .nav-item { color: #666; text-decoration: none; font-weight: 600; padding: 8px 16px; border-radius: 50px; transition: all 0.3s ease; }
 .nav-item:hover { color: #667eea; background-color: #f0f4ff; }
