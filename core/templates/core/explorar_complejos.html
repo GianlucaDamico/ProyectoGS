@@ -7,6 +7,35 @@
     <title>Explorar Complejos - Courtly</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'core/explorar.css' %}">
+    
+    <style>
+        .review-modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); animation: fadeIn 0.2s ease-in; }
+        .review-modal.active { display: flex; align-items: center; justify-content: center; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .review-modal-content { background-color: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); max-width: 500px; width: 90%; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .review-modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        .review-modal-header h2 { margin: 0; font-size: 1.5rem; color: #333; }
+        .close-modal { font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer; border: none; background: none; padding: 0; line-height: 1; transition: color 0.2s; }
+        .close-modal:hover { color: #000; }
+        .review-modal-body { margin-bottom: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 0.95rem; }
+        .star-rating { display: flex; gap: 10px; margin: 10px 0; }
+        .star { font-size: 36px; cursor: pointer; color: #ddd; transition: color 0.2s, transform 0.1s; }
+        .star:hover { transform: scale(1.1); }
+        .star:hover, .star.active { color: #ffc107; }
+        .form-group textarea { width: 100%; min-height: 120px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; font-size: 0.95rem; resize: vertical; transition: border-color 0.3s; }
+        .form-group textarea:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+        .review-modal-footer { display: flex; gap: 10px; justify-content: flex-end; }
+        .btn-cancel, .btn-submit { padding: 10px 20px; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+        .btn-cancel { background-color: #f1f5f9; color: #475569; }
+        .btn-cancel:hover { background-color: #e2e8f0; }
+        .btn-submit { background-color: #667eea; color: white; }
+        .btn-submit:hover { background-color: #5a6fe0; }
+        .btn-submit:disabled { background-color: #94a3b8; cursor: not-allowed; }
+        .rating-display { font-size: 0.9rem; color: #64748b; margin-top: 5px; font-weight: 600; }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -34,7 +63,7 @@
                                             <strong>{{ reserva.court.complex.name }}</strong>
                                             <p>Tu partida en {{ reserva.court.name }} terminó. ¡Deja una reseña!</p>
                                         </div>
-                                        <button class="notification-action" onclick="abrirModalResena({{ reserva.id }})">Reseñar</button>
+                                        <button class="notification-action" onclick="abrirModalResena({{ reserva.id }}, '{{ reserva.court.complex.name|escapejs }}')">Reseñar</button>
                                     </div>
                                 {% endfor %}
                             {% else %}
@@ -355,21 +384,10 @@
             return cookieValue;
         }
 
-        function abrirModalResena(bookingId) {
+        // AQUÍ ESTÁ LA MEJORA: Pasamos el nombre directamente desde el HTML, es 100% seguro
+        function abrirModalResena(bookingId, complexName) {
             currentBookingId = bookingId;
             selectedRating = 0;
-            
-            // Obtener datos de la reserva desde la notificación clickeada
-            const notificationItems = document.querySelectorAll('.notification-item');
-            let complexName = 'Complejo';
-            
-            for (let item of notificationItems) {
-                const button = item.querySelector('.notification-action');
-                if (button && parseInt(button.getAttribute('onclick').match(/\d+/)[0]) === bookingId) {
-                    complexName = item.querySelector('strong').textContent;
-                    break;
-                }
-            }
             
             document.getElementById('complexName').textContent = complexName;
             document.getElementById('reviewDescription').value = '';
