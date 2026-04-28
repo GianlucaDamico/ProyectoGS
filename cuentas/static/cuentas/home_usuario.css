@@ -203,6 +203,28 @@ body {
     font-weight: 700;
 }
 
+.nav-notificaciones-btn {
+    display: inline-flex;
+    align-items: center;
+    height: 40px;
+    padding: 4px 12px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+    white-space: nowrap;
+}
+
+.nav-notificaciones-btn:hover {
+    background: #f0f0f0;
+    color: var(--primary-dark);
+}
+
 .profile-dropdown {
     position: absolute;
     right: 0;

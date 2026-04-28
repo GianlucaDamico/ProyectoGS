@@ -220,14 +220,14 @@
             <div class="nav-right">
                 <details class="notifications-menu">
                     <summary class="notifications-trigger" aria-label="Abrir notificaciones">
-                        <span class="bell-icon">&#128276;</span>
+                        <span class="bell-icon">⭐</span>
                         {% if resenas_pendientes %}<span class="badge">{{ resenas_pendientes|length }}</span>{% endif %}
                     </summary>
                     <div class="notifications-dropdown">
-                        <p class="dropdown-title">Notificaciones</p>
+                        <p class="dropdown-title">Reseñas Pendientes</p>
                         {% if resenas_pendientes %}
                             {% for reserva in resenas_pendientes %}
-                                <div class="notification-item">
+                                <div class="notification-item review-pending">
                                     <div class="notification-text">
                                         <strong>{{ reserva.court.complex.name }}</strong>
                                         <p>Tu partida en {{ reserva.court.name }} terminó. ¡Deja una reseña!</p>
@@ -235,6 +235,36 @@
                                     <button class="notification-action" onclick="abrirModalResena({{ reserva.id }})">Reseñar</button>
                                 </div>
                             {% endfor %}
+                        {% else %}
+                            <p class="dropdown-empty">No tenes reseñas pendientes.</p>
+                        {% endif %}
+                    </div>
+                </details>
+                <details class="notifications-menu">
+                    <summary class="notifications-trigger" aria-label="Abrir notificaciones">
+                        <span class="bell-icon">🔔</span>
+                        {% if notificaciones %}<span class="badge">{{ notificaciones|length }}</span>{% endif %}
+                    </summary>
+                    <div class="notifications-dropdown">
+                        <p class="dropdown-title">Notificaciones</p>
+                        {% if notificaciones %}
+                            {% for notificacion in notificaciones %}
+                                <div class="notification-item {% if notificacion.status == 'pending_payment' %}payment-pending{% else %}upcoming-soon{% endif %}">
+                                    <div class="notification-text">
+                                        <strong>{{ notificacion.court.complex.name }}</strong>
+                                        {% if notificacion.status == 'pending_payment' %}
+                                            <p>💳 Pago pendiente - {{ notificacion.court.name }}</p>
+                                        {% else %}
+                                            <p>⏰ Próxima reserva - {{ notificacion.court.name }}</p>
+                                        {% endif %}
+                                        <small>{{ notificacion.start|date:'d/m/Y H:i' }}</small>
+                                    </div>
+                                    <a href="{% url 'core:reserva_detalle' notificacion.id %}" class="notification-action">Ver</a>
+                                </div>
+                            {% endfor %}
+                            <div class="dropdown-actions">
+                                <a href="{% url 'core:notificaciones' %}" class="view-all-link">Ver todas</a>
+                            </div>
                         {% else %}
                             <p class="dropdown-empty">No tenes notificaciones nuevas.</p>
                         {% endif %}
