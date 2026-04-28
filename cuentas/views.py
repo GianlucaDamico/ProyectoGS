@@ -10,6 +10,7 @@ from django.db import models
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncMonth
 from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 import datetime
 import json
 from bookings.models import Booking
@@ -606,3 +607,27 @@ def remove_amenity(request, complex_id):
         except:
             return JsonResponse({'success': False})
     return JsonResponse({'success': False})
+
+@login_required
+@csrf_exempt
+def update_image(request, complex_id):
+    if request.method == 'POST':
+        user = request.user
+        perfil_propietario = getattr(user, 'perfil_propietario', None)
+
+        # 1. Seguridad: Verificar que el usuario sea el dueño de este complejo exacto
+        if not perfil_propietario or not perfil_propietario.complex or perfil_propietario.complex.id != complex_id:
+            return JsonResponse({'error': 'No autorizado'}, status=403)
+
+        complex = perfil_propietario.complex
+
+        # 2. Capturar y guardar la imagen
+        # Nota: Los archivos no vienen en request.POST, vienen en request.FILES
+        if 'imagen' in request.FILES:
+            complex.imagen = request.FILES['imagen']
+            complex.save()
+            return JsonResponse({'success': True, 'message': 'Imagen actualizada'})
+        else:
+            return JsonResponse({'error': 'No se envió ninguna imagen'}, status=400)
+            
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
