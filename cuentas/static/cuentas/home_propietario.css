@@ -38,6 +38,12 @@
     gap: 10px; 
 }
 
+.logo-img { 
+    height: 91px; /* O el tamaño que prefieras */
+    width: auto; 
+    object-fit: contain; 
+}
+
 .nav-item { 
     color: #666; 
     text-decoration: none; 
