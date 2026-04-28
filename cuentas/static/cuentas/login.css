@@ -39,6 +39,8 @@ body {
     font-size: 14px;
 }
 
+.logo-img { height: 100px; width: auto; object-fit: contain; }
+
 .form-group {
     margin-bottom: 20px;
 }
