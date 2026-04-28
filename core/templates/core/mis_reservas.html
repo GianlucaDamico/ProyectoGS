@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Reservas - Courtly</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'core/mis_reservas.css' %}">
 </head>
 <body>
-    <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-container">
             <div class="logo">
@@ -16,23 +16,60 @@
                     <img src="{% static 'core/img/LOGO.png' %}" alt="Courtly" class="logo-img">
                 </a>
             </div>
-            <div class="nav-links">
+
+            <div class="nav-right">
                 {% if user.is_authenticated %}
-                        <span class="user-greeting">Hola, {{ user.username }}</span>
-                        <a href="{% url 'cuentas:home_usuario' %}" class="btn-login">Mi cuenta</a>
-                        <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn-register">Cerrar sesión</button>
-                        </form>
-                    {% else %}
-                        <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>
-                        <a href="{% url 'cuentas:register' %}" class="btn-register">Registrarse</a>
-                    {% endif %}
+                    
+                    <a href="{% url 'core:explorar_complejos' %}" class="nav-link-explore">
+                        <i class="fas fa-search"></i> Explorar
+                    </a>
+
+                    <details class="notifications-menu">
+                        <summary class="notifications-trigger" aria-label="Abrir notificaciones">
+                            <span class="bell-icon"><i class="fas fa-bell"></i></span>
+                            {% if resenas_pendientes %}<span class="badge">{{ resenas_pendientes|length }}</span>{% endif %}
+                        </summary>
+                        <div class="notifications-dropdown">
+                            <p class="dropdown-title">Notificaciones</p>
+                            {% if resenas_pendientes %}
+                                {% for reserva in resenas_pendientes %}
+                                    <div class="notification-item">
+                                        <div class="notification-text">
+                                            <strong>{{ reserva.court.complex.name }}</strong>
+                                            <p>Tu partida en {{ reserva.court.name }} terminó. ¡Deja una reseña!</p>
+                                        </div>
+                                        <button class="notification-action" onclick="abrirModalResena({{ reserva.id }}, '{{ reserva.court.complex.name|escapejs }}')">Reseñar</button>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p class="dropdown-empty">No tenes notificaciones nuevas.</p>
+                            {% endif %}
+                        </div>
+                    </details>
+
+                    <details class="profile-menu">
+                        <summary class="profile-trigger" aria-label="Abrir menu de perfil">
+                            <span class="profile-avatar">{{ user.username|slice:":1"|upper }}</span>
+                            <span class="profile-label">Perfil</span>
+                        </summary>
+                        <div class="profile-dropdown">
+                            <a href="{% url 'cuentas:home_usuario' %}" class="profile-item">Mi perfil</a>
+                            
+                            <form method="post" action="{% url 'cuentas:logout_usuario' %}" style="margin: 0;">
+                                {% csrf_token %}
+                                <button type="submit" class="profile-item logout-item">Cerrar sesión</button>
+                            </form>
+                        </div>
+                    </details>
+
+                {% else %}
+                    <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>
+                    <a href="{% url 'cuentas:register' %}" class="btn-register">Registrarse</a>
+                {% endif %}
             </div>
         </div>
     </nav>
 
-    <!-- Header -->
     <section class="reservas-header">
         <div class="container">
             <h1>Mis Reservas</h1>
@@ -40,7 +77,6 @@
         </div>
     </section>
 
-    <!-- Filtros -->
     <section class="filtros-section">
         <div class="container">
             <form method="GET" class="filtros-form">
@@ -57,7 +93,6 @@
         </div>
     </section>
 
-    <!-- Listado de reservas -->
     <section class="reservas-section">
         <div class="container">
             {% if reservas %}
@@ -96,7 +131,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-section">
@@ -137,24 +171,39 @@
         </div>
     </footer>
 
-     <script>
+    <script>
+        // Lógica para cerrar los menús desplegables al hacer click fuera
+        document.addEventListener('click', function(event) {
+            const allDetails = document.querySelectorAll('details');
+            allDetails.forEach((details) => {
+                if (!details.contains(event.target)) {
+                    details.removeAttribute('open');
+                }
+                const summary = details.querySelector('summary');
+                if (summary && summary.contains(event.target)) {
+                    allDetails.forEach((otherDetails) => {
+                        if (otherDetails !== details) {
+                            otherDetails.removeAttribute('open');
+                        }
+                    });
+                }
+            });
+        });
+
+        // Lógica para cancelar reservas
         function cancelarReserva(reservaId) {
-            // Confirmación del usuario
             if (!confirm('¿Estás seguro de que deseas cancelar esta reserva?')) {
                 return false;
             }
 
-            // Buscar el botón y mostrar estado de carga
             const button = event.target;
             const originalText = button.textContent;
             button.disabled = true;
             button.textContent = '⏳ Cancelando...';
 
-            // Obtener el CSRF token
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
-                            document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
+                              document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
 
-            // Enviar la solicitud AJAX
             fetch(`/reserva/${reservaId}/cambiar-estado/`, {
                 method: 'POST',
                 headers: {
@@ -168,12 +217,9 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Mostrar mensaje de éxito
                     alert('✓ Reserva cancelada exitosamente');
-                    // Recargar la página
                     location.reload();
                 } else {
-                    // Restaurar botón y mostrar error
                     button.disabled = false;
                     button.textContent = originalText;
                     alert('✗ Error: ' + (data.error || 'No se pudo cancelar la reserva'));
@@ -189,6 +235,5 @@
             return false;
         }
     </script>   
-
 </body>
 </html>
