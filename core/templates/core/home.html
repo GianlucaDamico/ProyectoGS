@@ -18,8 +18,13 @@
             </div>
             <div class="nav-links">
                 {% if user.is_authenticated %}
-                        <span class="user-greeting">Hola, {{ user.username }}</span>
-                        <a href="{% url 'cuentas:home_usuario' %}" class="btn-login">Mi cuenta</a>
+                        {% if user.perfil_propietario %}
+                            <a href="{% url 'cuentas:home_propietario' %}" class="btn-login">Entrar</a>
+                        {% elif user.perfil_jugador %}
+                            <a href="{% url 'cuentas:home_usuario' %}" class="btn-login">Entrar</a>
+                        {% else %}
+                            <a href="{% url 'core:home' %}" class="btn-login">Entrar</a>
+                        {% endif %}
                         <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit" class="btn-register">Cerrar sesión</button>
