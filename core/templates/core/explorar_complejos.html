@@ -79,6 +79,9 @@
                         </summary>
                         <div class="profile-dropdown">
                             <a href="{% url 'cuentas:home_usuario' %}" class="profile-item">Mi perfil</a>
+                            
+                            <a href="{% url 'core:mis_reservas' %}" class="profile-item">Mis reservas</a>
+                            
                             <form method="post" action="{% url 'cuentas:logout_usuario' %}" style="margin: 0;">
                                 {% csrf_token %}
                                 <button type="submit" class="profile-item logout-item">Cerrar sesión</button>
@@ -459,7 +462,6 @@
             });
         }
 
-        // Cerrar modal al hacer click fuera
         window.onclick = function(event) {
             const modal = document.getElementById('reviewModal');
             if (event.target === modal) {
