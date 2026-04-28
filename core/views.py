@@ -68,7 +68,7 @@ def complejo_detalle(request, complejo_id, slug=None):
 
 @login_required(login_url='cuentas:login')
 def explorar_complejos(request):
-    """Vista de exploración de complejos con filtros y búsqueda."""
+    """Vista de exploración de complejos con filtros, búsqueda y notificaciones."""
     query = request.GET.get('q', '')
     ciudad = request.GET.get('ciudad', '')
     deporte = request.GET.get('deporte', '')
@@ -105,6 +105,21 @@ def explorar_complejos(request):
     paginator = Paginator(complejos, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
+    # Lógica de NOTIFICACIONES (Reseñas pendientes) para la navbar
+    resenas_pendientes = None
+    if request.user.is_authenticated:
+        resenas_pendientes = (
+            Booking.objects
+            .filter(user=request.user)
+            .filter(
+                Q(status=Booking.Status.FINISHED) | Q(end__lt=timezone.now())
+            )
+            .exclude(status=Booking.Status.CANCELLED)
+            .exclude(review__isnull=False)
+            .select_related('court__complex')
+            .order_by('-end')
+        )
     
     context = {
         'page_obj': page_obj,
@@ -116,6 +131,7 @@ def explorar_complejos(request):
         'orden_actual': orden,
         'ciudades_disponibles': ciudades_disponibles,
         'sport_choices': Sport.choices,
+        'resenas_pendientes': resenas_pendientes,
     }
     
     return render(request, 'core/explorar_complejos.html', context)
