@@ -401,7 +401,6 @@ def register_jugador(request):
             return render(request, 'cuentas/register_jugador.html')
 
         user = User.objects.create_user(username=username, email=email, password=password)
-        # opcional: llenar firstname/lastname
         user.first_name = nombre
         user.last_name = apellido
         user.save()
