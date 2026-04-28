@@ -1731,3 +1731,57 @@ body {
         font-size: 1.2rem;
     }
 }
+
+/* ============ Layout Dividido para Hero ============ */
+.hero-split {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px; /* Buen espacio entre el texto y la imagen */
+}
+
+.complejo-hero-content {
+    flex: 1; /* El texto ocupa el espacio sobrante */
+}
+
+/* ============ Contenedor de la Imagen ============ */
+.hero-image-display {
+    width: 380px; /* Tamaño generoso para la vista pública */
+    height: 240px;
+    flex-shrink: 0; /* Evita que la imagen se aplaste si hay mucho texto */
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    border: 3px solid rgba(255, 255, 255, 0.2); /* Borde elegante */
+}
+
+.hero-image-display img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Fallback (Por si acaso un complejo antiguo no tiene el default) */
+.no-image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    font-size: 4rem;
+}
+
+/* ============ Diseño Responsivo (Móviles) ============ */
+@media (max-width: 768px) {
+    .hero-split {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+    }
+    
+    .hero-image-display {
+        width: 100%;
+        max-width: 380px; /* En móviles no superará este ancho */
+    }
+}
