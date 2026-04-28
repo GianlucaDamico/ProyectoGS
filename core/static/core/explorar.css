@@ -51,7 +51,7 @@ body {
 }
 
 .logo-img { 
-    height: 91px; 
+    height: 70px; 
     width: auto; 
     object-fit: contain; 
 }
@@ -63,6 +63,10 @@ body {
 }
 
 .notifications-menu, .profile-menu { position: relative; }
+
+/* Limpieza de flechas nativas */
+summary::-webkit-details-marker { display: none; }
+summary { list-style: none; outline: none; cursor: pointer; }
 
 .notifications-trigger {
     list-style: none;
@@ -135,9 +139,7 @@ body {
 
 .profile-label { color: var(--text); font-size: 0.95rem; font-weight: 600; }
 
-.notifications-trigger::-webkit-details-marker,
-.profile-trigger::-webkit-details-marker { display: none; }
-
+/* MODIFICACIÓN: Lógica de Dropdowns Smooth */
 .notifications-dropdown, .profile-dropdown {
     position: absolute;
     right: 0;
@@ -146,14 +148,46 @@ body {
     background: #fff;
     box-shadow: var(--shadow);
     z-index: 30;
+    
+    /* Configuración para animación suave */
+    display: flex !important; /* Usamos flex para alinear los items verticalmente */
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+/* Mostramos el menú si pasamos el ratón O si está abierto por click */
+.notifications-menu:hover .notifications-dropdown,
+.profile-menu:hover .profile-dropdown,
+details[open] .notifications-dropdown,
+details[open] .profile-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Área de puente invisible para no perder el hover */
+.notifications-menu::after,
+.profile-menu::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 15px;
 }
 
 .notifications-dropdown { width: 300px; border-radius: 14px; padding: 16px; }
-.profile-dropdown { min-width: 180px; border-radius: 14px; padding: 8px; display: grid; gap: 4px; }
+.profile-dropdown { min-width: 180px; border-radius: 14px; padding: 8px; }
 
 .dropdown-title { margin: 0 0 12px; font-size: 1rem; font-weight: 700; color: var(--text); }
 .dropdown-empty { margin: 0; color: var(--muted); font-size: 0.9rem; }
 
+/* MODIFICACIÓN: Corrección de botones "Rotos" */
 .profile-item {
     width: 100%;
     border: 0;
@@ -167,10 +201,24 @@ body {
     cursor: pointer;
     text-decoration: none;
     transition: background 0.2s, color 0.2s;
+    display: block; /* Aseguramos que ocupen todo el ancho */
+    font-family: inherit;
 }
 
 .profile-item:hover { background: #f0f4ff; color: var(--primary); }
-.logout-item { color: #ef4444; }
+
+/* Arreglo para el formulario de logout */
+.profile-dropdown form {
+    margin: 0;
+    width: 100%;
+}
+
+.logout-item { 
+    color: #ef4444; 
+    border-top: 1px solid #f1f5f9;
+    margin-top: 4px;
+    padding-top: 12px;
+}
 .logout-item:hover { background: #fef2f2; color: #dc2626; }
 
 .notification-item { padding: 12px 0; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; gap: 15px; }
@@ -186,18 +234,17 @@ body {
 
 /* ============ Page Header con Imagen BANNER1 ============ */
 .page-header {
-    background-image: url('../img/BANNER1.jpg'); /* Ojo: Si al final lo guardaste en minúscula, pon 'banner1.jpg' */
+    background-image: url('../img/BANNER1.jpg'); 
     background-repeat: no-repeat;
     background-position: center right;
     background-size: cover;
-    background-color: var(--primary); /* Fondo de respaldo */
+    background-color: var(--primary); 
     position: relative;
     color: white;
     padding: 100px 20px 150px;
     text-align: center;
 }
 
-/* Creamos la capa oscura/azul con transparencia sobre la imagen */
 .page-header::before {
     content: "";
     position: absolute;
@@ -209,7 +256,6 @@ body {
     z-index: 1;
 }
 
-/* Levantamos el contenedor de los textos para que estén por encima de la capa oscura */
 .page-header .container {
     position: relative;
     z-index: 2;
@@ -381,3 +427,4 @@ body {
 .footer-section a:hover { color: white; }
 .social-links { display: flex; flex-direction: column; gap: 10px; }
 .footer-bottom { max-width: 1200px; margin: 0 auto; text-align: center; padding-top: 30px; border-top: 1px solid #334155; color: #64748b; }
+
