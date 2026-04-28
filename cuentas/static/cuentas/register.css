@@ -16,7 +16,7 @@ body {
 .header-section {
     text-align: center;
     color: white;
-    margin-bottom: 40px;
+    margin-bottom: 50px;
 }
 
 .header-section h1 {
@@ -91,15 +91,15 @@ body {
     color: #666;
     font-size: 1rem;
     line-height: 1.6;
-    margin-bottom: 20px;
+    margin-bottom: 0px;
     flex-grow: 1;
 }
 
 .card-divider {
     border: none;
     height: 2px;
-    background-color: #9f9b9b; /* Un gris muy suave y elegante */
-    margin-bottom: 5px; /* Espacio entre la línea y la lista de características */
+    background-color: #9f9b9b; 
+    margin-bottom: 5px; 
     width: 100%;
 }
 
