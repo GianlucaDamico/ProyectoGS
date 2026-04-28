@@ -16,7 +16,7 @@ body {
 .header-section {
     text-align: center;
     color: white;
-    margin-bottom: 50px;
+    margin-bottom: 40px;
 }
 
 .header-section h1 {
@@ -29,6 +29,8 @@ body {
     font-size: 1.1rem;
     opacity: 0.9;
 }
+
+.logo-img { height: 90px; width: auto; object-fit: contain; }
 
 .cards-container {
     display: grid;
@@ -54,14 +56,12 @@ body {
 }
 
 .card-header-owner {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding: 40px 20px;
     text-align: center;
     color: white;
 }
 
 .card-header-player {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
     padding: 40px 20px;
     text-align: center;
     color: white;
@@ -91,8 +91,16 @@ body {
     color: #666;
     font-size: 1rem;
     line-height: 1.6;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     flex-grow: 1;
+}
+
+.card-divider {
+    border: none;
+    height: 2px;
+    background-color: #9f9b9b; /* Un gris muy suave y elegante */
+    margin-bottom: 5px; /* Espacio entre la línea y la lista de características */
+    width: 100%;
 }
 
 .card-features {

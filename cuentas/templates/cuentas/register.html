@@ -13,14 +13,14 @@
 <body>
     <div class="registration-container">
         <div class="header-section">
-            <h1>🏀 CourtlyGPS</h1>
+            <img src="{% static 'core/img/logotextoalter.png' %}" alt="Courtly" class="logo-img">
             <p>¿Cuál es tu rol? Elige el registro adecuado</p>
         </div>
 
         <div class="cards-container">
             <!-- Card para Dueños -->
             <div class="registration-card">
-                <div class="card-header-owner">
+                <div class="card-header-owner" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.65) 0%, rgba(118, 75, 162, 0.65) 100%), url('{% static 'core/img/CentroDeportivo.png' %}'); background-size: cover; background-position: center;">                   
                     <i class="fas fa-building"></i>
                     <h2>Soy Dueño</h2>
                 </div>
@@ -28,6 +28,7 @@
                     <p class="card-description">
                         Registrate como dueño de un complejo deportivo y gestiona tus instalaciones.
                     </p>
+                    <hr class="card-divider">
                     <ul class="card-features">
                         <li>Registra tu complejo deportivo</li>
                         <li>Maneja tu agenda de reservas</li>
@@ -40,7 +41,7 @@
 
             <!-- Card para Jugadores -->
             <div class="registration-card">
-                <div class="card-header-player">
+                <div class="card-header-player" style="background: linear-gradient(135deg, rgba(240, 147, 251, 0.65) 0%, rgba(245, 87, 108, 0.65) 100%), url('{% static 'core/img/soyjugador.png' %}'); background-size: cover; background-position: center;">                    
                     <i class="fas fa-user"></i>
                     <h2>Soy Jugador</h2>
                 </div>
@@ -48,6 +49,7 @@
                     <p class="card-description">
                         Registrate como jugador para encontrar pistas de tu deporte favorito y reservar tus turnos.
                     </p>
+                    <hr class="card-divider">
                     <ul class="card-features">
                         <li>Descubre complejos deportivos cercanos</li>
                         <li>Juega tu deporte favorito</li>
