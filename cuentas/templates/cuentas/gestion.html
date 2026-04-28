@@ -47,8 +47,8 @@
                         </div>
                         <img src="{{ court.imagen.url }}" alt="Cancha de {{ court.sport }}" class="img-court">
                         <div class="court-details">
-                            <p><i class="fas fa-running icon-detail"></i> <strong>Deporte:</strong> {{ court.get_sport_display }}</p>
-                            <p><i class="fas fa-layer-group icon-detail"></i> <strong>Superficie:</strong> {{ court.get_surface_display }}</p>
+                            <p><i class="fas fa-running icon-detail"></i> <strong>Deporte: </strong> {{ court.get_sport_display }}</p>
+                            <p><i class="fas fa-layer-group icon-detail"></i> <strong>Superficie: </strong> {{ court.get_surface_display }}</p>
                             <p><i class="far fa-lightbulb icon-detail"></i> <strong>Iluminación:</strong> 
                                 {% if court.has_lighting %}
                                     <span class="badge-yes">Sí</span>
