@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from django.db import models
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, Avg
 from django.db.models.functions import TruncMonth
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
@@ -342,7 +342,6 @@ def gestion(request):
 
 @login_required
 def resenas(request):
-    from django.db.models import Avg
     user = request.user
     perfil_propietario = getattr(user, 'perfil_propietario', None)
 
