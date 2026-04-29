@@ -26,7 +26,7 @@ body {
     min-height: 90px; 
     display: flex; 
     align-items: center;
-    width: 100%; /* ← Garantiza que el fondo blanco abarque todo el ancho */
+    width: 100%;
 }
 
 .navbar-container { 
@@ -40,14 +40,12 @@ body {
 }
 .logo-img { height: 91px; width: auto; object-fit: contain; }
 
-/* Contenedor flexible con espaciado uniforme */
 .nav-links { 
     display: flex; 
     align-items: center;
-    gap: 25px; /* ← Espaciado perfecto entre Explorar, Notificaciones y Botón */
+    gap: 25px; 
 }
 
-/* Resetea el margen en el formulario para evitar conflictos */
 .nav-links form {
     margin: 0;
 }
@@ -57,9 +55,9 @@ body {
     text-decoration: none; 
     font-weight: 600; 
     transition: 0.3s;
-    display: flex; /* ← Alinea el icono de lupa con el texto */
+    display: flex; 
     align-items: center;
-    gap: 8px; /* ← Espaciado entre la lupa y la palabra Explorar */
+    gap: 8px; 
 }
 .btn-login:hover { color: #4a5dbf; }
 
@@ -99,19 +97,25 @@ summary::-webkit-details-marker { display: none; }
 }
 
 .notifications-dropdown {
-    position: absolute; right: 0; top: 100%; margin-top: 10px;
-    width: 300px; background: white; border-radius: 16px; 
+    position: absolute; right: 0; top: calc(100% + 10px);
+    width: 300px; background: white; border-radius: 12px; 
     box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;
-    padding: 15px; z-index: 100; color: #1b1f2a;
-    display: block !important; opacity: 0; visibility: hidden;
-    transform: translateY(10px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    pointer-events: none;
+    padding: 8px 0; z-index: 1000; color: #1b1f2a;
+    animation: fadeInDown 0.2s ease-out;
 }
-.notifications-menu:hover .notifications-dropdown, 
-details[open] .notifications-dropdown {
-    opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto;
+
+.dropdown-title { padding: 10px 20px; font-weight: 700; border-bottom: 1px solid #f1f5f9; margin-bottom: 5px; color: #333; }
+.notification-item { padding: 12px 20px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+.notification-item:last-child { border-bottom: none; }
+.notification-text p { color: #64748b; margin: 5px 0 10px 0; }
+.notification-action { background: #667eea; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; transition: background 0.2s; }
+.notification-action:hover { background: #764ba2; }
+.dropdown-empty { padding: 15px 20px; color: #64748b; font-size: 0.9rem; text-align: center; }
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
-.notifications-menu::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 15px; }
 
 /* ============ LAYOUT DASHBOARD ============ */
 .dashboard-layout {
@@ -182,7 +186,6 @@ details[open] .notifications-dropdown {
 .match-card-dash { display: flex; align-items: center; gap: 15px; padding: 20px;}
 .match-icon { width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; }
 
-
 /* ============ FORMULARIOS GLASS (Perfil, Pagos, Seguridad) ============ */
 .glass-form { display: flex; flex-direction: column; gap: 20px; }
 .form-row { display: flex; gap: 15px; flex-wrap: wrap; }
@@ -245,3 +248,29 @@ details[open] .notifications-dropdown {
     .btn-primary-glass { align-self: stretch; justify-content: center; }
     .matches-grid-dashboard, .stats-grid-top { grid-template-columns: 1fr; }
 }
+
+/* ============ MODAL DE RESEÑAS ============ */
+.review-modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); animation: fadeIn 0.2s ease-in; }
+.review-modal.active { display: flex; align-items: center; justify-content: center; }
+.review-modal-content { background-color: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); max-width: 500px; width: 90%; animation: slideUp 0.3s ease-out; }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.review-modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+.review-modal-header h2 { margin: 0; font-size: 1.5rem; color: #333; }
+.close-modal { font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer; border: none; background: none; padding: 0; line-height: 1; transition: color 0.2s; }
+.close-modal:hover { color: #000; }
+.review-modal-body { margin-bottom: 20px; }
+.form-group label.text-dark { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 0.95rem; }
+.star-rating { display: flex; gap: 10px; margin: 10px 0; }
+.star { font-size: 36px; cursor: pointer; color: #ddd; transition: color 0.2s, transform 0.1s; }
+.star:hover { transform: scale(1.1); }
+.star:hover, .star.active { color: #ffc107; }
+.review-modal textarea { width: 100%; min-height: 120px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; font-size: 0.95rem; resize: vertical; transition: border-color 0.3s; color: #333;}
+.review-modal textarea:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+.review-modal-footer { display: flex; gap: 10px; justify-content: flex-end; }
+.btn-cancel, .btn-submit { padding: 10px 20px; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+.btn-cancel { background-color: #f1f5f9; color: #475569; }
+.btn-cancel:hover { background-color: #e2e8f0; }
+.btn-submit { background-color: #667eea; color: white; }
+.btn-submit:hover { background-color: #5a6fe0; }
+.btn-submit:disabled { background-color: #94a3b8; cursor: not-allowed; }
+.rating-display { font-size: 0.9rem; color: #64748b; margin-top: 5px; font-weight: 600; }
