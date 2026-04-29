@@ -701,24 +701,31 @@ def update_court_api(request, court_id):
 def update_avatar(request):
     if request.method == 'POST':
         user = request.user
-        
-        # Intentamos obtener el perfil del jugador
         perfil = getattr(user, 'perfil_jugador', None)
         
         if not perfil:
-            return JsonResponse({'error': 'Perfil de jugador no encontrado'}, status=404)
+            return JsonResponse({'error': 'Perfil no encontrado'}, status=404)
 
+        # 1. Guardamos los datos de texto si vienen en la petición
+        if 'nombre' in request.POST:
+            perfil.nombre = request.POST['nombre']
+        if 'telefono' in request.POST:
+            perfil.telefono = request.POST['telefono']
+
+        # 2. Guardamos la imagen si viene en la petición
         if 'avatar' in request.FILES:
             perfil.avatar = request.FILES['avatar']
-            perfil.save()
-            # Devolvemos la nueva URL para que el frontend pueda actualizar la imagen sin refrescar
-            return JsonResponse({
-                'success': True, 
-                'message': 'Avatar actualizado',
-                'url': perfil.avatar.url
-            })
-        else:
-            return JsonResponse({'error': 'No se envió ninguna imagen'}, status=400)
+            
+        perfil.save()
+        
+        # Devolvemos la URL del avatar (por si se actualizó) o string vacío si no hay foto
+        url_avatar = perfil.avatar.url if perfil.avatar else ''
+        
+        return JsonResponse({
+            'success': True, 
+            'message': 'Perfil actualizado correctamente',
+            'url': url_avatar
+        })
 
     return JsonResponse({'error': 'Método no permitido'}, status=405)
 
