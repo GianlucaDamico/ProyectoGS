@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.utils import timezone
 
-# Importes de modelos locales (asegúrate de que las apps existan)
+# Importes de modelos locales
 from venues.models import Complex, Court, Sport, Surface
 from bookings.models import Booking
 
@@ -176,11 +176,25 @@ def mis_reservas(request):
     estado_filtro = request.GET.get('estado', '')
     if estado_filtro:
         reservas = reservas.filter(status=estado_filtro)
+        
+    # 👇 LÓGICA DE NOTIFICACIONES AÑADIDA AQUÍ 👇
+    resenas_pendientes = (
+        Booking.objects
+        .filter(user=request.user)
+        .filter(
+            Q(status=Booking.Status.FINISHED) | Q(end__lt=timezone.now())
+        )
+        .exclude(status=Booking.Status.CANCELLED)
+        .exclude(review__isnull=False)
+        .select_related('court__complex')
+        .order_by('-end')
+    )
     
     context = {
         'reservas': reservas,
         'estado_filtro': estado_filtro,
         'status_choices': Booking.Status.choices,
+        'resenas_pendientes': resenas_pendientes, # ← Pasado al contexto
     }
     
     return render(request, 'core/mis_reservas.html', context)
