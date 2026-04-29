@@ -539,7 +539,10 @@ body {
     align-items: center;
     justify-content: center;
     font-size: 80px;
+    padding: 0; 
+    overflow: hidden;
 }
+/* padding: 0; overflow: hidden;*/
 
 /* CLASE .cancha-content
    Contenedor del contenido de la tarjeta (título, detalles, precio, botón).

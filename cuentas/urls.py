@@ -14,6 +14,7 @@ urlpatterns = [
     path('api/complex/<int:complex_id>/add-amenity/', views.add_amenity, name='add_amenity'),
     path('api/complex/<int:complex_id>/remove-amenity/', views.remove_amenity, name='remove_amenity'),
     path('api/complex/<int:complex_id>/update-image/', views.update_image, name='update_image'),
+    path('api/court/<int:court_id>/edit/', views.update_court_api, name='update_court_api'),
     path('dashboard/gestion/', views.gestion, name='gestion'),
     path('dashboard/resenas/', views.resenas, name='resenas'),
     path('logout', views.logout_usuario, name='logout_usuario'),

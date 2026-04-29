@@ -144,6 +144,13 @@ class Court(models.Model):
         decimal_places=2,
         default=0.00
     )
+
+    imagen = models.ImageField(
+        upload_to='courts/', 
+        default='courts/default_court.png', 
+        null=True, 
+        blank=True
+    )
     
     def __str__(self):
         return f"{self.complex.name} - {self.name} ({self.get_sport_display()})"

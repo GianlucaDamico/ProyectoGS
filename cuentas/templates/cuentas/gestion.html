@@ -45,10 +45,10 @@
                             <h3>{{ court.name }}</h3>
                             <div class="court-icon"><i class="fas fa-volleyball-ball"></i></div>
                         </div>
-                        
+                        <img src="{{ court.imagen.url }}" alt="Cancha de {{ court.sport }}" class="img-court">
                         <div class="court-details">
-                            <p><i class="fas fa-running icon-detail"></i> <strong>Deporte:</strong> {{ court.get_sport_display }}</p>
-                            <p><i class="fas fa-layer-group icon-detail"></i> <strong>Superficie:</strong> {{ court.get_surface_display }}</p>
+                            <p><i class="fas fa-running icon-detail"></i> <strong>Deporte: </strong>&nbsp;{{ court.get_sport_display }}</p>
+                            <p><i class="fas fa-layer-group icon-detail"></i> <strong>Superficie: </strong> &nbsp;{{ court.get_surface_display }}</p>
                             <p><i class="far fa-lightbulb icon-detail"></i> <strong>Iluminación:</strong> 
                                 {% if court.has_lighting %}
                                     <span class="badge-yes">Sí</span>
@@ -68,14 +68,19 @@
                                 </div>
                             </div>
                         </div>
-
-                        <form method="post" style="margin-top: 20px;" onsubmit="return confirmDelete()">
-                            {% csrf_token %}
-                            <input type="hidden" name="court_id" value="{{ court.id }}">
-                            <button type="submit" name="delete_court" class="btn-delete"><i class="far fa-trash-alt"></i> Eliminar Cancha</button>
-                        </form>
-                    </div>
-                {% empty %}
+                            
+                        <div class="court-actions" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+                            <button onclick="openEditModal({{ court.id }}, '{{ court.name }}', '{{ court.sport }}', '{{ court.surface }}', {{ court.has_lighting|yesno:'true,false' }}, '{{ court.base_price_per_hour }}', '{{ court.lighting_extra_per_hour }}')" class="btn-edit-court" style="background: #f0f4ff; color: #667eea; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                                <i class="fas fa-edit"></i> Editar Cancha
+                            </button>
+                            
+                            <form method="post" onsubmit="return confirmDelete()">
+                                {% csrf_token %}
+                                <input type="hidden" name="court_id" value="{{ court.id }}">
+                                <button type="submit" name="delete_court" class="btn-delete" style="width: 100%;"><i class="far fa-trash-alt"></i> Eliminar Cancha</button>
+                            </form>
+                        </div>
+                    </div> {% empty %}
                     <div class="empty-state-global" style="grid-column: 1 / -1;">
                         <i class="fas fa-map-marked-alt"></i>
                         <h3>Sin canchas registradas</h3>
@@ -102,11 +107,73 @@
         </div>
     </div>
 
+    <div id="edit-court-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Cancha</h3>
+                <span class="close" onclick="closeEditModal()">&times;</span>
+            </div>
+            
+            <form id="edit-court-form" class="custom-form" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" id="edit_court_id" name="court_id">
+                
+                <p>
+                    <label for="edit_name">Nombre:</label>
+                    <input type="text" id="edit_name" name="name" required class="custom-input">
+                </p>
+                
+                <p>
+                    <label for="edit_sport">Deporte:</label>
+                    <select id="edit_sport" name="sport" required class="custom-input">
+                        {% for value, label in sport_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </p>
+
+                <p>
+                    <label for="edit_surface">Superficie:</label>
+                    <select id="edit_surface" name="surface" required class="custom-input">
+                        {% for value, label in surface_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </p>
+
+                <p style="display: flex; align-items: center; gap: 10px; margin-top: 15px;">
+                    <input type="checkbox" id="edit_has_lighting" name="has_lighting">
+                    <label for="edit_has_lighting" style="margin: 0;">Tiene iluminación</label>
+                </p>
+
+                <div style="display: flex; gap: 15px; margin-top: 15px;">
+                    <div style="flex: 1;">
+                        <label for="edit_base_price">Precio base/hora:</label>
+                        <input type="number" id="edit_base_price" name="base_price_per_hour" step="0.01" required class="custom-input">
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="edit_lighting_price">Extra luz/hora:</label>
+                        <input type="number" id="edit_lighting_price" name="lighting_extra_per_hour" step="0.01" required class="custom-input">
+                    </div>
+                </div>
+
+                <p style="margin-top: 15px;">
+                    <label for="edit_imagen">Imagen:</label>
+                    <input type="file" id="edit_imagen" name="imagen" accept="image/*" class="custom-input" style="padding: 8px;">
+                </p>
+
+                <div class="modal-footer" style="margin-top: 20px;">
+                    <button type="submit" id="save-edit-btn" class="btn-submit" style="padding: 10px 20px; border-radius: 8px; background: #667eea; color: white; border: none; cursor:pointer;">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <script>
         // Modal logic
         var modal = document.getElementById("add-court-modal");
         var btn = document.getElementById("add-court-btn");
         var span = document.getElementsByClassName("close")[0];
+        var editModal = document.getElementById("edit-court-modal");
 
         btn.onclick = function() {
             modal.style.display = "block";
@@ -130,6 +197,68 @@
         function confirmDelete() {
             return confirm("¿Estás seguro de que quieres eliminar esta cancha de forma permanente?");
         }
+
+        function openEditModal(id, name, sport, surface, hasLighting, basePrice, lightPrice) {
+            // Cargar datos en los inputs
+            document.getElementById('edit_court_id').value = id;
+            document.getElementById('edit_name').value = name;
+            document.getElementById('edit_sport').value = sport;
+            document.getElementById('edit_surface').value = surface;
+            document.getElementById('edit_has_lighting').checked = hasLighting;
+            
+            // Reemplazar comas por puntos si el backend envía precios con coma
+            document.getElementById('edit_base_price').value = basePrice.replace(',', '.');
+            document.getElementById('edit_lighting_price').value = lightPrice.replace(',', '.');
+            
+            // Limpiar input de archivo
+            document.getElementById('edit_imagen').value = '';
+
+            editModal.style.display = "block";
+            setTimeout(() => editModal.classList.add("show"), 10);
+        }
+
+        function closeEditModal() {
+            editModal.classList.remove("show");
+            setTimeout(() => editModal.style.display = "none", 300);
+        }
+
+        // Manejar envío del formulario de edición por AJAX (para soportar imagen)
+        document.getElementById('edit-court-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const form = e.target;
+            const courtId = document.getElementById('edit_court_id').value;
+            const formData = new FormData(form);
+            const btn = document.getElementById('save-edit-btn');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+            try {
+                const response = await fetch(`/api/court/${courtId}/edit/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                        // FormData maneja automáticamente el Content-Type para archivos
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    location.reload(); // Recargar para ver los cambios
+                } else {
+                    const data = await response.json();
+                    alert('Error al guardar: ' + (data.error || 'Verifica los datos.'));
+                    btn.disabled = false;
+                    btn.innerHTML = 'Guardar Cambios';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Hubo un problema de conexión.');
+                btn.disabled = false;
+                btn.innerHTML = 'Guardar Cambios';
+            }
+        });
     </script>
 </body>
 </html>

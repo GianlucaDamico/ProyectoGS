@@ -7,14 +7,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from django.db import models
-from django.db.models import Q, Sum, Count
+from django.db.models import Q, Sum, Count, Avg
 from django.db.models.functions import TruncMonth
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import datetime
 import json
 from bookings.models import Booking
-from venues.models import Sport, Complex, Court, Review
+from venues.models import Sport, Complex, Court, Review, Surface
 from venues.forms import CourtForm
 from .models import Jugador, Propietario
 
@@ -366,13 +366,14 @@ def gestion(request):
         'page': 'Gestión',
         'courts': courts,
         'form': form,
+        'sport_choices': Sport.choices,
+        'surface_choices': Surface.choices,
     }
     return render(request, 'cuentas/gestion.html', context)
 
 
 @login_required
 def resenas(request):
-    from django.db.models import Avg
     user = request.user
     perfil_propietario = getattr(user, 'perfil_propietario', None)
 
@@ -662,4 +663,38 @@ def update_image(request, complex_id):
         else:
             return JsonResponse({'error': 'No se envió ninguna imagen'}, status=400)
             
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+from django.http import JsonResponse
+from venues.models import Court
+
+@login_required
+def update_court_api(request, court_id):
+    if request.method == 'POST':
+        try:
+            # 1. Obtener la cancha y verificar que pertenezca al complejo del usuario
+            court = Court.objects.get(id=court_id)
+            if court.complex.owner != request.user:
+                return JsonResponse({'error': 'No tienes permiso'}, status=403)
+
+            # 2. Actualizar campos de texto y números
+            court.name = request.POST.get('name')
+            court.sport = request.POST.get('sport')
+            court.surface = request.POST.get('surface')
+            court.has_lighting = request.POST.get('has_lighting') == 'on'
+            court.base_price_per_hour = request.POST.get('base_price_per_hour')
+            court.lighting_extra_per_hour = request.POST.get('lighting_extra_per_hour')
+
+            # 3. Actualizar imagen solo si se subió una nueva
+            if 'imagen' in request.FILES:
+                court.imagen = request.FILES['imagen']
+
+            court.save()
+            return JsonResponse({'success': True})
+
+        except Court.DoesNotExist:
+            return JsonResponse({'error': 'Cancha no encontrada'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
     return JsonResponse({'error': 'Método no permitido'}, status=405)
