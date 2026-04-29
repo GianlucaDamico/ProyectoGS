@@ -49,7 +49,11 @@
 
                     <details class="profile-menu">
                         <summary class="profile-trigger" aria-label="Abrir menu de perfil">
-                            <span class="profile-avatar">{{ user.username|slice:":1"|upper }}</span>
+                            {% if user.perfil_jugador.avatar %}
+                                <img src="{{ user.perfil_jugador.avatar.url }}" alt="Avatar" class="profile-avatar">
+                            {% else %}
+                                <span class="profile-avatar">{{ nombre|slice:":1"|upper }}</span>
+                            {% endif %}
                             <span class="profile-label">Perfil</span>
                         </summary>
                         <div class="profile-dropdown">
