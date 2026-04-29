@@ -25,7 +25,7 @@
                 
                 <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline; margin-left: 15px;">
                     {% csrf_token %}
-                    <button type="submit" class="btn-register"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+                    <button type="submit" class="btn-close-sesion"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
                 </form>
             </div>
         </div>

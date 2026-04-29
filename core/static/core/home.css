@@ -8,6 +8,7 @@ body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #333; overf
 .navbar-container { width: 100%; max-width: 1800px; margin: 0 auto; padding: 0 30px; display: flex; justify-content: space-between; align-items: center; }
 .logo-img { height: 91px; width: auto; object-fit: contain; }
 .btn-register { background: #667eea; color: white; text-decoration: none; padding: 0.8rem 2rem; border-radius: 50px; font-weight: 600; transition: 0.3s; }
+.btn-close-sesion { background: #ef4444; color: white; text-decoration: none; padding: 0.8rem 2rem; border-radius: 50px; font-weight: 600; transition: 0.3s; }
 .btn-login { color: #667eea; text-decoration: none; font-weight: 600; margin-right: 20px; }
 
 .hero { position: relative; height: 85vh; display: flex; align-items: center; overflow: hidden; color: white; padding: 0 80px; }
