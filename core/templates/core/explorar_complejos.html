@@ -221,16 +221,16 @@
                                     {% endif %}
                                 </div>
                                 <p class="complejo-ubicacion">
-                                    📍 {{ complejo.city }}
+                                    <i class="fas fa-map-marker-alt text-muted" style="color: #e74c3c;"></i> {{ complejo.city }}
                                 </p>
                                 
                                 <div class="complejo-stats">
                                     <span class="stat-item">
-                                        🏟️ {{ complejo.num_courts }} cancha{{ complejo.num_courts|pluralize }}
+                                        <i class="fa-solid fa-basketball"></i> {{ complejo.num_courts }} cancha{{ complejo.num_courts|pluralize }}
                                     </span>
                                     {% if complejo.amenities.exists %}
                                         <span class="stat-item">
-                                            ⭐ {{ complejo.amenities.count }} servicio{{ complejo.amenities.count|pluralize }}
+                                            <i class="fa-solid fa-gem"></i> {{ complejo.amenities.count }} servicio{{ complejo.amenities.count|pluralize }}
                                         </span>
                                     {% endif %}
                                 </div>
