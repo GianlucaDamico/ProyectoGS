@@ -46,6 +46,7 @@
                                     <i class="fas fa-star star-icon"></i>
                                     <span class="rating-number">{{ promedio_calificacion|floatformat:1 }}</span>
                                     <span class="rating-count">({{ cantidad_resenas }} reseñas)</span>
+                                    <span class="view-reviews-link" onclick="abrirModalResenas()">Ver todas</span>
                                 </div>
                             {% else %}
                                 <div class="complex-rating empty">
@@ -359,6 +360,43 @@
             </div>
         </footer>
 
+        <div id="modal-resenas" class="modal">
+            <div class="modal-content glass-card reviews-modal">
+                <div class="modal-header">
+                    <h3>Reseñas del complejo</h3>
+                    <button class="btn-cerrar" onclick="cerrarModalResenas()">&times;</button>
+                </div>
+                
+                <div class="reviews-list">
+                    {% for resena in resenas %}
+                        <div class="review-item">
+                            <div class="review-user">
+                                <div class="user-avatar-mini">
+                                    {% if resena.user.perfil_jugador.avatar %}
+                                        <img src="{{ resena.user.perfil_jugador.avatar.url }}" alt="Avatar">
+                                    {% else %}
+                                        <span>{{ resena.user.first_name|slice:":1"|upper }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="user-info">
+                                    <strong>{{ resena.user.get_full_name|default:resena.user.username }}</strong>
+                                    <div class="user-rating">
+                                        {% for i in "12345" %}
+                                            <i class="fa{% if forloop.counter <= resena.rating %}s{% else %}r{% endif %} fa-star"></i>
+                                        {% endfor %}
+                                        <span class="review-date">{{ resena.created_at|date:"d M, Y" }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="review-text">{{ resena.description }}</p>
+                        </div>
+                    {% empty %}
+                        <p class="empty-msg">Este complejo aún no tiene reseñas.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
         <script>
             // Variables globales para el modal
             let canchaSeleccionada = null;
@@ -643,6 +681,28 @@
                 const modal = document.getElementById('modalDisponibilidad');
                 if (event.target === modal) {
                     cerrarModal();
+                }
+            }
+
+            const modalResenas = document.getElementById('modal-resenas');
+
+            function abrirModalResenas() {
+                modalResenas.style.display = "flex";
+                setTimeout(() => modalResenas.classList.add("show"), 10);
+            }
+
+            function cerrarModalResenas() {
+                modalResenas.classList.remove("show");
+                setTimeout(() => modalResenas.style.display = "none", 300);
+            }
+
+            // También hacemos que al tocar la estrella se abra
+            document.getElementById('btn-abrir-resenas').onclick = abrirModalResenas;
+
+            // Cerrar si hace clic afuera del modal
+            window.onclick = function(event) {
+                if (event.target == modalResenas) {
+                    cerrarModalResenas();
                 }
             }
         </script>

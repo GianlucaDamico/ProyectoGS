@@ -1832,3 +1832,101 @@ body {
     font-size: 0.95rem;
     opacity: 0.8;
 }
+
+/* ============ MODAL DE RESEÑAS (MODO CLARO) ============ */
+.reviews-modal {
+    background: #ffffff !important; /* Forzamos fondo blanco limpio */
+    color: #1f2937; /* Texto oscuro principal */
+    max-width: 550px !important;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.reviews-modal .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.reviews-modal .modal-header h3 {
+    margin: 0;
+    color: #111827;
+    font-size: 1.25rem;
+}
+
+.reviews-list {
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Scrollbar sutil */
+.reviews-list::-webkit-scrollbar { width: 6px; }
+.reviews-list::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+
+.review-item {
+    border-bottom: 1px solid #f3f4f6;
+    padding: 20px 0;
+}
+
+.review-item:last-child { 
+    border-bottom: none; 
+}
+
+.review-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.user-avatar-mini {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; flex-shrink: 0;
+    color: white;
+    font-weight: bold;
+}
+
+.user-avatar-mini img { width: 100%; height: 100%; object-fit: cover; }
+
+.user-info strong { 
+    display: block; 
+    font-size: 1rem; 
+    color: #1f2937;
+}
+
+.user-rating { 
+    color: #fbbf24; /* Amarillo solo para las estrellas */
+    font-size: 0.85rem; 
+    display: flex; 
+    align-items: center; 
+    gap: 3px; 
+    margin-top: 3px;
+}
+
+.review-date { 
+    color: #9ca3af; /* Gris sutil para la fecha */
+    font-size: 0.8rem; 
+    margin-left: 8px; 
+}
+
+.review-text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #4b5563; /* Gris oscuro para que se lea perfecto */
+    margin: 8px 0 0 0; /* Un pequeño margen arriba para separarlo del nombre */
+}
+
+.btn-cerrar {
+    background: none; border: none; color: #9ca3af; font-size: 1.8rem; cursor: pointer; transition: 0.2s;
+}
+.btn-cerrar:hover { color: #1f2937; }
