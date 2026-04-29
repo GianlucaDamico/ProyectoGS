@@ -171,26 +171,43 @@
         </div>
     </footer>
 
-    <script>
-        // Lógica para cerrar los menús desplegables al hacer click fuera
-        document.addEventListener('click', function(event) {
-            const allDetails = document.querySelectorAll('details');
-            allDetails.forEach((details) => {
-                if (!details.contains(event.target)) {
-                    details.removeAttribute('open');
-                }
-                const summary = details.querySelector('summary');
-                if (summary && summary.contains(event.target)) {
-                    allDetails.forEach((otherDetails) => {
-                        if (otherDetails !== details) {
-                            otherDetails.removeAttribute('open');
-                        }
-                    });
-                }
-            });
-        });
+    <div id="reviewModal" class="review-modal">
+        <div class="review-modal-content">
+            <div class="review-modal-header">
+                <h2>Dejar una reseña</h2>
+                <button class="close-modal" onclick="cerrarModalResena()">&times;</button>
+            </div>
+            <div class="review-modal-body">
+                <div class="form-group">
+                    <label class="text-dark">Complejo: <strong id="complexName"></strong></label>
+                </div>
+                <div class="form-group">
+                    <label class="text-dark">Calificación</label>
+                    <div class="star-rating" id="starRating">
+                        <span class="star" onclick="seleccionarEstrella(1)">★</span>
+                        <span class="star" onclick="seleccionarEstrella(2)">★</span>
+                        <span class="star" onclick="seleccionarEstrella(3)">★</span>
+                        <span class="star" onclick="seleccionarEstrella(4)">★</span>
+                        <span class="star" onclick="seleccionarEstrella(5)">★</span>
+                    </div>
+                    <div class="rating-display" id="ratingDisplay"></div>
+                </div>
+                <div class="form-group">
+                    <label for="reviewDescription" class="text-dark">Descripción (opcional)</label>
+                    <textarea id="reviewDescription" placeholder="Cuéntanos tu experiencia..."></textarea>
+                </div>
+            </div>
+            <div class="review-modal-footer">
+                <button class="btn-cancel" onclick="cerrarModalResena()">Cancelar</button>
+                <button class="btn-submit" onclick="enviarResena()" id="submitReviewBtn">Enviar reseña</button>
+            </div>
+        </div>
+    </div>
 
-        // Lógica para cancelar reservas
+    <script>
+        // ==========================================
+        // LÓGICA DE CANCELAR RESERVAS
+        // ==========================================
         function cancelarReserva(reservaId) {
             if (!confirm('¿Estás seguro de que deseas cancelar esta reserva?')) {
                 return false;
@@ -234,6 +251,133 @@
 
             return false;
         }
-    </script>   
+
+        // ==========================================
+        // LÓGICA DE NOTIFICACIONES Y MODAL DE RESEÑA
+        // ==========================================
+        let currentBookingId = null;
+        let selectedRating = 0;
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                          document.querySelector('input[name=csrfmiddlewaretoken]')?.value ||
+                          getCookie('csrftoken');
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function abrirModalResena(bookingId, complexName) {
+            currentBookingId = bookingId;
+            selectedRating = 0;
+            
+            document.getElementById('complexName').textContent = complexName;
+            document.getElementById('reviewDescription').value = '';
+            
+            document.querySelectorAll('.star').forEach(star => {
+                star.classList.remove('active');
+            });
+            document.getElementById('ratingDisplay').textContent = '';
+            
+            document.getElementById('reviewModal').classList.add('active');
+        }
+
+        function cerrarModalResena() {
+            document.getElementById('reviewModal').classList.remove('active');
+            currentBookingId = null;
+            selectedRating = 0;
+        }
+
+        function seleccionarEstrella(rating) {
+            selectedRating = rating;
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+            document.getElementById('ratingDisplay').textContent = rating + ' estrellas';
+        }
+
+        function enviarResena() {
+            if (!currentBookingId || selectedRating === 0) {
+                alert('Por favor selecciona una calificación');
+                return;
+            }
+
+            const description = document.getElementById('reviewDescription').value;
+            const submitBtn = document.getElementById('submitReviewBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
+
+            fetch('/api/reviews/create/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({
+                    booking_id: currentBookingId,
+                    rating: selectedRating,
+                    description: description
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert('¡Reseña enviada exitosamente!');
+                    cerrarModalResena();
+                    location.reload();
+                } else if (data.error) {
+                    alert('Error: ' + data.error);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Enviar reseña';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Ocurrió un error al enviar la reseña');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Enviar reseña';
+            });
+        }
+
+        // Cierre de menús notificaciones y modal al hacer clic fuera
+        document.addEventListener('click', function(event) {
+            const allDetails = document.querySelectorAll('details');
+            
+            // Cerrar el modal de reseña si se hace clic por fuera
+            const modal = document.getElementById('reviewModal');
+            if (event.target === modal) {
+                cerrarModalResena();
+            }
+
+            // Lógica para cerrar detalles
+            allDetails.forEach((details) => {
+                if (!details.contains(event.target)) {
+                    details.removeAttribute('open');
+                }
+                const summary = details.querySelector('summary');
+                if (summary && summary.contains(event.target)) {
+                    allDetails.forEach((otherDetails) => {
+                        if (otherDetails !== details) {
+                            otherDetails.removeAttribute('open');
+                        }
+                    });
+                }
+            });
+        });
+    </script> 
 </body>
 </html>
