@@ -665,9 +665,6 @@ def update_image(request, complex_id):
             
     return JsonResponse({'error': 'Método no permitido'}, status=405)
 
-from django.http import JsonResponse
-from venues.models import Court
-
 @login_required
 def update_court_api(request, court_id):
     if request.method == 'POST':
