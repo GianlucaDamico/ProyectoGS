@@ -21,6 +21,12 @@ class Jugador(models.Model):
 	apellido = models.CharField(max_length=100)
 	telefono = models.CharField(max_length=20, blank=True)
 	deporte_preferido = models.CharField(max_length=50, blank=True)
+	avatar = models.ImageField(
+        upload_to='usuarios/avatars/', 
+        default='usuarios/avatars/default_avatar.png',
+        null=True, 
+        blank=True
+    )
 
 	def __str__(self):
 		return f"{self.nombre} {self.apellido} ({self.user.username})"
