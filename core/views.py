@@ -88,7 +88,10 @@ def explorar_complejos(request):
     complejos = Complex.objects.select_related('owner').prefetch_related(
         'courts', 'amenities'
     ).annotate(
-        num_courts=Count('courts')
+        # distinct=True es vital aquí para que no se mezclen las canchas con las reseñas
+        num_courts=Count('courts', distinct=True), 
+        cantidad_resenas=Count('reviews', distinct=True),
+        promedio_calificacion=Avg('reviews__rating')
     ).filter(
         num_courts__gt=0
     )
@@ -131,6 +134,8 @@ def explorar_complejos(request):
             .select_related('court__complex')
             .order_by('-end')
         )
+
+    # Borramos el bloque de "resenas = ..." que daba error, porque ahora todo viaja en page_obj
     
     context = {
         'page_obj': page_obj,
@@ -143,6 +148,7 @@ def explorar_complejos(request):
         'ciudades_disponibles': ciudades_disponibles,
         'sport_choices': Sport.choices,
         'resenas_pendientes': resenas_pendientes,
+        # Ya no hace falta pasar promedio_calificacion ni cantidad_resenas sueltos
     }
     
     return render(request, 'core/explorar_complejos.html', context)

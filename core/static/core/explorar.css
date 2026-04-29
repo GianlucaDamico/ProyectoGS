@@ -542,3 +542,35 @@ details[open] .profile-dropdown {
 .social-links { display: flex; flex-direction: column; gap: 10px; }
 .footer-bottom { max-width: 1200px; margin: 0 auto; text-align: center; padding-top: 30px; border-top: 1px solid #334155; color: #64748b; }
 
+.complejo-header {
+    display: flex;
+    justify-content: space-between; /* Título a la izquierda, estrella a la derecha */
+    align-items: center; /* Los centra verticalmente en la misma línea */
+    width: 100%; /* Obliga a usar todo el ancho de la card */
+    margin-bottom: 10px;
+    gap: 15px; /* Espacio de seguridad por si el nombre es muy largo */
+}
+
+.complejo-header h3 {
+    margin: 0; /* Vital para que flexbox lo alinee correctamente */
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+/* ============ ESTRELLAS EN LA CARD ============ */
+.card-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1f2937;
+    flex-shrink: 0; /* Prohíbe terminantemente que la pastilla se aplaste */
+}
+
+.card-rating .star-icon {
+    color: #fbbf24; /* Dorado brillante */
+    font-size: 1rem;
+}

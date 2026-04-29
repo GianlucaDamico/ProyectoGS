@@ -201,8 +201,15 @@
                             </div>
                             
                             <div class="complejo-content">
-                                <h3>{{ complejo.name }}</h3>
-                                
+                                <div class="complejo-header">
+                                    <h3>{{ complejo.name }}</h3>
+                                    {% if complejo.cantidad_resenas > 0 %}
+                                        <div class="card-rating" title="Basado en {{ complejo.cantidad_resenas }} reseñas">
+                                            <i class="fas fa-star star-icon"></i>
+                                            <span class="rating-number">{{ complejo.promedio_calificacion|floatformat:1 }}</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
                                 <p class="complejo-ubicacion">
                                     📍 {{ complejo.city }}
                                 </p>
