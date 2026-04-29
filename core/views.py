@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, JsonResponse
-from django.db.models import Avg, Count, Q, Case, When, Value, IntegerField
+from django.db.models import Avg, Count, Q, Case, When, Value, IntegerField, F
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
@@ -113,6 +113,8 @@ def explorar_complejos(request):
         complejos = complejos.order_by('city', 'name')
     elif orden == 'canchas':
         complejos = complejos.order_by('-num_courts', 'name')
+    elif orden == 'calificacion':
+        complejos = complejos.order_by(F('promedio_calificacion').desc(nulls_last=True), 'name')
     
     ciudades_disponibles = Complex.objects.values_list('city', flat=True).distinct().order_by('city')
     
