@@ -182,6 +182,21 @@
     color: #e0e6ff;
 }
 
+.profile-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    background: var(--primary);
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
 .review-user-name {
     font-weight: 800;
     font-size: 1.2rem;

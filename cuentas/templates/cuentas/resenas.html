@@ -72,7 +72,11 @@
                             <div class="review-header">
                                 <div class="review-user-info">
                                     <div class="review-avatar">
-                                        <i class="fas fa-user-circle"></i>
+                                        {% if resena.user.perfil_jugador.avatar %}
+                                            <img src="{{ resena.user.perfil_jugador.avatar.url }}" alt="Avatar" class="profile-avatar">
+                                        {% else %}
+                                            <i class="fas fa-user-circle"></i>
+                                        {% endif %}
                                     </div>
                                     <div>
                                         <div class="review-user-name">{{ resena.user.first_name|default:resena.user.username }}</div>

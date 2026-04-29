@@ -135,6 +135,8 @@ summary { list-style: none; outline: none; cursor: pointer; }
     font-weight: 700;
     color: #fff;
     background: var(--primary);
+    object-fit: cover;
+    flex-shrink: 0;
 }
 
 .profile-label { color: var(--text); font-size: 0.95rem; font-weight: 600; }

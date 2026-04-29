@@ -57,7 +57,11 @@
         <aside class="sidebar-glass">
             <div class="sidebar-user-info">
                 <div class="avatar-frame">
-                    <span>{{ nombre|slice:":1"|upper }}</span>
+                    {% if user.perfil_jugador.avatar %}
+                        <img src="{{ user.perfil_jugador.avatar.url }}" alt="Avatar de {{ nombre }}" class="avatar-img">
+                    {% else %}
+                        <span>{{ nombre|slice:":1"|upper }}</span>
+                    {% endif %}
                 </div>
                 <h3>{{ nombre }}</h3>
                 <p>{{ user.email }}</p>
@@ -130,34 +134,48 @@
             <div id="perfil" class="tab-pane">
                 <div class="glass-card">
                     <h2>Configuración de Perfil</h2>
-                    <div class="profile-edit-container">
-                        <div class="profile-pic-edit">
-                            <div class="avatar-frame large">
-                                <span>{{ nombre|slice:":1"|upper }}</span>
+                    
+                    <form id="form-perfil" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="profile-edit-container">
+                            
+                            <div class="profile-pic-edit" style="display: flex; flex-direction: column; align-items: center;">
+                                <div class="avatar-frame large">
+                                    {% if user.perfil_jugador.avatar %}
+                                        <img src="{{ user.perfil_jugador.avatar.url }}" alt="Avatar" class="avatar-img" id="avatar-preview">
+                                    {% else %}
+                                        <span id="avatar-initial">{{ nombre|slice:":1"|upper }}</span>
+                                        <img src="" class="avatar-img" id="avatar-preview" style="display: none;">
+                                    {% endif %}                            
+                                </div>
+                                <label for="foto-perfil" class="btn-outline-light" style="margin-top: 15px; cursor: pointer;">
+                                    <i class="fas fa-camera"></i> Cambiar Foto
+                                </label>
+                                <input type="file" name="avatar" id="foto-perfil" accept="image/*" hidden>
                             </div>
-                            <label for="foto-perfil" class="btn-outline-light"><i class="fas fa-camera"></i> Cambiar Foto</label>
-                            <input type="file" id="foto-perfil" accept="image/*" hidden>
+                            
+                            <div class="glass-form"> 
+                                <div class="form-group">
+                                    <label>Nombre Completo</label>
+                                    <input type="text" name="nombre" value="{{ nombre }}" class="glass-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>Correo Electrónico</label>
+                                    <input type="email" value="{{ user.email }}" class="glass-input" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label>Teléfono de Contacto</label>
+                                    <input type="tel" name="telefono" value="{{ user.perfil_jugador.telefono }}" placeholder="+34 XXX XXX XXX" class="glass-input">
+                                </div>
+                                <button type="button" id="btn-abrir-modal" class="btn-primary-glass">Guardar Cambios</button>
+                            </div>
+
                         </div>
-                        
-                        <form class="glass-form" action="#" method="POST">
-                            {% csrf_token %}
-                            <div class="form-group">
-                                <label>Nombre Completo</label>
-                                <input type="text" name="nombre" value="{{ nombre }}" class="glass-input">
-                            </div>
-                            <div class="form-group">
-                                <label>Correo Electrónico</label>
-                                <input type="email" value="{{ user.email }}" class="glass-input" disabled title="El correo no se puede cambiar">
-                            </div>
-                            <div class="form-group">
-                                <label>Teléfono de Contacto</label>
-                                <input type="tel" name="telefono" placeholder="+34 XXX XXX XXX" class="glass-input">
-                            </div>
-                            <button type="submit" class="btn-primary-glass">Guardar Cambios</button>
-                        </form>
-                    </div>
+                    </form>
                 </div>
             </div>
+
+
 
             <div id="pagos" class="tab-pane">
                 <div class="glass-card">
@@ -260,6 +278,18 @@
         </div>
     </div>
 
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content glass-card" style="max-width: 350px; text-align: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <div class="modal-header" style="justify-content: center; border-bottom: none;">
+                <h3>¿Guardar cambios?</h3>
+            </div>
+            <p style="margin-bottom: 20px; color: var(--text-dim);">Se actualizará tu información de perfil.</p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button type="button" onclick="cerrarModalConfirmacion()" style="padding: 10px 20px; border-radius: 8px; border: 1px solid #ccc; background: transparent; color: white; cursor:pointer;">Cancelar</button>
+                <button type="button" id="btn-confirmar-guardar" class="btn-primary-glass" style="margin: 0; width: auto;">Sí, guardar</button>
+            </div>
+        </div>
+    </div>
     <script>
         function switchTab(evt, tabId) {
             document.querySelectorAll('.tab-pane').forEach(t => t.classList.remove('active'));
@@ -393,6 +423,65 @@
                     });
                 }
             });
+        });
+
+        // 1. Previsualizar la foto seleccionada
+        document.getElementById('foto-perfil').addEventListener('change', function(event) {
+            if (event.target.files && event.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('avatar-preview').src = e.target.result;
+                    document.getElementById('avatar-preview').style.display = 'block';
+                    const initial = document.getElementById('avatar-initial');
+                    if (initial) initial.style.display = 'none';
+                }
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        });
+
+        // 2. Lógica del Modal
+        const modalConfirm = document.getElementById('confirm-modal');
+        
+        document.getElementById('btn-abrir-modal').addEventListener('click', () => {
+            modalConfirm.style.display = "block";
+            setTimeout(() => modalConfirm.classList.add("show"), 10);
+        });
+
+        function cerrarModalConfirmacion() {
+            modalConfirm.classList.remove("show");
+            setTimeout(() => modalConfirm.style.display = "none", 300);
+        }
+
+        // 3. Confirmar y enviar a la API
+        document.getElementById('btn-confirmar-guardar').addEventListener('click', async function() {
+            const formPerfil = document.getElementById('form-perfil');
+            const formData = new FormData(formPerfil);
+            const btn = this;
+            
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/user/update-avatar/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    // Feedback visual en el botón y recarga suave, sin alerts
+                    btn.innerHTML = '<i class="fas fa-check"></i> ¡Listo!';
+                    setTimeout(() => location.reload(), 600); 
+                } else {
+                    // Solo mostramos alert si ocurre un error real del servidor
+                    alert('Error al guardar. Verifica los datos.');
+                    btn.innerHTML = 'Sí, guardar';
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                btn.innerHTML = 'Sí, guardar';
+                btn.disabled = false;
+            }
         });
     </script>
 </body>
