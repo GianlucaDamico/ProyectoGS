@@ -125,7 +125,7 @@
 
                     <div class="filtro-item">
                         <label for="ciudad"><i class="fas fa-map-marker-alt text-muted" style="color: #e74c3c;"></i> Ciudad</label>
-                        <select name="ciudad" id="ciudad" onchange="this.form.submit()">
+                        <select name="ciudad" id="ciudad">
                             <option value="">Todas las ciudades</option>
                             {% for ciudad in ciudades_disponibles %}
                                 <option value="{{ ciudad }}" 
@@ -138,7 +138,7 @@
 
                     <div class="filtro-item">
                         <label for="deporte"><i class="fas fa-volleyball-ball text-muted" style="color: #9b59b6;"></i> Deporte</label>
-                        <select name="deporte" id="deporte" onchange="this.form.submit()">
+                        <select name="deporte" id="deporte">
                             <option value="">Todos los deportes</option>
                             {% for sport_value, sport_label in sport_choices %}
                                 <option value="{{ sport_value }}"
@@ -151,7 +151,7 @@
 
                     <div class="filtro-item">
                         <label for="orden"><i class="fas fa-sort-amount-down text-muted" style="color: #2ecc71;"></i> Ordenar por</label>
-                        <select name="orden" id="orden" onchange="this.form.submit()">
+                        <select name="orden" id="orden">
                             <option value="nombre" {% if orden_actual == 'nombre' %}selected{% endif %}>
                                 Nombre A-Z
                             </option>
