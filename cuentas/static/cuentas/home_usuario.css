@@ -25,8 +25,10 @@ body {
     z-index: 1000; 
     min-height: 90px; 
     display: flex; 
-    align-items: center; 
+    align-items: center;
+    width: 100%; /* ← Garantiza que el fondo blanco abarque todo el ancho */
 }
+
 .navbar-container { 
     width: 100%; 
     max-width: 1800px; 
@@ -38,14 +40,26 @@ body {
 }
 .logo-img { height: 91px; width: auto; object-fit: contain; }
 
-.nav-links { display: flex; align-items: center; }
+/* Contenedor flexible con espaciado uniforme */
+.nav-links { 
+    display: flex; 
+    align-items: center;
+    gap: 25px; /* ← Espaciado perfecto entre Explorar, Notificaciones y Botón */
+}
+
+/* Resetea el margen en el formulario para evitar conflictos */
+.nav-links form {
+    margin: 0;
+}
 
 .btn-login { 
     color: var(--primary); 
     text-decoration: none; 
     font-weight: 600; 
-    margin-right: 20px; 
-    transition: 0.3s; 
+    transition: 0.3s;
+    display: flex; /* ← Alinea el icono de lupa con el texto */
+    align-items: center;
+    gap: 8px; /* ← Espaciado entre la lupa y la palabra Explorar */
 }
 .btn-login:hover { color: #4a5dbf; }
 
@@ -99,89 +113,8 @@ details[open] .notifications-dropdown {
 }
 .notifications-menu::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 15px; }
 
-<<<<<<< HEAD
-.dropdown-empty {
-    margin: 0;
-    color: var(--muted);
-    font-size: 0.9rem;
-}
-
-.profile-trigger {
-    list-style: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    background: #ffffff;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    height: 40px;
-    padding: 4px 12px 4px 6px;
-}
-
-.profile-trigger:hover {
-    background: #f0f0f0;
-}
-
-.profile-trigger::-webkit-details-marker {
-    display: none;
-}
-
-.profile-avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 999px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #fff;
-    background: var(--primary);
-}
-
-.profile-label {
-    color: var(--text);
-    font-size: 0.9rem;
-    font-weight: 700;
-}
-
-.nav-notificaciones-btn {
-    display: inline-flex;
-    align-items: center;
-    height: 40px;
-    padding: 4px 12px;
-    background: #ffffff;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--primary);
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s, color 0.3s;
-    white-space: nowrap;
-}
-
-.nav-notificaciones-btn:hover {
-    background: #f0f0f0;
-    color: var(--primary-dark);
-}
-
-.profile-dropdown {
-    position: absolute;
-    right: 0;
-    top: calc(100% + 8px);
-    min-width: 170px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: #fff;
-    box-shadow: var(--shadow);
-    padding: 6px;
-=======
 /* ============ LAYOUT DASHBOARD ============ */
 .dashboard-layout {
->>>>>>> 471e766 (Toda la parte de mi perfil modificada con funciones nuevas)
     display: grid;
     grid-template-columns: 280px 1fr;
     max-width: 1600px;
