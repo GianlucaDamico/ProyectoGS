@@ -1788,3 +1788,47 @@ body {
         max-width: 380px; /* En móviles no superará este ancho */
     }
 }
+
+/* ============ TEXTO DE RESEÑAS ============ */
+.complex-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+    margin-top: 5px; 
+    margin-bottom: 5px;
+    color: white; 
+    font-size: 1.1rem; /* Un poquito más grande para que destaque por sí solo */
+}
+
+/* Efecto muy sutil al pasar el mouse, sin cajas ni sombras */
+.complex-rating:hover {
+    opacity: 0.8; 
+}
+
+.complex-rating.empty {
+    cursor: default;
+}
+
+.complex-rating.empty:hover {
+    opacity: 1;
+}
+
+.star-icon {
+    color: #fbbf24; /* Dorado brillante */
+    font-size: 1.2rem;
+}
+
+.complex-rating.empty .star-icon {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.rating-number {
+    font-weight: 700;
+}
+
+.rating-count {
+    font-size: 0.95rem;
+    opacity: 0.8;
+}

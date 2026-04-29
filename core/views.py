@@ -1,13 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, JsonResponse
-from django.db.models import Count, Q, Case, When, Value, IntegerField
+from django.db.models import Avg, Count, Q, Case, When, Value, IntegerField
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.utils import timezone
 
 # Importes de modelos locales
-from venues.models import Complex, Court, Sport, Surface
+from venues.models import Complex, Court, Sport, Surface, Review
 from bookings.models import Booking
 
 # --- VISTAS GENERALES ---
@@ -53,6 +53,14 @@ def complejo_detalle(request, complejo_id, slug=None):
     deportes_disponibles = complejo.courts.values_list('sport', flat=True).distinct()
     superficies_disponibles = complejo.courts.values_list('surface', flat=True).distinct()
     
+    # Obtenemos las reseñas asociadas a este complejo específico
+    resenas = Review.objects.filter(complex=complejo).select_related('user').order_by('-created_at')
+    
+    # Calculamos el promedio
+    promedio_data = resenas.aggregate(promedio=Avg('rating'))
+    promedio_calificacion = promedio_data['promedio'] or 0
+    cantidad_resenas = resenas.count() # Útil para el texto del link
+
     context = {
         'complejo': complejo,
         'canchas': canchas,
@@ -62,6 +70,9 @@ def complejo_detalle(request, complejo_id, slug=None):
         'superficies_disponibles': superficies_disponibles,
         'sport_choices': Sport.choices,
         'surface_choices': Surface.choices,
+        'resenas': resenas,
+        'promedio_calificacion': promedio_calificacion,
+        'cantidad_resenas': cantidad_resenas,
     }
     
     return render(request, 'core/complejo_detalle.html', context)

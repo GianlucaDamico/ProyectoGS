@@ -6,6 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{{ complejo.name }} - Complejo Deportivo</title>
         <link rel="icon" type="image/png" href="{% static 'core/img/logoicono.png' %}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <link rel="stylesheet" href="{% static 'core/complejo.css' %}">
     </head>
     <body>
@@ -40,6 +41,18 @@
                     <div class="hero-split">
                         <div class="complejo-hero-content">
                             <h1 class="complejo-title">{{ complejo.name }}</h1>
+                            {% if cantidad_resenas > 0 %}
+                                <div class="complex-rating" id="btn-ver-resenas" role="button" tabindex="0">
+                                    <i class="fas fa-star star-icon"></i>
+                                    <span class="rating-number">{{ promedio_calificacion|floatformat:1 }}</span>
+                                    <span class="rating-count">({{ cantidad_resenas }} reseñas)</span>
+                                </div>
+                            {% else %}
+                                <div class="complex-rating empty">
+                                    <i class="far fa-star star-icon"></i>
+                                    <span class="rating-count">Aún no hay reseñas</span>
+                                </div>
+                            {% endif %}
                             <p class="complejo-location">📍
                                 {% if complejo.barrio %}{{ complejo.barrio }}{% endif %}
                                 {% if complejo.address %}{% if complejo.barrio %}, {% endif %}{{ complejo.address }}{% endif %}
