@@ -5,6 +5,16 @@ class CourtForm(forms.ModelForm):
     class Meta:
         model = Court
         fields = ['name', 'sport', 'surface', 'has_lighting', 'base_price_per_hour', 'lighting_extra_per_hour']
+
+        labels = {
+            'name': 'Nombre',
+            'sport': 'Deporte',
+            'surface': 'Superficie',
+            'has_lighting': '¿Tiene iluminación?',
+            'base_price_per_hour': 'Precio base/hora (€)',
+            'lighting_extra_per_hour': 'Extra luz/hora (€)',
+        }
+
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'sport': forms.Select(attrs={'class': 'form-control'}),
