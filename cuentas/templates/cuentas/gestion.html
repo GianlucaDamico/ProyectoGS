@@ -37,7 +37,11 @@
                 <h2 class="section-heading">{{ page }}</h2>
                 <button id="add-court-btn" class="btn-add"><i class="fas fa-plus"></i> Agregar Cancha</button>
             </div>
-
+            <div class="django-messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
             <div class="courts-grid">
                 {% for court in courts %}
                     <div class="court-card">
