@@ -178,7 +178,7 @@
             <!-- Sección de precio -->
             <div class="price-section">
                 <div class="price-label">Precio Total</div>
-                <div class="price-amount">${{ reserva.total_price }}</div>
+                <div class="price-amount">€{{ reserva.total_price }}</div>
             </div>
 
             <!-- Sección de acciones -->
@@ -187,7 +187,7 @@
                     <form method="POST" action="{% url 'core:cambiar_estado_reserva' reserva.id %}" id="formPago">
                         {% csrf_token %}
                         <input type="hidden" name="nuevo_estado" value="confirmed">
-                        <button type="submit" class="btn-action btn-pay" onclick="return confirm('¿Confirmar el pago de ${{ reserva.total_price }}?')">
+                        <button type="submit" class="btn-action btn-pay" onclick="return confirm('¿Confirmar el pago de €{{ reserva.total_price }}?')">
                             💳 Confirmar Pago
                         </button>
                     </form>
