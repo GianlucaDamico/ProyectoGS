@@ -597,8 +597,13 @@
                         // Éxito
                         mostrarMensaje('¡Reserva confirmada! Redirigiendo...', 'success');
                         setTimeout(() => {
-                            // Redirigir a mis reservas o donde prefieras
-                            window.location.href = '/mis_reservas/';
+                            if (data && data.id) {
+                                // Te lleva a la reserva REAL que se acaba de crear para que la pagues
+                                window.location.href = `/reserva/${data.id}/`;
+                            } else {
+                                // Por si acaso la API no devuelve el ID, te mandamos a mis_reservas como plan B
+                                window.location.href = '/mis_reservas/';
+                            }
                         }, 2000);
                     } else {
                         // Error de validación
