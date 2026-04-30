@@ -212,10 +212,22 @@ def mis_reservas(request):
         .order_by('-end')
     )
     
+    # Filtrar status_choices para solo mostrar los estados permitidos
+    allowed_statuses = [
+        Booking.Status.PENDING_PAYMENT,
+        Booking.Status.CONFIRMED,
+        Booking.Status.IN_PROGRESS,
+    ]
+    status_choices = [
+        (status, label)
+        for status, label in Booking.Status.choices
+        if status in allowed_statuses
+    ]
+    
     context = {
         'reservas': reservas,
         'estado_filtro': estado_filtro,
-        'status_choices': Booking.Status.choices,
+        'status_choices': status_choices,
         'resenas_pendientes': resenas_pendientes, # ← Pasado al contexto
     }
     
