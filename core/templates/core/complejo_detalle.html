@@ -450,58 +450,66 @@
             }
 
             async function cargarHorariosDisponibles() {
-                // 1. Obtener la fecha que el usuario acaba de seleccionar
                 const fecha = document.getElementById('fechaReserva').value;
-                if (!fecha) return; // Si no hay fecha, no hacemos nada
+                if (!fecha) return;
                 
                 const container = document.getElementById('horariosContainer');
-                
-                // 2. Mostrar un mensajito de carga mientras consultamos a la base de datos
-                container.innerHTML = '<p class="info-text">⏳ Cargando horarios disponibles...</p>';
+                container.innerHTML = '<p class="info-text">⏳ Buscando disponibilidad...</p>';
                 
                 try {
-                    // 3. Llamar a la API de Django que acabas de crear (pasándole la cancha y la fecha)
                     const response = await fetch(`/api/bookings/disponibilidad/?court_id=${canchaSeleccionada.id}&fecha=${fecha}`);
-                    
                     let horariosOcupados = [];
-                    
                     if (response.ok) {
                         const data = await response.json();
-                        // Guardamos la lista que nos devolvió Django (ej: ['15:00', '19:00'])
                         horariosOcupados = data.ocupados || []; 
                     }
 
-                    // 4. Generar todos los horarios del complejo (de 9:00 a 22:00)
+                    const ahora = new Date();
+                    
+                    // Construimos la fecha de hoy en formato YYYY-MM-DD para compararla de forma segura
+                    const anio = ahora.getFullYear();
+                    const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+                    const dia = String(ahora.getDate()).padStart(2, '0');
+                    const fechaHoy = `${anio}-${mes}-${dia}`;
+                    
+                    // Verificamos si la fecha que seleccionó el usuario es el día de hoy
+                    const esHoy = (fecha === fechaHoy);
+                    const esDiaPasado = (fecha < fechaHoy);
+                    const horaActual = ahora.getHours();
+
                     const horarios = [];
                     for (let hora = 9; hora <= 22; hora++) {
                         const horaStr = hora.toString().padStart(2, '0') + ':00';
-                        horarios.push(horaStr);
+                        
+                        // Evaluamos las dos condiciones para cada botón
+                        const estaOcupado = horariosOcupados.includes(horaStr);
+                        const yaPaso = esDiaPasado || (esHoy && (hora <= horaActual));   
+                                             
+                        if (estaOcupado) {
+                            // Horario reservado por otra persona (Rojo)
+                            horarios.push(`
+                                <button class="horario-btn ocupado" disabled>
+                                    ${horaStr}
+                                </button>
+                            `);
+                        } else if (yaPaso) {
+                            // Horario que ya transcurrió en el reloj (Gris)
+                            horarios.push(`
+                                <button class="horario-btn pasado" disabled>
+                                    ${horaStr}
+                                </button>
+                            `);
+                        } else {
+                            // Horario disponible (Blanco)
+                            horarios.push(`
+                                <button class="horario-btn" onclick="seleccionarHorario('${horaStr}')">
+                                    ${horaStr}
+                                </button>
+                            `);
+                        }
                     }
                     
-                    // 5. Crear el HTML de los botones verificando uno por uno
-                    const horariosHTML = horarios.map(horario => {
-                        // ¿Este horario está en la lista de los que ya se ocuparon?
-                        const estaOcupado = horariosOcupados.includes(horario);
-                        
-                        if (estaOcupado) {
-                            // Si está OCUPADO: le ponemos la clase "ocupado" y el atributo "disabled"
-                            return `
-                                <button class="horario-btn ocupado" disabled>
-                                    ${horario}
-                                </button>
-                            `;
-                        } else {
-                            // Si está LIBRE: lo dejamos blanquito y con su función onclick
-                            return `
-                                <button class="horario-btn" onclick="seleccionarHorario('${horario}')">
-                                    ${horario}
-                                </button>
-                            `;
-                        }
-                    }).join('');
-                    
-                    // 6. Inyectar todos los botones generados en el modal
-                    container.innerHTML = horariosHTML;
+                    container.innerHTML = horarios.join('');
                     
                 } catch (error) {
                     console.error('Error al cargar la disponibilidad:', error);
