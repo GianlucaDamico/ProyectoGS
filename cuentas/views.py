@@ -1,7 +1,7 @@
 from urllib import request
 
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout, update_session_auth_hash
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -729,3 +729,54 @@ def update_avatar(request):
 
     return JsonResponse({'error': 'Método no permitido'}, status=405)
 
+@login_required
+def cambiar_contrasena(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            password_actual = data.get('password_actual')
+            password_nueva = data.get('password_nueva')
+            password_confirmar = data.get('password_confirmar')
+
+            user = request.user
+
+            # Campos obligatorios
+            if not password_actual or not password_nueva or not password_confirmar:
+                return JsonResponse({'error': 'Todos los campos son obligatorios.'}, status=400)
+
+            # Contraseña actual correcta
+            if not user.check_password(password_actual):
+                return JsonResponse({'error': 'La contraseña actual es incorrecta.'}, status=400)
+
+            # Que las nuevas coincidan
+            if password_nueva != password_confirmar:
+                return JsonResponse({'error': 'Las contraseñas nuevas no coinciden.'}, status=400)
+
+            # - REGLAS DE SEGURIDAD ESTRICTAS -
+            
+            # Mínimo 8 caracteres
+            if len(password_nueva) < 8:
+                return JsonResponse({'error': 'La contraseña debe tener al menos 8 caracteres.'}, status=400)
+            # Al menos una mayúscula
+            if not any(char.isupper() for char in password_nueva):
+                return JsonResponse({'error': 'La contraseña debe tener al menos una letra mayúscula.'}, status=400)
+            # Al menos una minúscula
+            if not any(char.islower() for char in password_nueva):
+                return JsonResponse({'error': 'La contraseña debe tener al menos una letra minúscula.'}, status=400)
+            # Al menos un número
+            if not any(char.isdigit() for char in password_nueva):
+                return JsonResponse({'error': 'La contraseña debe tener al menos un número.'}, status=400)
+                
+            #  Todo perfecto, guardamos
+            user.set_password(password_nueva)
+            user.save()
+
+            # Mantiene la sesión viva
+            update_session_auth_hash(request, user)
+
+            return JsonResponse({'mensaje': '¡Contraseña actualizada con éxito!'})
+            
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Error al procesar los datos.'}, status=400)
+    
+    return JsonResponse({'error': 'Método no permitido'}, status=405)

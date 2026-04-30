@@ -221,7 +221,7 @@
                     <h2>Seguridad y Contraseña</h2>
                     <p style="color: var(--text-dim); margin-bottom: 25px;">Protege tu cuenta utilizando una contraseña segura y no la compartas con nadie.</p>
                     
-                    <form class="glass-form" action="#" method="POST">
+                    <form id="form-password" class="glass-form" action="#" method="POST">
                         {% csrf_token %}
                         <div class="form-group">
                             <label>Contraseña Actual</label>
@@ -481,6 +481,65 @@
                 console.error('Error:', error);
                 btn.innerHTML = 'Sí, guardar';
                 btn.disabled = false;
+            }
+        });
+
+        // Escuchamos el evento "submit" del formulario
+        document.getElementById('form-password').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Evitamos que la página parpadee o se recargue
+
+            const form = this;
+            const btnSubmit = form.querySelector('button[type="submit"]');
+            const iconoOriginal = '<i class="fas fa-lock"></i> ';
+            
+            // Obtenemos los valores usando el atributo "name" de tu HTML
+            const oldPassword = form.elements['old_password'].value;
+            const newPassword = form.elements['new_password'].value;
+            const confirmPassword = form.elements['confirm_password'].value;
+
+            // Validación rápida en el Frontend para no hacer esperar al usuario
+            if (newPassword !== confirmPassword) {
+                alert("Las contraseñas nuevas no coinciden.");
+                return;
+            }
+
+            // Cambiamos el estado del botón mientras carga
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
+
+            try {
+                // Asegúrate de que esta URL sea la correcta según tu urls.py
+                const response = await fetch('/api/cambiar-contrasena/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken') // El token de seguridad de Django
+                    },
+                    body: JSON.stringify({
+                        // Mapeamos los nombres de tu HTML a los que espera views.py
+                        password_actual: oldPassword,
+                        password_nueva: newPassword,
+                        password_confirmar: confirmPassword
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // ¡Éxito!
+                    alert(data.mensaje); // "¡Contraseña actualizada con éxito!"
+                    form.reset(); // Limpiamos los inputs
+                } else {
+                    // El servidor encontró un error (ej. falta una mayúscula, o la actual es incorrecta)
+                    alert("Error: " + data.error);
+                }
+            } catch (error) {
+                console.error("Error en la petición:", error);
+                alert("Ocurrió un error al intentar conectar con el servidor.");
+            } finally {
+                // Restauramos el botón a su estado original, pase lo que pase
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = iconoOriginal + 'Actualizar Contraseña';
             }
         });
     </script>
