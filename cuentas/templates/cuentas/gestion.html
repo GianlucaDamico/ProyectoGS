@@ -25,7 +25,7 @@
                 
                 <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline; margin-left: 15px;">
                     {% csrf_token %}
-                    <button type="submit" class="btn-register"><i class="fas fa-sign-out-alt"></i> Salir</button>
+                    <button type="submit" class="btn-close-sesion"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
                 </form>
             </div>
         </div>
@@ -37,7 +37,11 @@
                 <h2 class="section-heading">{{ page }}</h2>
                 <button id="add-court-btn" class="btn-add"><i class="fas fa-plus"></i> Agregar Cancha</button>
             </div>
-
+            <div class="django-messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
             <div class="courts-grid">
                 {% for court in courts %}
                     <div class="court-card">
@@ -70,7 +74,7 @@
                         </div>
                             
                         <div class="court-actions" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
-                            <button onclick="openEditModal({{ court.id }}, '{{ court.name }}', '{{ court.sport }}', '{{ court.surface }}', {{ court.has_lighting|yesno:'true,false' }}, '{{ court.base_price_per_hour }}', '{{ court.lighting_extra_per_hour }}')" class="btn-edit-court" style="background: #f0f4ff; color: #667eea; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                            <button onclick="openEditModal( '{{ court.id }}', '{{ court.name }}', '{{ court.sport }}', '{{ court.surface }}', '{{ court.has_lighting|yesno:'true,false' }}', '{{ court.base_price_per_hour }}', '{{ court.lighting_extra_per_hour }}')" class="btn-edit-court" style="background: #f0f4ff; color: #667eea; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer;">
                                 <i class="fas fa-edit"></i> Editar Cancha
                             </button>
                             

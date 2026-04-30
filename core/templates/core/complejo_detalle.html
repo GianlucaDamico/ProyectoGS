@@ -230,7 +230,7 @@
                                     </div>
                                     
                                     <button class="btn-reservar" 
-                                        onclick="verDisponibilidad({{ cancha.id }}, '{{ cancha.name }}')">
+                                        onclick="verDisponibilidad(event, {{ cancha.id }}, '{{ cancha.name }}')">
                                         Ver disponibilidad
                                     </button>
                                 </div>
@@ -245,15 +245,6 @@
                         </a>
                     </div>
                 {% endif %}
-            </div>
-        </section>
-
-        <!-- CTA Final -->
-        <section class="cta-section">
-            <div class="container">
-                <h2>¿Listo para reservar?</h2>
-                <p>Elige tu cancha favorita y reserva tu horario en segundos</p>
-                <a href="#" class="btn-primary">Explorar canchas</a>
             </div>
         </section>
 
@@ -291,8 +282,7 @@
                             <div class="config-item">
                                 <label for="duracion">Duración:</label>
                                 <select id="duracion" onchange="calcularPrecio()">
-                                    <option value="60">60 minutos</option>
-                                    <option value="90" selected>90 minutos</option>
+                                    <option value="60" selected>60 minutos</option>
                                     <option value="120">120 minutos</option>
                                 </select>
                             </div>
@@ -300,7 +290,7 @@
                             <div class="config-item" id="iluminacionContainer" style="display: none;">
                                 <label for="iluminacion">
                                     <input type="checkbox" id="iluminacion" onchange="calcularPrecio()">
-                                    Añadir iluminación
+                                    Añadir iluminación (+€<span id="modalPrecioLuzDisplay">0</span>/hora)
                                 </label>
                             </div>
                         </div>
@@ -331,34 +321,6 @@
                 <div id="modalMensaje" class="modal-mensaje"></div>
             </div>
         </div>
-
-        <!-- Footer (igual que en home) -->
-        <footer class="footer">
-            <div class="footer-container">
-                <div class="footer-section">
-                    <h4>Courtly</h4>
-                    <p>La mejor plataforma para reservar canchas deportivas.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Enlaces Rápidos</h4>
-                    <ul>
-                        <li><a href="{% url 'core:home' %}">Inicio</a></li>
-                        <li><a href="#">Canchas</a></li>
-                        <li><a href="#">Contacto</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Legal</h4>
-                    <ul>
-                        <li><a href="#">Términos de servicio</a></li>
-                        <li><a href="#">Política de privacidad</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 Courtly. Todos los derechos reservados.</p>
-            </div>
-        </footer>
 
         <div id="modal-resenas" class="modal">
             <div class="modal-content glass-card reviews-modal">
@@ -405,7 +367,7 @@
             let precioLuz = 0;
 
             // Función para abrir el modal (reemplaza el alert anterior)
-            function verDisponibilidad(canchaId, canchaNombre) {
+            function verDisponibilidad(event, canchaId, canchaNombre) {
                 // Buscar la información de la cancha en el DOM
                 const canchaCard = event.target.closest('.cancha-card');
                 const precioElement = canchaCard.querySelector('.precio-valor');
@@ -419,6 +381,7 @@
                     if (precioExtraElement) {
                         const precioExtraTexto = precioExtraElement.textContent;
                         precioLuz = parseFloat(precioExtraTexto.replace('+€', '').replace(' con luz', ''));
+                        document.getElementById('modalPrecioLuzDisplay').textContent = precioLuz.toFixed(2);
                     }
                     document.getElementById('iluminacionContainer').style.display = 'block';
                 } else {
@@ -634,8 +597,13 @@
                         // Éxito
                         mostrarMensaje('¡Reserva confirmada! Redirigiendo...', 'success');
                         setTimeout(() => {
-                            // Redirigir a mis reservas o donde prefieras
-                            window.location.href = '/mis_reservas/';
+                            if (data && data.id) {
+                                // Te lleva a la reserva REAL que se acaba de crear para que la pagues
+                                window.location.href = `/reserva/${data.id}/`;
+                            } else {
+                                // Por si acaso la API no devuelve el ID, te mandamos a mis_reservas como plan B
+                                window.location.href = '/mis_reservas/';
+                            }
                         }, 2000);
                     } else {
                         // Error de validación

@@ -28,7 +28,7 @@
                         {% endif %}
                         <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline;">
                             {% csrf_token %}
-                            <button type="submit" class="btn-register">Cerrar sesión</button>
+                            <button type="submit" class="btn-close-sesion"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
                         </form>
                     {% else %}
                         <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>

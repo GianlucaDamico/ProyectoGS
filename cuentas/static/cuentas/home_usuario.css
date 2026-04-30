@@ -61,19 +61,7 @@ body {
 }
 .btn-login:hover { color: #4a5dbf; }
 
-.btn-register { 
-    background: var(--primary); 
-    color: white; 
-    text-decoration: none; 
-    padding: 0.8rem 2rem; 
-    border-radius: 50px; 
-    font-weight: 600; 
-    transition: 0.3s; 
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    font-family: inherit;
-}
+.btn-register {background: #ef4444; color: white; text-decoration: none; padding: 0.8rem 2rem; border-radius: 50px; font-weight: 600; transition: 0.3s;}
 .btn-register:hover { background: #5668d6; }
 
 /* ============ Notificaciones en el Navbar ============ */
