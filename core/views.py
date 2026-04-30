@@ -180,7 +180,7 @@ def mis_reservas(request):
     # Re-consulta con ordenamiento específico, filtrando solo reservas confirmadas o pendientes de pago
     reservas = Booking.objects.filter(
         user=request.user,
-        status__in=[Booking.Status.CONFIRMED, Booking.Status.PENDING_PAYMENT]
+        status__in=[Booking.Status.CONFIRMED, Booking.Status.PENDING_PAYMENT, Booking.Status.IN_PROGRESS]
     ).select_related(
         'court', 'court__complex'
     ).annotate(
