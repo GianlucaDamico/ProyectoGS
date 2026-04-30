@@ -177,8 +177,11 @@ def mis_reservas(request):
             reserva.status = Booking.Status.FINISHED
             reserva.save()
 
-    # Re-consulta con ordenamiento específico
-    reservas = Booking.objects.filter(user=request.user).select_related(
+    # Re-consulta con ordenamiento específico, filtrando solo reservas confirmadas o pendientes de pago
+    reservas = Booking.objects.filter(
+        user=request.user,
+        status__in=[Booking.Status.CONFIRMED, Booking.Status.PENDING_PAYMENT]
+    ).select_related(
         'court', 'court__complex'
     ).annotate(
         status_order=Case(
