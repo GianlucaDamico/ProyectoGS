@@ -92,6 +92,9 @@
         <div class="container">
             <div class="filtros-container">
                 <form method="GET" class="filtros-form">
+                    {% if mostrar_historial %}
+                        <input type="hidden" name="historial" value="true">
+                    {% endif %}
                     <select name="estado" class="filter-select">
                         <option value="">Todos los estados</option>
                         {% for status_code, status_label in status_choices %}
