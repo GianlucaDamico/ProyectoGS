@@ -165,3 +165,34 @@ class BookingViewSet(viewsets.ModelViewSet):
                 {"error": str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
+    @action(detail=False, methods=['get'], permission_classes=[permissions.AllowAny])
+    def disponibilidad(self, request):
+        """
+        Endpoint personalizado para consultar los horarios ocupados.
+        Ruta: GET /api/bookings/disponibilidad/?court_id=X&fecha=YYYY-MM-DD
+        """
+        # En DRF usamos query_params en lugar de GET
+        court_id = request.query_params.get('court_id')
+        fecha = request.query_params.get('fecha')
+        
+        if not court_id or not fecha:
+            return Response({'error': 'Faltan parámetros court_id y fecha'}, status=400)
+        
+        # Filtramos usando el queryset del ViewSet
+        reservas = self.get_queryset().filter(
+            court_id=court_id, 
+            start__date=fecha
+        )
+        
+        # Si tu modelo tiene un estado 'CANCELLED', descomenta la siguiente línea 
+        # para ignorar las reservas canceladas y mostrar el horario como libre:
+        reservas = reservas.exclude(status='CANCELLED')
+        
+        horas_ocupadas = []
+        for reserva in reservas:
+            # Extraemos la hora en formato 'HH:MM' (ej: '15:00')
+            hora_str = reserva.start.strftime('%H:%M')
+            horas_ocupadas.append(hora_str)
+            
+        return Response({'ocupados': horas_ocupadas})

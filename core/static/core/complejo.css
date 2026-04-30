@@ -1930,3 +1930,12 @@ body {
     background: none; border: none; color: #9ca3af; font-size: 1.8rem; cursor: pointer; transition: 0.2s;
 }
 .btn-cerrar:hover { color: #1f2937; }
+
+.horario-btn.ocupado {
+    background-color: #ffbbbb;
+    color: #f32b2b;
+    border: 1px solid #f32b2b;
+    cursor: not-allowed;
+    opacity: 0.6;
+    text-decoration: line-through;
+}
