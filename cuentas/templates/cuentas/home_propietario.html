@@ -35,7 +35,7 @@
     <main class="dashboard-main container">
         <div class="dashboard-header">
             <div>
-                <h1 class="section-heading">Hola, {{ nombre }} 👋</h1>
+                <h1 class="section-heading">Hola, {{ nombre }} </h1>
                 {% if complex %}
                     <p class="text-muted"><i class="far fa-building"></i> Gestionando: <strong>{{ complex.name }}</strong></p>
                 {% endif %}
@@ -111,7 +111,7 @@
                                 {% for r in proximas_reservas %}
                                 <tr>
                                     <td><strong>{{ r.court.name }}</strong></td>
-                                    <td><i class="fas fa-user-circle text-muted"></i> {{ r.user.username|default:"Cliente" }}</td>
+                                    <td>{{ r.user.username|default:"Cliente" }}</td>
                                     <td>{{ r.start|date:"d/m/Y - H:i" }}</td>
                                     <td><strong>${{ r.total_price }}</strong></td>
                                     <td>

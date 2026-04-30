@@ -5,6 +5,9 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from .services import BookingService
+from django.utils import timezone
+from datetime import timedelta
+
 
 
 from .models import Booking
@@ -139,7 +142,6 @@ class BookingViewSet(viewsets.ModelViewSet):
         # Por ejemplo, solo reservas futuras
         future_only = request.query_params.get('future', None)
         if future_only == 'true':
-            from django.utils import timezone
             queryset = queryset.filter(start__gte=timezone.now())
 
         page = self.paginate_queryset(queryset)
@@ -172,27 +174,33 @@ class BookingViewSet(viewsets.ModelViewSet):
         Endpoint personalizado para consultar los horarios ocupados.
         Ruta: GET /api/bookings/disponibilidad/?court_id=X&fecha=YYYY-MM-DD
         """
-        # En DRF usamos query_params en lugar de GET
         court_id = request.query_params.get('court_id')
         fecha = request.query_params.get('fecha')
         
         if not court_id or not fecha:
             return Response({'error': 'Faltan parámetros court_id y fecha'}, status=400)
         
-        # Filtramos usando el queryset del ViewSet
         reservas = self.get_queryset().filter(
             court_id=court_id, 
             start__date=fecha
         )
         
-        # Si tu modelo tiene un estado 'CANCELLED', descomenta la siguiente línea 
-        # para ignorar las reservas canceladas y mostrar el horario como libre:
         reservas = reservas.exclude(status='CANCELLED')
         
         horas_ocupadas = []
         for reserva in reservas:
-            # Extraemos la hora en formato 'HH:MM' (ej: '15:00')
-            hora_str = reserva.start.strftime('%H:%M')
-            horas_ocupadas.append(hora_str)
+            # Empezamos desde la hora de inicio
+            tiempo_actual = reserva.start
+            
+            # Mientras el tiempo actual sea menor a la hora de fin de la reserva
+            while tiempo_actual < reserva.end:
+                hora_str = tiempo_actual.strftime('%H:%M')
+                
+                # Evitamos duplicados por si acaso
+                if hora_str not in horas_ocupadas:
+                    horas_ocupadas.append(hora_str)
+                
+                # Le sumamos 1 hora al tiempo actual para revisar la siguiente
+                tiempo_actual += timedelta(hours=1)
             
         return Response({'ocupados': horas_ocupadas})
