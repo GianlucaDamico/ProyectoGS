@@ -177,23 +177,56 @@ def mis_reservas(request):
             reserva.status = Booking.Status.FINISHED
             reserva.save()
 
-    # Re-consulta con ordenamiento específico, filtrando solo reservas confirmadas o pendientes de pago
-    reservas = Booking.objects.filter(
-        user=request.user,
-        status__in=[Booking.Status.CONFIRMED, Booking.Status.PENDING_PAYMENT, Booking.Status.IN_PROGRESS]
-    ).select_related(
-        'court', 'court__complex'
-    ).annotate(
-        status_order=Case(
-            When(status=Booking.Status.IN_PROGRESS, then=Value(1)),
-            When(status=Booking.Status.PENDING_PAYMENT, then=Value(2)),
-            When(status=Booking.Status.CONFIRMED, then=Value(3)),
-            When(status=Booking.Status.FINISHED, then=Value(4)),
-            When(status=Booking.Status.CANCELLED, then=Value(5)),
-            default=Value(6),
-            output_field=IntegerField(),
-        )
-    ).order_by('status_order', '-start')
+    # Verificar si se solicita ver el historial
+    mostrar_historial = request.GET.get('historial', 'false').lower() == 'true'
+    
+    # Re-consulta con ordenamiento específico
+    if mostrar_historial:
+        # Mostrar solo reservas finalizadas y canceladas
+        reservas = Booking.objects.filter(
+            user=request.user,
+            status__in=[Booking.Status.FINISHED, Booking.Status.CANCELLED]
+        ).select_related(
+            'court', 'court__complex'
+        ).annotate(
+            status_order=Case(
+                When(status=Booking.Status.FINISHED, then=Value(1)),
+                When(status=Booking.Status.CANCELLED, then=Value(2)),
+                default=Value(3),
+                output_field=IntegerField(),
+            )
+        ).order_by('status_order', '-start')
+        
+        # Para el historial, mostrar todos los estados (FINISHED y CANCELLED)
+        allowed_statuses = [
+            Booking.Status.FINISHED,
+            Booking.Status.CANCELLED,
+        ]
+    else:
+        # Mostrar solo reservas confirmadas, pendientes de pago e en curso
+        reservas = Booking.objects.filter(
+            user=request.user,
+            status__in=[Booking.Status.CONFIRMED, Booking.Status.PENDING_PAYMENT, Booking.Status.IN_PROGRESS]
+        ).select_related(
+            'court', 'court__complex'
+        ).annotate(
+            status_order=Case(
+                When(status=Booking.Status.IN_PROGRESS, then=Value(1)),
+                When(status=Booking.Status.PENDING_PAYMENT, then=Value(2)),
+                When(status=Booking.Status.CONFIRMED, then=Value(3)),
+                When(status=Booking.Status.FINISHED, then=Value(4)),
+                When(status=Booking.Status.CANCELLED, then=Value(5)),
+                default=Value(6),
+                output_field=IntegerField(),
+            )
+        ).order_by('status_order', '-start')
+        
+        # Para la vista normal, solo mostrar estados activos
+        allowed_statuses = [
+            Booking.Status.PENDING_PAYMENT,
+            Booking.Status.CONFIRMED,
+            Booking.Status.IN_PROGRESS,
+        ]
     
     estado_filtro = request.GET.get('estado', '')
     if estado_filtro:
@@ -213,11 +246,6 @@ def mis_reservas(request):
     )
     
     # Filtrar status_choices para solo mostrar los estados permitidos
-    allowed_statuses = [
-        Booking.Status.PENDING_PAYMENT,
-        Booking.Status.CONFIRMED,
-        Booking.Status.IN_PROGRESS,
-    ]
     status_choices = [
         (status, label)
         for status, label in Booking.Status.choices
@@ -228,7 +256,8 @@ def mis_reservas(request):
         'reservas': reservas,
         'estado_filtro': estado_filtro,
         'status_choices': status_choices,
-        'resenas_pendientes': resenas_pendientes, # ← Pasado al contexto
+        'resenas_pendientes': resenas_pendientes,
+        'mostrar_historial': mostrar_historial,
     }
     
     return render(request, 'core/mis_reservas.html', context)

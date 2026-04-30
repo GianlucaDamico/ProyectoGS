@@ -78,24 +78,41 @@
 
     <section class="reservas-header">
         <div class="container">
-            <h1>Mis Reservas</h1>
-            <p>Gestiona tus reservas de canchas</p>
+            {% if mostrar_historial %}
+                <h1>Historial de Reservas</h1>
+                <p>Revisa tus reservas finalizadas y canceladas</p>
+            {% else %}
+                <h1>Mis Reservas</h1>
+                <p>Gestiona tus reservas de canchas</p>
+            {% endif %}
         </div>
     </section>
 
     <section class="filtros-section">
         <div class="container">
-            <form method="GET" class="filtros-form">
-                <select name="estado" class="filter-select">
-                    <option value="">Todos los estados</option>
-                    {% for status_code, status_label in status_choices %}
-                        <option value="{{ status_code }}" {% if estado_filtro == status_code %}selected{% endif %}>
-                            {{ status_label }}
-                        </option>
-                    {% endfor %}
-                </select>
-                <button type="submit" class="btn-filter">Filtrar</button>
-            </form>
+            <div class="filtros-container">
+                <form method="GET" class="filtros-form">
+                    <select name="estado" class="filter-select">
+                        <option value="">Todos los estados</option>
+                        {% for status_code, status_label in status_choices %}
+                            <option value="{{ status_code }}" {% if estado_filtro == status_code %}selected{% endif %}>
+                                {{ status_label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn-filter">Filtrar</button>
+                </form>
+                
+                {% if mostrar_historial %}
+                    <a href="{% url 'core:mis_reservas' %}" class="btn-history">
+                        <i class="fas fa-arrow-left"></i> Volver a mis reservas
+                    </a>
+                {% else %}
+                    <a href="{% url 'core:mis_reservas' %}?historial=true" class="btn-history">
+                        <i class="fas fa-history"></i> Ver historial
+                    </a>
+                {% endif %}
+            </div>
         </div>
     </section>
 
