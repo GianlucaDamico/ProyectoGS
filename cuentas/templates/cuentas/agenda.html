@@ -54,7 +54,7 @@
                             
                             <div class="court-bookings">
                                 {% for booking in court_data.bookings %}
-                                    <div class="booking-item">
+                                   <div class="booking-item" data-hora="{{ booking.hora }}">
                                         <div class="booking-time">
                                             <i class="far fa-clock"></i> {{ booking.hora }}
                                         </div>
@@ -90,6 +90,46 @@
         function changeDate(date) {
             window.location.href = '?date=' + date;
         }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // 1. Obtenemos la fecha que se está viendo en la agenda
+            const fechaInput = document.getElementById('date').value;
+            if (!fechaInput) return;
+
+            // Separar año, mes y día para evitar problemas de zonas horarias
+            const [anioSel, mesSel, diaSel] = fechaInput.split('-').map(Number);
+            
+            // Obtenemos la hora actual de la máquina del usuario
+            const ahora = new Date();
+
+            // Seleccionamos todas las tarjetas de reserva en la pantalla
+            const reservas = document.querySelectorAll('.booking-item');
+
+            reservas.forEach(reserva => {
+                const horaStr = reserva.getAttribute('data-hora'); // Ej: "15:00"
+                if (!horaStr) return;
+
+                const [hora, minuto] = horaStr.split(':').map(Number);
+
+                // Creamos fechas exactas para el inicio y fin de esta reserva
+                const inicioReserva = new Date(anioSel, mesSel - 1, diaSel, hora, minuto, 0);
+                
+                // Asumimos que el turno dura 60 minutos. (Cambia el 60 si duran distinto)
+                const finReserva = new Date(inicioReserva.getTime() + 60 * 60000); 
+
+                // 4. Comparamos y aplicamos las clases de color
+                if (ahora > finReserva) {
+                    // Ya pasó la hora de finalización
+                    reserva.classList.add('estado-pasado');
+                } else if (ahora >= inicioReserva && ahora <= finReserva) {
+                    // Estamos justo en el medio del turno
+                    reserva.classList.add('estado-curso');
+                } else {
+                    // Todavía no empieza
+                    reserva.classList.add('estado-futuro');
+                }
+            });
+        });
     </script>
 </body>
 </html>

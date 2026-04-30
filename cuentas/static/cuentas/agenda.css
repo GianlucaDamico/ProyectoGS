@@ -231,3 +231,23 @@
     color: #666;
     font-weight: 600;
 }
+
+/* Estado: Ya pasó (Rojo) */
+.booking-item.estado-pasado {
+    border-left: 5px solid #ef4444;
+    background-color: #fee2e2;
+    opacity: 0.7; /* Lo hacemos un poco transparente porque ya no es relevante */
+}
+
+/* Estado: En curso (Naranja) */
+.booking-item.estado-curso {
+    border-left: 5px solid #f59e0b;
+    background-color: #fef3c7;
+    box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.2); /* Sombra para resaltar */
+}
+
+/* Estado: Futuro (Verde) */
+.booking-item.estado-futuro {
+    border-left: 5px solid #10b981;
+    background-color: #d1fae5;
+}
