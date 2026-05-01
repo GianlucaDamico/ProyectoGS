@@ -1,8 +1,8 @@
 :root {
-    --primary: #667eea; /* Azul corporativo Courtly */
-    --primary-light: #8295eb; /* Azul más claro para hovers */
-    --primary-dark: #4d5eb0; /* Azul oscuro para gradientes */
-    --accent: #e74c3c; /* Rojo para notificaciones */
+    --primary: #667eea;
+    --primary-light: #8295eb;
+    --primary-dark: #4d5eb0;
+    --accent: #e74c3c;
     --text: #1b1f2a;
     --muted: #60708a;
     --border: #e2e8f0;
@@ -28,7 +28,7 @@ body {
     padding: 0 20px;
 }
 
-/* ============ Navbar ============ */
+/* ============ Navbar Avanzada (Desde Explorar) ============ */
 .navbar { 
     background: white; 
     box-shadow: 0 2px 10px rgba(0,0,0,0.04); 
@@ -62,13 +62,30 @@ body {
     gap: 12px;
 }
 
+/* Estilo para el botón de Explorar en la Navbar */
+.nav-link-explore {
+    text-decoration: none;
+    color: #334155;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.3s ease;
+}
+
+.nav-link-explore:hover {
+    color: var(--primary);
+}
+
 .notifications-menu, .profile-menu { position: relative; }
 
-/* Limpieza de flechas nativas */
 summary::-webkit-details-marker { display: none; }
 summary { list-style: none; outline: none; cursor: pointer; }
 
-.notifications-trigger {
+/* NUEVO: .qr-trigger se añade aquí para compartir los mismos estilos */
+.notifications-trigger, .qr-trigger {
     list-style: none;
     width: 44px; 
     height: 44px;
@@ -81,12 +98,14 @@ summary { list-style: none; outline: none; cursor: pointer; }
     cursor: pointer;
     position: relative;
     transition: all 0.3s ease;
+    text-decoration: none;
 }
 
-.notifications-trigger:hover { background: #eef2ff; }
+.notifications-trigger:hover, .qr-trigger:hover { background: #eef2ff; }
 
 .bell-icon { font-size: 1.15rem; color: #64748b; transition: color 0.3s ease; }
-.notifications-trigger:hover .bell-icon { color: var(--primary); }
+
+.notifications-trigger:hover .bell-icon, .qr-trigger:hover .bell-icon { color: var(--primary); }
 
 .badge {
     position: absolute;
@@ -141,7 +160,6 @@ summary { list-style: none; outline: none; cursor: pointer; }
 
 .profile-label { color: var(--text); font-size: 0.95rem; font-weight: 600; }
 
-/* MODIFICACIÓN: Lógica de Dropdowns Smooth */
 .notifications-dropdown, .profile-dropdown {
     position: absolute;
     right: 0;
@@ -150,9 +168,7 @@ summary { list-style: none; outline: none; cursor: pointer; }
     background: #fff;
     box-shadow: var(--shadow);
     z-index: 30;
-    
-    /* Configuración para animación suave */
-    display: flex !important; /* Usamos flex para alinear los items verticalmente */
+    display: flex !important; 
     flex-direction: column;
     opacity: 0;
     visibility: hidden;
@@ -161,7 +177,6 @@ summary { list-style: none; outline: none; cursor: pointer; }
     pointer-events: none;
 }
 
-/* Mostramos el menú si pasamos el ratón O si está abierto por click */
 .notifications-menu:hover .notifications-dropdown,
 .profile-menu:hover .profile-dropdown,
 details[open] .notifications-dropdown,
@@ -172,7 +187,6 @@ details[open] .profile-dropdown {
     pointer-events: auto;
 }
 
-/* Área de puente invisible para no perder el hover */
 .notifications-menu::after,
 .profile-menu::after {
     content: "";
@@ -189,7 +203,6 @@ details[open] .profile-dropdown {
 .dropdown-title { margin: 0 0 12px; font-size: 1rem; font-weight: 700; color: var(--text); }
 .dropdown-empty { margin: 0; color: var(--muted); font-size: 0.9rem; }
 
-/* MODIFICACIÓN: Corrección de botones "Rotos" */
 .profile-item {
     width: 100%;
     border: 0;
@@ -203,13 +216,12 @@ details[open] .profile-dropdown {
     cursor: pointer;
     text-decoration: none;
     transition: background 0.2s, color 0.2s;
-    display: block; /* Aseguramos que ocupen todo el ancho */
+    display: block; 
     font-family: inherit;
 }
 
 .profile-item:hover { background: #f0f4ff; color: var(--primary); }
 
-/* Arreglo para el formulario de logout */
 .profile-dropdown form {
     margin: 0;
     width: 100%;
@@ -544,15 +556,15 @@ details[open] .profile-dropdown {
 
 .complejo-header {
     display: flex;
-    justify-content: space-between; /* Título a la izquierda, estrella a la derecha */
-    align-items: center; /* Los centra verticalmente en la misma línea */
-    width: 100%; /* Obliga a usar todo el ancho de la card */
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
     margin-bottom: 10px;
-    gap: 15px; /* Espacio de seguridad por si el nombre es muy largo */
+    gap: 15px; 
 }
 
 .complejo-header h3 {
-    margin: 0; /* Vital para que flexbox lo alinee correctamente */
+    margin: 0; 
     font-size: 1.2rem;
     font-weight: 700;
 }
@@ -567,10 +579,10 @@ details[open] .profile-dropdown {
     font-size: 0.95rem;
     font-weight: 700;
     color: #1f2937;
-    flex-shrink: 0; /* Prohíbe terminantemente que la pastilla se aplaste */
+    flex-shrink: 0;
 }
 
 .card-rating .star-icon {
-    color: #fbbf24; /* Dorado brillante */
+    color: #fbbf24;
     font-size: 1rem;
 }
