@@ -10,11 +10,12 @@
         <link rel="stylesheet" href="{% static 'core/complejo.css' %}">
     </head>
     <body>
-        <!-- Navbar (igual que en home) -->
+        <!-- Navbar -->
         <nav class="navbar">
         <div class="navbar-container">
             <div class="logo">
-                <a href="{% url 'core:home' %}">
+                <!-- AQUI EL CAMBIO: Redirecciona a explorar_complejos -->
+                <a href="{% url 'core:explorar_complejos' %}">
                     <img src="{% static 'core/img/LOGO.png' %}" alt="Courtly" class="logo-img">
                 </a>
             </div>
@@ -366,7 +367,7 @@
             let precioBase = 0;
             let precioLuz = 0;
 
-            // Función para abrir el modal (reemplaza el alert anterior)
+            // Función para abrir el modal
             function verDisponibilidad(event, canchaId, canchaNombre) {
                 // Buscar la información de la cancha en el DOM
                 const canchaCard = event.target.closest('.cancha-card');
@@ -426,7 +427,7 @@
             function resetearModal() {
                 // Resetear formulario
                 document.getElementById('fechaReserva').value = '';
-                document.getElementById('duracion').value = '90';
+                document.getElementById('duracion').value = '60';
                 document.getElementById('iluminacion').checked = false;
                 document.getElementById('horariosContainer').innerHTML = 
                     '<p class="info-text">Selecciona una fecha para ver horarios disponibles</p>';
@@ -466,13 +467,13 @@
 
                     const ahora = new Date();
                     
-                    // Construimos la fecha de hoy en formato YYYY-MM-DD para compararla de forma segura
+                    // Construimos la fecha de hoy en formato YYYY-MM-DD
                     const anio = ahora.getFullYear();
                     const mes = String(ahora.getMonth() + 1).padStart(2, '0');
                     const dia = String(ahora.getDate()).padStart(2, '0');
                     const fechaHoy = `${anio}-${mes}-${dia}`;
                     
-                    // Verificamos si la fecha que seleccionó el usuario es el día de hoy
+                    // Verificamos si la fecha seleccionada es el día de hoy
                     const esHoy = (fecha === fechaHoy);
                     const esDiaPasado = (fecha < fechaHoy);
                     const horaActual = ahora.getHours();
@@ -481,26 +482,23 @@
                     for (let hora = 9; hora <= 22; hora++) {
                         const horaStr = hora.toString().padStart(2, '0') + ':00';
                         
-                        // Evaluamos las dos condiciones para cada botón
+                        // Evaluamos las condiciones
                         const estaOcupado = horariosOcupados.includes(horaStr);
                         const yaPaso = esDiaPasado || (esHoy && (hora <= horaActual));   
                                              
                         if (estaOcupado) {
-                            // Horario reservado por otra persona (Rojo)
                             horarios.push(`
                                 <button class="horario-btn ocupado" disabled>
                                     ${horaStr}
                                 </button>
                             `);
                         } else if (yaPaso) {
-                            // Horario que ya transcurrió en el reloj (Gris)
                             horarios.push(`
                                 <button class="horario-btn pasado" disabled>
                                     ${horaStr}
                                 </button>
                             `);
                         } else {
-                            // Horario disponible (Blanco)
                             horarios.push(`
                                 <button class="horario-btn" onclick="seleccionarHorario('${horaStr}')">
                                     ${horaStr}
@@ -635,10 +633,8 @@
                         mostrarMensaje('¡Reserva confirmada! Redirigiendo...', 'success');
                         setTimeout(() => {
                             if (data && data.id) {
-                                // Te lleva a la reserva REAL que se acaba de crear para que la pagues
                                 window.location.href = `/reserva/${data.id}/`;
                             } else {
-                                // Por si acaso la API no devuelve el ID, te mandamos a mis_reservas como plan B
                                 window.location.href = '/mis_reservas/';
                             }
                         }, 2000);
@@ -665,7 +661,6 @@
                 mensajeEl.style.display = 'block';
             }
 
-            // Helper para obtener CSRF token de las cookies
             function getCookie(name) {
                 let cookieValue = null;
                 if (document.cookie && document.cookie !== '') {
@@ -681,11 +676,14 @@
                 return cookieValue;
             }
 
-            // Cerrar modal al hacer click fuera
+            // Manejo del Modal de Reservas y Reseñas
             window.onclick = function(event) {
                 const modal = document.getElementById('modalDisponibilidad');
+                const modalResenas = document.getElementById('modal-resenas');
                 if (event.target === modal) {
                     cerrarModal();
+                } else if (event.target === modalResenas) {
+                    cerrarModalResenas();
                 }
             }
 
@@ -701,14 +699,9 @@
                 setTimeout(() => modalResenas.style.display = "none", 300);
             }
 
-            // También hacemos que al tocar la estrella se abra
-            document.getElementById('btn-abrir-resenas').onclick = abrirModalResenas;
-
-            // Cerrar si hace clic afuera del modal
-            window.onclick = function(event) {
-                if (event.target == modalResenas) {
-                    cerrarModalResenas();
-                }
+            const btnVerResenas = document.getElementById('btn-ver-resenas');
+            if (btnVerResenas) {
+                btnVerResenas.onclick = abrirModalResenas;
             }
         </script>
     </body>
