@@ -10,30 +10,74 @@
         <link rel="stylesheet" href="{% static 'core/complejo.css' %}">
     </head>
     <body>
-        <!-- Navbar -->
+        
+        <!-- NUEVA NAVBAR -->
         <nav class="navbar">
-        <div class="navbar-container">
-            <div class="logo">
-                <!-- AQUI EL CAMBIO: Redirecciona a explorar_complejos -->
-                <a href="{% url 'core:explorar_complejos' %}">
-                    <img src="{% static 'core/img/LOGO.png' %}" alt="Courtly" class="logo-img">
-                </a>
-            </div>
-            <div class="nav-links">
-                {% if user.is_authenticated %}
-                        <span class="user-greeting">Hola, {{ user.username }}</span>
-                        <a href="{% url 'cuentas:home_usuario' %}" class="btn-login">Mi cuenta</a>
-                        <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn-register">Cerrar sesión</button>
-                        </form>
+            <div class="navbar-container">
+                <div class="logo">
+                    <a href="{% url 'core:explorar_complejos' %}">
+                        <img src="{% static 'core/img/LOGO.png' %}" alt="Courtly" class="logo-img">
+                    </a>
+                </div>
+
+                <div class="nav-right">
+                    {% if user.is_authenticated %}
+                        
+                        <a href="{% url 'core:explorar_complejos' %}" class="nav-link-explore">
+                            <i class="fas fa-search"></i> Explorar
+                        </a>
+
+                        <details class="notifications-menu">
+                            <summary class="notifications-trigger" aria-label="Abrir notificaciones">
+                                <span class="bell-icon"><i class="fas fa-bell"></i></span>
+                                {% if resenas_pendientes %}<span class="badge">{{ resenas_pendientes|length }}</span>{% endif %}
+                            </summary>
+                            <div class="notifications-dropdown">
+                                <p class="dropdown-title">Notificaciones</p>
+                                {% if resenas_pendientes %}
+                                    {% for reserva in resenas_pendientes %}
+                                        <div class="notification-item">
+                                            <div class="notification-text">
+                                                <strong>{{ reserva.court.complex.name }}</strong>
+                                                <p>Tu partida en {{ reserva.court.name }} terminó. ¡Deja una reseña!</p>
+                                            </div>
+                                            <button class="notification-action" onclick="abrirModalResena({{ reserva.id }}, '{{ reserva.court.complex.name|escapejs }}')">Reseñar</button>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="dropdown-empty">No tienes notificaciones nuevas.</p>
+                                {% endif %}
+                            </div>
+                        </details>
+
+                        <details class="profile-menu">
+                            <summary class="profile-trigger" aria-label="Abrir menu de perfil">
+                                {% if user.perfil_jugador.avatar %}
+                                    <img src="{{ user.perfil_jugador.avatar.url }}" alt="Avatar" class="profile-avatar">
+                                {% else %}
+                                    <span class="profile-avatar">{{ user.username|slice:":1"|upper }}</span>
+                                {% endif %}
+                                <span class="profile-label">Perfil</span>
+                            </summary>
+                            <div class="profile-dropdown">
+                                <a href="{% url 'cuentas:home_usuario' %}" class="profile-item">Mi perfil</a>
+                                
+                                <a href="{% url 'core:mis_reservas' %}" class="profile-item">Mis reservas</a>
+                                
+                                <form method="post" action="{% url 'cuentas:logout_usuario' %}" style="margin: 0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="profile-item logout-item">Cerrar sesión</button>
+                                </form>
+                            </div>
+                        </details>
+
                     {% else %}
                         <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>
                         <a href="{% url 'cuentas:register' %}" class="btn-register">Registrarse</a>
                     {% endif %}
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
 
         <!-- Hero del complejo -->
         <section class="complejo-hero">
@@ -323,6 +367,7 @@
             </div>
         </div>
 
+        <!-- MODAL DE VER RESEÑAS -->
         <div id="modal-resenas" class="modal">
             <div class="modal-content glass-card reviews-modal">
                 <div class="modal-header">
@@ -359,23 +404,56 @@
                 </div>
             </div>
         </div>
+
+        <!-- MODAL DE CREAR RESEÑA (NOTIFICACIONES) -->
+        <div id="reviewModal" class="review-modal">
+            <div class="review-modal-content">
+                <div class="review-modal-header">
+                    <h2>Dejar una reseña</h2>
+                    <button class="close-modal" onclick="cerrarModalResena()">&times;</button>
+                </div>
+                <div class="review-modal-body">
+                    <div class="form-group">
+                        <label class="text-dark">Complejo: <strong id="complexName"></strong></label>
+                    </div>
+                    <div class="form-group">
+                        <label class="text-dark">Calificación</label>
+                        <div class="star-rating" id="starRating">
+                            <span class="star" onclick="seleccionarEstrella(1)">★</span>
+                            <span class="star" onclick="seleccionarEstrella(2)">★</span>
+                            <span class="star" onclick="seleccionarEstrella(3)">★</span>
+                            <span class="star" onclick="seleccionarEstrella(4)">★</span>
+                            <span class="star" onclick="seleccionarEstrella(5)">★</span>
+                        </div>
+                        <div class="rating-display" id="ratingDisplay"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewDescription" class="text-dark">Descripción (opcional)</label>
+                        <textarea id="reviewDescription" placeholder="Cuéntanos tu experiencia..."></textarea>
+                    </div>
+                </div>
+                <div class="review-modal-footer">
+                    <button class="btn-cancel" onclick="cerrarModalResena()">Cancelar</button>
+                    <button class="btn-submit" onclick="enviarResena()" id="submitReviewBtn">Enviar reseña</button>
+                </div>
+            </div>
+        </div>
         
         <script>
-            // Variables globales para el modal
+            // ==========================================
+            // LÓGICA DE DISPONIBILIDAD Y RESERVAS
+            // ==========================================
             let canchaSeleccionada = null;
             let horarioSeleccionado = null;
             let precioBase = 0;
             let precioLuz = 0;
 
-            // Función para abrir el modal
             function verDisponibilidad(event, canchaId, canchaNombre) {
-                // Buscar la información de la cancha en el DOM
                 const canchaCard = event.target.closest('.cancha-card');
                 const precioElement = canchaCard.querySelector('.precio-valor');
                 const precioTexto = precioElement.textContent;
                 precioBase = parseFloat(precioTexto.replace('€', '').replace('/hora', ''));
                 
-                // Verificar si tiene iluminación
                 const hasLighting = canchaCard.querySelector('.detail-badge.lighting') !== null;
                 if (hasLighting) {
                     const precioExtraElement = canchaCard.querySelector('.precio-extra');
@@ -390,7 +468,6 @@
                     precioLuz = 0;
                 }
                 
-                // Guardar información de la cancha
                 canchaSeleccionada = {
                     id: canchaId,
                     nombre: canchaNombre,
@@ -399,23 +476,16 @@
                     hasLighting: hasLighting
                 };
                 
-                // Actualizar título del modal
                 document.getElementById('modalCanchaNombre').textContent = `Reservar ${canchaNombre}`;
-                
-                // Resetear el modal
                 resetearModal();
 
                 const btnConfirmar = document.getElementById('btnConfirmar');
                 btnConfirmar.style.display = 'inline-block';
                 btnConfirmar.disabled = true;
                 
-                // Mostrar el modal
                 const modal = document.getElementById('modalDisponibilidad');
                 modal.classList.add('active');
                 document.body.style.overflow = 'hidden';
-
-                // Mostrar el botón de confirmar al abrir disponibilidad
-                document.getElementById('btnConfirmar').style.display = 'inline-block';
             }
 
             function cerrarModal() {
@@ -425,7 +495,6 @@
             }
 
             function resetearModal() {
-                // Resetear formulario
                 document.getElementById('fechaReserva').value = '';
                 document.getElementById('duracion').value = '60';
                 document.getElementById('iluminacion').checked = false;
@@ -434,13 +503,11 @@
                 document.getElementById('btnConfirmar').disabled = true;
                 horarioSeleccionado = null;
                 
-                // Limpiar resumen
                 document.getElementById('resumenFecha').textContent = '';
                 document.getElementById('resumenHorario').textContent = '';
                 document.getElementById('resumenDuracion').textContent = '';
                 document.getElementById('precioTotal').textContent = '€0.00';
                 
-                // Limpiar mensajes
                 document.getElementById('modalMensaje').textContent = '';
                 document.getElementById('modalMensaje').className = 'modal-mensaje';
 
@@ -466,14 +533,11 @@
                     }
 
                     const ahora = new Date();
-                    
-                    // Construimos la fecha de hoy en formato YYYY-MM-DD
                     const anio = ahora.getFullYear();
                     const mes = String(ahora.getMonth() + 1).padStart(2, '0');
                     const dia = String(ahora.getDate()).padStart(2, '0');
                     const fechaHoy = `${anio}-${mes}-${dia}`;
                     
-                    // Verificamos si la fecha seleccionada es el día de hoy
                     const esHoy = (fecha === fechaHoy);
                     const esDiaPasado = (fecha < fechaHoy);
                     const horaActual = ahora.getHours();
@@ -482,28 +546,15 @@
                     for (let hora = 9; hora <= 22; hora++) {
                         const horaStr = hora.toString().padStart(2, '0') + ':00';
                         
-                        // Evaluamos las condiciones
                         const estaOcupado = horariosOcupados.includes(horaStr);
                         const yaPaso = esDiaPasado || (esHoy && (hora <= horaActual));   
                                              
                         if (estaOcupado) {
-                            horarios.push(`
-                                <button class="horario-btn ocupado" disabled>
-                                    ${horaStr}
-                                </button>
-                            `);
+                            horarios.push(`<button class="horario-btn ocupado" disabled>${horaStr}</button>`);
                         } else if (yaPaso) {
-                            horarios.push(`
-                                <button class="horario-btn pasado" disabled>
-                                    ${horaStr}
-                                </button>
-                            `);
+                            horarios.push(`<button class="horario-btn pasado" disabled>${horaStr}</button>`);
                         } else {
-                            horarios.push(`
-                                <button class="horario-btn" onclick="seleccionarHorario('${horaStr}')">
-                                    ${horaStr}
-                                </button>
-                            `);
+                            horarios.push(`<button class="horario-btn" onclick="seleccionarHorario('${horaStr}')">${horaStr}</button>`);
                         }
                     }
                     
@@ -516,20 +567,16 @@
             }
 
             function seleccionarHorario(horario) {
-                // Quitar selección previa
                 document.querySelectorAll('.horario-btn').forEach(btn => {
                     btn.classList.remove('selected');
                 });
                 
-                // Marcar el nuevo seleccionado
                 event.target.classList.add('selected');
                 horarioSeleccionado = horario;
                 
-                // Actualizar resumen y calcular precio
                 actualizarResumen();
                 calcularPrecio();
                 
-                // Habilitar botón de confirmar
                 document.getElementById('btnConfirmar').disabled = false;
             }
 
@@ -566,7 +613,6 @@
                 const duracion = parseInt(document.getElementById('duracion').value);
                 const conIluminacion = document.getElementById('iluminacion').checked;
                 
-                // Calcular precio
                 const horas = duracion / 60;
                 let precioFinal = canchaSeleccionada.precioBase * horas;
                 
@@ -574,15 +620,11 @@
                     precioFinal += canchaSeleccionada.precioLuz * horas;
                 }
                 
-                // Mostrar precio
                 document.getElementById('precioTotal').textContent = `€${precioFinal.toFixed(2)}`;
-                
-                // Actualizar resumen
                 actualizarResumen();
             }
 
             async function confirmarReserva() {
-                // Verificar que el usuario esté autenticado
                 {% if not user.is_authenticated %}
                     mostrarMensaje('Debes iniciar sesión para reservar', 'error');
                     setTimeout(() => {
@@ -595,23 +637,19 @@
                 const duracion = parseInt(document.getElementById('duracion').value);
                 const conIluminacion = document.getElementById('iluminacion').checked;
                 
-                // Construir fecha-hora ISO
                 const [hora, minuto] = horarioSeleccionado.split(':');
                 const startISO = `${fecha}T${hora}:${minuto}:00`;
                 
-                // Calcular fecha-hora de fin
                 const startDate = new Date(startISO);
                 const endDate = new Date(startDate.getTime() + duracion * 60000);
                 const pad = (n) => String(n).padStart(2, '0');
                 const endISO = `${endDate.getFullYear()}-${pad(endDate.getMonth() + 1)}-${pad(endDate.getDate())}T${pad(endDate.getHours())}:${pad(endDate.getMinutes())}:${pad(endDate.getSeconds())}`;
 
-                // Deshabilitar botón y mostrar loading
                 const btnConfirmar = document.getElementById('btnConfirmar');
                 btnConfirmar.disabled = true;
                 btnConfirmar.textContent = 'Procesando...';
                 
                 try {
-                    // Llamar a la API de reservas
                     const response = await fetch('/api/bookings/', {
                         method: 'POST',
                         headers: {
@@ -629,7 +667,6 @@
                     const data = await response.json();
                     
                     if (response.ok) {
-                        // Éxito
                         mostrarMensaje('¡Reserva confirmada! Redirigiendo...', 'success');
                         setTimeout(() => {
                             if (data && data.id) {
@@ -639,7 +676,6 @@
                             }
                         }, 2000);
                     } else {
-                        // Error de validación
                         const errorMsg = data.non_field_errors ? data.non_field_errors[0] : 'Error al crear la reserva';
                         mostrarMensaje(errorMsg, 'error');
                         btnConfirmar.disabled = false;
@@ -676,17 +712,9 @@
                 return cookieValue;
             }
 
-            // Manejo del Modal de Reservas y Reseñas
-            window.onclick = function(event) {
-                const modal = document.getElementById('modalDisponibilidad');
-                const modalResenas = document.getElementById('modal-resenas');
-                if (event.target === modal) {
-                    cerrarModal();
-                } else if (event.target === modalResenas) {
-                    cerrarModalResenas();
-                }
-            }
-
+            // ==========================================
+            // LÓGICA DEL MODAL PARA VER RESEÑAS
+            // ==========================================
             const modalResenas = document.getElementById('modal-resenas');
 
             function abrirModalResenas() {
@@ -703,6 +731,126 @@
             if (btnVerResenas) {
                 btnVerResenas.onclick = abrirModalResenas;
             }
+
+            // ==========================================
+            // LÓGICA DEL MODAL PARA CREAR RESEÑA (NOTIFICACIONES)
+            // ==========================================
+            let currentBookingId = null;
+            let selectedRating = 0;
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                              document.querySelector('input[name=csrfmiddlewaretoken]')?.value ||
+                              getCookie('csrftoken');
+
+            function abrirModalResena(bookingId, complexName) {
+                currentBookingId = bookingId;
+                selectedRating = 0;
+                
+                document.getElementById('complexName').textContent = complexName;
+                document.getElementById('reviewDescription').value = '';
+                
+                document.querySelectorAll('.star').forEach(star => {
+                    star.classList.remove('active');
+                });
+                document.getElementById('ratingDisplay').textContent = '';
+                
+                document.getElementById('reviewModal').classList.add('active');
+            }
+
+            function cerrarModalResena() {
+                document.getElementById('reviewModal').classList.remove('active');
+                currentBookingId = null;
+                selectedRating = 0;
+            }
+
+            function seleccionarEstrella(rating) {
+                selectedRating = rating;
+                const stars = document.querySelectorAll('.star');
+                stars.forEach((star, index) => {
+                    if (index < rating) {
+                        star.classList.add('active');
+                    } else {
+                        star.classList.remove('active');
+                    }
+                });
+                document.getElementById('ratingDisplay').textContent = rating + ' estrellas';
+            }
+
+            function enviarResena() {
+                if (!currentBookingId || selectedRating === 0) {
+                    alert('Por favor selecciona una calificación');
+                    return;
+                }
+
+                const description = document.getElementById('reviewDescription').value;
+                const submitBtn = document.getElementById('submitReviewBtn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Enviando...';
+
+                fetch('/api/reviews/create/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken,
+                    },
+                    body: JSON.stringify({
+                        booking_id: currentBookingId,
+                        rating: selectedRating,
+                        description: description
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert('¡Reseña enviada exitosamente!');
+                        cerrarModalResena();
+                        location.reload();
+                    } else if (data.error) {
+                        alert('Error: ' + data.error);
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Enviar reseña';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Ocurrió un error al enviar la reseña');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Enviar reseña';
+                });
+            }
+
+            // ==========================================
+            // LÓGICA DE CIERRE DE MODALES Y MENÚS
+            // ==========================================
+            window.onclick = function(event) {
+                const modalDisp = document.getElementById('modalDisponibilidad');
+                const modalResView = document.getElementById('modal-resenas');
+                const modalResCreate = document.getElementById('reviewModal');
+                
+                if (event.target === modalDisp) {
+                    cerrarModal();
+                } else if (event.target === modalResView) {
+                    cerrarModalResenas();
+                } else if (event.target === modalResCreate) {
+                    cerrarModalResena();
+                }
+            }
+
+            document.addEventListener('click', function(event) {
+                const allDetails = document.querySelectorAll('details');
+                allDetails.forEach((details) => {
+                    if (!details.contains(event.target)) {
+                        details.removeAttribute('open');
+                    }
+                    const summary = details.querySelector('summary');
+                    if (summary && summary.contains(event.target)) {
+                        allDetails.forEach((otherDetails) => {
+                            if (otherDetails !== details) {
+                                otherDetails.removeAttribute('open');
+                            }
+                        });
+                    }
+                });
+            });
         </script>
     </body>
 </html>

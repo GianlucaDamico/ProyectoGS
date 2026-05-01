@@ -1,22 +1,22 @@
 /* core/static/core/complejo.css */
 
-/* SELECTOR UNIVERSAL (*)
-   Elimina los márgenes y espacios internos por defecto de todos los elementos.
-   box-sizing: border-box asegura que el ancho total incluya bordes y padding.
-*/
+:root {
+    --primary: #667eea;
+    --primary-light: #8295eb;
+    --primary-dark: #4d5eb0;
+    --accent: #e74c3c;
+    --text: #1b1f2a;
+    --muted: #60708a;
+    --border: #e2e8f0;
+    --shadow: 0 10px 24px rgba(18, 31, 53, 0.08);
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* CLASE BODY
-   Estilos globales del cuerpo de la página.
-   - font-family: Define la tipografía principal con fuentes alternativas
-   - line-height: Altura de línea de 1.6 para mejor legibilidad
-   - color: Color de texto gris oscuro por defecto
-   - background: Fondo gris claro suave
-*/
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
@@ -24,45 +24,146 @@ body {
     background: #f8f9fa;
 }
 
-/* CLASE .container
-   Contenedor principal que limita el ancho máximo del contenido.
-   - max-width: 1200px: Ancho máximo para mejor legibilidad
-   - margin: 0 auto: Centra el contenedor horizontalmente
-   - padding: 0 20px: Espaciado lateral para mantener distancia desde los bordes
-*/
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
 }
 
-/* ============ NAVBAR (BARRA DE NAVEGACIÓN) ============ */
+/* ============ NAVBAR AVANZADA ============ */
+.navbar { 
+    background: white; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04); 
+    position: sticky; 
+    top: 0; 
+    z-index: 1000; 
+    min-height: 85px; 
+    display: flex; 
+    align-items: center; 
+    width: 100%;
+}
 
-/* CLASE .navbar
-   Barra de navegación principal del sitio.
-   - background: Fondo blanco para contraste
-   - box-shadow: Sombra sutil para separarse del contenido
-   - position: sticky: Se queda fija al hacer scroll
-   - top: 0: Posicionado al tope de la página
-   - z-index: 1000: Se coloca encima de otros elementos
-*/
-.navbar { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; min-height: 90px; display: flex; align-items: center; }
-.navbar-container { width: 100%; max-width: 1800px; margin: 0 auto; padding: 0 30px; display: flex; justify-content: space-between; align-items: center; }
-.logo-img { height: 91px; width: auto; object-fit: contain; }
-.btn-register { background: #667eea; color: white; text-decoration: none; padding: 0.8rem 2rem; border-radius: 50px; font-weight: 600; transition: 0.3s; }
-.btn-login { color: #667eea; text-decoration: none; font-weight: 600; margin-right: 20px; }
-.user-greeting { font-size: 1.2rem; color: #000000; padding-right: 20px;}
+.navbar-container { 
+    width: 100%; 
+    max-width: 1800px; 
+    margin: 0 auto; 
+    padding: 0 30px; 
+    display: flex; 
+    justify-content: space-between;
+    align-items: center; 
+}
+
+.logo-img { 
+    height: 91px; 
+    width: auto; 
+    object-fit: contain; 
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-link-explore {
+    text-decoration: none;
+    color: #334155;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.3s ease;
+}
+
+.nav-link-explore:hover { color: var(--primary); }
+
+.notifications-menu, .profile-menu { position: relative; }
+summary::-webkit-details-marker { display: none; }
+summary { list-style: none; outline: none; cursor: pointer; }
+
+.notifications-trigger {
+    list-style: none; width: 44px; height: 44px; border-radius: 50%;
+    border: 1px solid transparent; background: #f1f5f9; 
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer; position: relative; transition: all 0.3s ease;
+}
+.notifications-trigger:hover { background: #eef2ff; }
+.bell-icon { font-size: 1.15rem; color: #64748b; transition: color 0.3s ease; }
+.notifications-trigger:hover .bell-icon { color: var(--primary); }
+
+.badge {
+    position: absolute; top: -2px; right: -2px; display: inline-flex;
+    justify-content: center; align-items: center; min-width: 22px;
+    height: 22px; border-radius: 999px; font-size: 0.75rem;
+    font-weight: bold; background: var(--accent); color: white; border: 2px solid white;
+}
+
+.profile-trigger {
+    list-style: none; display: inline-flex; align-items: center; gap: 10px;
+    cursor: pointer; background: #ffffff; border: 1px solid var(--border);
+    border-radius: 50px; height: 44px; padding: 4px 16px 4px 6px; 
+    transition: all 0.3s ease;
+}
+.profile-trigger:hover { border-color: #cbd5e1; box-shadow: 0 4px 6px rgba(0,0,0,0.04); }
+
+.profile-avatar {
+    width: 32px; height: 32px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 0.95rem;
+    font-weight: 700; color: #fff; background: var(--primary); object-fit: cover; flex-shrink: 0;
+}
+.profile-label { color: var(--text); font-size: 0.95rem; font-weight: 600; }
+
+.notifications-dropdown, .profile-dropdown {
+    position: absolute; right: 0; top: calc(100% + 12px); border: 1px solid var(--border);
+    background: #fff; box-shadow: var(--shadow); z-index: 30;
+    display: flex !important; flex-direction: column; opacity: 0; visibility: hidden;
+    transform: translateY(10px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.notifications-menu:hover .notifications-dropdown,
+.profile-menu:hover .profile-dropdown,
+details[open] .notifications-dropdown,
+details[open] .profile-dropdown {
+    opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto;
+}
+
+.notifications-menu::after, .profile-menu::after {
+    content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 15px;
+}
+
+.notifications-dropdown { width: 300px; border-radius: 14px; padding: 16px; }
+.profile-dropdown { min-width: 180px; border-radius: 14px; padding: 8px; }
+.dropdown-title { margin: 0 0 12px; font-size: 1rem; font-weight: 700; color: var(--text); }
+.dropdown-empty { margin: 0; color: var(--muted); font-size: 0.9rem; }
+
+.profile-item {
+    width: 100%; border: 0; border-radius: 8px; text-align: left;
+    background: transparent; color: var(--text); font-size: 0.95rem;
+    font-weight: 500; padding: 10px 14px; cursor: pointer; text-decoration: none;
+    transition: background 0.2s, color 0.2s; display: block; font-family: inherit;
+}
+.profile-item:hover { background: #f0f4ff; color: var(--primary); }
+
+.profile-dropdown form { margin: 0; width: 100%; }
+.logout-item { color: #ef4444; border-top: 1px solid #f1f5f9; margin-top: 4px; padding-top: 12px; }
+.logout-item:hover { background: #fef2f2; color: #dc2626; }
+
+.notification-item { padding: 12px 0; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; gap: 15px; }
+.notification-item:last-child { border-bottom: none; padding-bottom: 0; }
+.notification-text strong { color: var(--text); font-size: 0.95rem; }
+.notification-text p { color: var(--muted); font-size: 0.85rem; margin-top: 4px; line-height: 1.4; }
+.notification-action { padding: 8px 14px; background-color: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: background-color 0.2s; }
+.notification-action:hover { background-color: var(--primary-light); }
+
+.btn-login { color: var(--primary); text-decoration: none; font-weight: 600; margin-right: 15px; }
+.btn-register { background: var(--primary); color: white; text-decoration: none; padding: 0.8rem 2rem; border-radius: 50px; font-weight: 600; transition: background 0.3s; }
+.btn-register:hover { background: var(--primary-light); }
+
 
 /* ============ HERO DEL COMPLEJO (SECCIÓN PRINCIPAL) ============ */
-
-/* CLASE .complejo-hero
-   Sección hero (principal) que muestra la imagen de fondo del complejo.
-   - background: Degradado lineal de azul a púrpura (135 grados)
-   - min-height: 350px: Altura mínima para que la sección sea visible
-   - position: relative: Permite posicionar elementos hijos relativos a este
-   - display: flex: Usa flexbox para organizar contenido
-   - align-items: flex-end: Alinea el contenido al fondo (bottom) de la sección
-*/
 .complejo-hero {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 350px;
@@ -71,33 +172,16 @@ body {
     align-items: flex-end;
 }
 
-/* CLASE .complejo-hero-overlay
-   Overlay (capa) oscura sobre el hero que mejora la legibilidad del texto.
-   - background: rgba(0, 0, 0, 0.4): Fondo negro semi-transparente (40% de opacidad)
-   - width: 100%: Ocupa todo el ancho disponible
-   - padding: 60px 0 40px: Espaciado vertical para el contenido
-*/
 .complejo-hero-overlay {
     background: rgba(0, 0, 0, 0.4);
     width: 100%;
     padding: 60px 0 40px;
 }
 
-/* CLASE .complejo-hero-content
-   Contenedor del contenido del hero (título, ubicación, amenities).
-   - color: white: Todo el texto en blanco para contraste con el fondo oscuro
-*/
 .complejo-hero-content {
     color: white;
 }
 
-/* CLASE .complejo-title
-   Título principal del complejo deportivo.
-   - font-size: 3rem: Tamaño muy grande para ser el elemento principal
-   - font-weight: 700: Texto en negrita para mayor impacto
-   - margin-bottom: 10px: Espacio debajo del título
-   - text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3): Sombra del texto para mejorar legibilidad
-*/
 .complejo-title {
     font-size: 3rem;
     font-weight: 700;
@@ -105,25 +189,12 @@ body {
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* CLASE .complejo-location
-   Ubicación del complejo debajo del título.
-   - font-size: 1.3rem: Tamaño moderadamente grande
-   - margin-bottom: 20px: Espacio antes de las amenities
-   - opacity: 0.95: Ligeramente semi-transparente para jerarquía visual
-*/
 .complejo-location {
     font-size: 1.3rem;
     margin-bottom: 20px;
     opacity: 0.95;
 }
 
-/* CLASE .amenities-badges
-   Contenedor de las pequeñas etiquetas de amenidades (servicios, facilidades).
-   - display: flex: Alinea las etiquetas en fila
-   - flex-wrap: wrap: Permite que las etiquetas se rompan en múltiples líneas si es necesario
-   - gap: 10px: Espacio entre cada etiqueta
-   - margin-top: 20px: Espacio por encima del contenedor
-*/
 .amenities-badges {
     display: flex;
     flex-wrap: wrap;
@@ -131,17 +202,6 @@ body {
     margin-top: 20px;
 }
 
-/* CLASE .amenity-badge
-   Estilo de cada etiqueta individual de amenidad.
-   - background: rgba(255, 255, 255, 0.2): Fondo blanco semi-transparente
-   - backdrop-filter: blur(10px): Efecto de vidrio esmerilado (glassmorphism)
-   - color: white: Texto blanco
-   - padding: 8px 16px: Espaciado interno
-   - border-radius: 20px: Esquinas muy redondeadas para aspecto de píldora
-   - font-size: 0.9rem: Tamaño de texto pequeño
-   - font-weight: 500: Texto semi-negrita
-   - border: 1px solid rgba(255, 255, 255, 0.3): Borde blanco semi-transparente
-*/
 .amenity-badge {
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
@@ -154,24 +214,11 @@ body {
 }
 
 /* ============ SECCIÓN DE INFORMACIÓN DEL COMPLEJO ============ */
-
-/* CLASE .complejo-info-section
-   Sección que contiene información detallada del complejo.
-   - padding: 60px 20px: Espaciado amplio vertical y horizontal
-   - background: white: Fondo blanco para contrastar con el hero
-*/
 .complejo-info-section {
     padding: 60px 20px;
     background: white;
 }
 
-/* CLASE .info-grid
-   Grid que divide la información en dos columnas: contenido principal y tarjeta de contacto.
-   - display: grid: Usa CSS Grid para disposición
-   - grid-template-columns: 2fr 1fr: Columna izquierda 2 veces más ancha que la derecha
-   - gap: 40px: Espacio entre las columnas
-   - align-items: start: Alinea elementos al inicio (top) de sus filas
-*/
 .info-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -179,25 +226,12 @@ body {
     align-items: start;
 }
 
-/* CLASE .info-main h2
-   Título secundario en la sección de información principal.
-   - font-size: 2rem: Tamaño grande pero menor que el hero
-   - color: #333: Gris muy oscuro (casi negro)
-   - margin-bottom: 20px: Espacio debajo del título
-*/
 .info-main h2 {
     font-size: 2rem;
     color: #333;
     margin-bottom: 20px;
 }
 
-/* CLASE .complejo-description
-   Párrafo descriptivo del complejo.
-   - font-size: 1.1rem: Tamaño ligeramente mayor al normal para legibilidad
-   - color: #666: Gris medio para texto de cuerpo
-   - line-height: 1.8: Altura de línea mayor para mejor legibilidad
-   - margin-bottom: 30px: Espacio amplio debajo del párrafo
-*/
 .complejo-description {
     font-size: 1.1rem;
     color: #666;
@@ -205,13 +239,6 @@ body {
     margin-bottom: 30px;
 }
 
-/* CLASE .info-main h3
-   Título terciario para subsecciones (como "Amenidades").
-   - font-size: 1.5rem: Tamaño moderadamente grande
-   - color: #333: Gris muy oscuro
-   - margin-bottom: 15px: Espacio debajo
-   - margin-top: 30px: Espacio encima para separarse del contenido anterior
-*/
 .info-main h3 {
     font-size: 1.5rem;
     color: #333;
@@ -219,23 +246,11 @@ body {
     margin-top: 30px;
 }
 
-/* CLASE .amenities-list
-   Lista de amenidades sin estilos de viñeta por defecto.
-   - list-style: none: Elimina los puntos de lista
-   - padding: 0: Elimina espaciado izquierdo de la lista
-*/
 .amenities-list {
     list-style: none;
     padding: 0;
 }
 
-/* CLASE .amenities-list li
-   Cada elemento de amenidad en la lista.
-   - padding: 10px 0: Espaciado vertical en cada elemento
-   - font-size: 1.05rem: Tamaño ligeramente más grande
-   - color: #555: Gris medio-oscuro
-   - border-bottom: 1px solid #eee: Línea divisoria gris clara debajo de cada elemento
-*/
 .amenities-list li {
     padding: 10px 0;
     font-size: 1.05rem;
@@ -243,25 +258,11 @@ body {
     border-bottom: 3px solid #eee;
 }
 
-/* CLASE .amenities-list li:last-child
-   Último elemento de amenidad (no lleva línea divisoria debajo).
-   - border-bottom: none: Elimina la línea divisoria del último elemento
-*/
 .amenities-list li:last-child {
     border-bottom: none;
 }
 
 /* ============ TARJETA DE CONTACTO ============ */
-
-/* CLASE .contact-card
-   Tarjeta que contiene información de contacto del complejo.
-   - background: #f8f9fa: Fondo gris muy claro
-   - border-radius: 12px: Esquinas redondeadas para aspecto moderno
-   - padding: 30px: Espaciado interno amplio
-   - box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08): Sombra sutil para profundidad
-   - position: sticky: Se mantiene visible al hacer scroll
-   - top: 100px: Se queda a 100px del tope
-*/
 .contact-card {
     background: #f8f9fa;
     border-radius: 12px;
@@ -271,14 +272,6 @@ body {
     top: 100px; 
 }
 
-/* CLASE .contact-card h3
-   Título de la tarjeta de contacto.
-   - font-size: 1.3rem: Tamaño moderadamente grande
-   - color: #333: Gris muy oscuro
-   - margin-bottom: 20px: Espacio debajo
-   - border-bottom: 2px solid #667eea: Línea de color corporativo
-   - padding-bottom: 10px: Espacio entre el texto y la línea
-*/
 .contact-card h3 {
     font-size: 1.3rem;
     color: #333;
@@ -287,24 +280,12 @@ body {
     padding-bottom: 10px;
 }
 
-/* CLASE .contact-card p
-   Párrafo de información dentro de la tarjeta de contacto.
-   - margin-bottom: 12px: Espacio debajo de cada párrafo
-   - color: #555: Gris medio-oscuro
-   - font-size: 0.95rem: Tamaño de texto pequeño
-*/
 .contact-card p {
     margin-bottom: 12px;
     color: #555;
     font-size: 0.95rem;
 }
 
-/* CLASE .contact-card strong
-   Etiquetas (labels) en negrita dentro de la tarjeta de contacto.
-   - color: #333: Gris muy oscuro
-   - display: inline-block: Permite aplicar ancho mínimo
-   - min-width: 90px: Ancho mínimo para alinear verticalmente los valores
-*/
 .contact-card strong {
     color: #333;
     display: inline-block;
@@ -312,38 +293,18 @@ body {
 }
 
 /* ============ SECCIÓN DE FILTROS ============ */
-
-/* CLASE .filtros-section
-   Sección que contiene los filtros para búsqueda/filtración de canchas.
-   - padding: 40px 20px: Espaciado vertical y horizontal
-   - background: white: Fondo blanco
-   - border-bottom: 1px solid #eee: Línea divisoria clara debajo
-*/
 .filtros-section {
     padding: 40px 20px;
     background: white;
     border-bottom: 1px solid #eee;
 }
 
-/* CLASE .filtros-container h3
-   Título de la sección de filtros.
-   - font-size: 1.5rem: Tamaño moderadamente grande
-   - color: #333: Gris muy oscuro
-   - margin-bottom: 20px: Espacio debajo del título
-*/
 .filtros-container h3 {
     font-size: 1.5rem;
     color: #333;
     margin-bottom: 20px;
 }
 
-/* CLASE .filtros-form
-   Formulario contenedor de los campos de filtro.
-   - display: flex: Alinea los filtros horizontalmente
-   - gap: 20px: Espacio entre los campos de filtro
-   - align-items: end: Alinea al final (bottom) para alinear botón con los selects
-   - flex-wrap: wrap: Permite que los filtros se rompan en múltiples líneas
-*/
 .filtros-form {
     display: flex;
     gap: 20px;
@@ -351,41 +312,18 @@ body {
     flex-wrap: wrap;
 }
 
-/* CLASE .filtro-group
-   Grupo individual de filtro (etiqueta + select).
-   - display: flex: Alinea etiqueta y select verticalmente
-   - flex-direction: column: Etiqueta encima del select
-   - gap: 8px: Espacio entre etiqueta y select
-*/
 .filtro-group {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-/* CLASE .filtro-group label
-   Etiqueta del grupo de filtro.
-   - font-weight: 600: Texto semi-negrita
-   - color: #555: Gris medio-oscuro
-   - font-size: 0.95rem: Tamaño ligeramente menor
-*/
 .filtro-group label {
     font-weight: 600;
     color: #555;
     font-size: 0.95rem;
 }
 
-/* CLASE .filtro-group select
-   Campo de selección (dropdown) del filtro.
-   - padding: 10px 15px: Espaciado interno
-   - border: 2px solid #e0e0e0: Borde gris claro
-   - border-radius: 6px: Esquinas ligeramente redondeadas
-   - font-size: 1rem: Tamaño de texto normal
-   - min-width: 200px: Ancho mínimo para visibilidad
-   - cursor: pointer: Cursor cambia a mano indicando clickabilidad
-   - transition: border-color 0.3s: Transición suave del borde
-   - background: white: Fondo blanco
-*/
 .filtro-group select {
     padding: 10px 15px;
     border: 2px solid #e0e0e0;
@@ -397,39 +335,16 @@ body {
     background: white;
 }
 
-/* CLASE .filtro-group select:hover
-   Efecto hover del select.
-   - border-color: #667eea: Borde cambia al color corporativo
-*/
 .filtro-group select:hover {
     border-color: #667eea;
 }
 
-/* CLASE .filtro-group select:focus
-   Efecto focus del select (cuando está activo/seleccionado).
-   - outline: none: Elimina el contorno por defecto del navegador
-   - border-color: #667eea: Borde del color corporativo
-   - box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1): Sombra suave de color corporativo
-*/
 .filtro-group select:focus {
     outline: none;
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* CLASE .btn-clear-filters
-   Botón para limpiar/reset todos los filtros.
-   - background: #f44336: Fondo rojo para indicar acción destructiva
-   - color: white: Texto blanco
-   - padding: 10px 20px: Espaciado interno
-   - border: none: Sin borde
-   - border-radius: 6px: Esquinas ligeramente redondeadas
-   - font-weight: 600: Texto semi-negrita
-   - cursor: pointer: Cursor tipo mano
-   - text-decoration: none: Sin subrayado
-   - transition: background 0.3s: Transición suave del fondo
-   - display: inline-block: Se comporta como elemento de línea con propiedades de bloque
-*/
 .btn-clear-filters {
     background: #f44336;
     color: white;
@@ -443,33 +358,16 @@ body {
     display: inline-block;
 }
 
-/* CLASE .btn-clear-filters:hover
-   Efecto del botón limpiar filtros cuando se pasa el mouse.
-   - background: #d32f2f: Rojo más oscuro para indicar cambio de estado
-*/
 .btn-clear-filters:hover {
     background: #d32f2f;
 }
 
 /* ============ SECCIÓN DE CANCHAS ============ */
-
-/* CLASE .canchas-section
-   Sección que contiene la cuadrícula de canchas disponibles.
-   - padding: 60px 20px: Espaciado amplio vertical y horizontal
-   - background: #f8f9fa: Fondo gris muy claro
-*/
 .canchas-section {
     padding: 60px 20px;
     background: #f8f9fa;
 }
 
-/* CLASE .canchas-section h2
-   Título de la sección de canchas.
-   - font-size: 2rem: Tamaño grande
-   - color: #333: Gris muy oscuro
-   - margin-bottom: 40px: Espacio amplio debajo del título
-   - text-align: center: Justifica el título al centro
-*/
 .canchas-section h2 {
     font-size: 2rem;
     color: #333;
@@ -477,12 +375,6 @@ body {
     text-align: center;
 }
 
-/* CLASE .canchas-grid
-   Grid que organiza las tarjetas de canchas en una cuadrícula responsive.
-   - display: grid: Usa CSS Grid
-   - grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)): Crea columnas repetidas de mínimo 320px, se adapta al espacio disponible
-   - gap: 30px: Espacio entre tarjetas
-*/
 .canchas-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -490,17 +382,6 @@ body {
 }
 
 /* ============ TARJETA DE CANCHA ============ */
-
-/* CLASE .cancha-card
-   Tarjeta que muestra información de una cancha individual.
-   - background: white: Fondo blanco
-   - border-radius: 12px: Esquinas redondeadas para aspecto moderno
-   - overflow: hidden: Oculta contenido que sale de los límites (importante para border-radius)
-   - box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1): Sombra para profundidad
-   - transition: transform 0.3s, box-shadow 0.3s: Transiciones suaves
-   - display: flex: Usa flexbox
-   - flex-direction: column: Organiza contenido verticalmente
-*/
 .cancha-card {
     background: white;
     border-radius: 12px;
@@ -511,26 +392,11 @@ body {
     flex-direction: column;
 }
 
-/* CLASE .cancha-card:hover
-   Efecto hover de la tarjeta de cancha (al pasar el mouse).
-   - transform: translateY(-8px): Mueve la tarjeta hacia arriba 8px
-   - box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15): Sombra más pronunciada
-*/
 .cancha-card:hover {
     transform: translateY(-8px);
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
 }
 
-/* CLASE .cancha-image
-   Área de imagen de la cancha en la tarjeta.
-   - width: 100%: Ocupa todo el ancho de la tarjeta
-   - height: 180px: Altura fija para consistencia
-   - background: Degradado lineal de azul a púrpura
-   - display: flex: Usa flexbox para centrar contenido
-   - align-items: center: Centra verticalmente
-   - justify-content: center: Centra horizontalmente
-   - font-size: 80px: Tamaño grande para emoji/icono
-*/
 .cancha-image {
     width: 100%;
     height: 180px;
@@ -542,15 +408,7 @@ body {
     padding: 0; 
     overflow: hidden;
 }
-/* padding: 0; overflow: hidden;*/
 
-/* CLASE .cancha-content
-   Contenedor del contenido de la tarjeta (título, detalles, precio, botón).
-   - padding: 20px: Espaciado interno
-   - flex-grow: 1: Se expande para llenar el espacio disponible
-   - display: flex: Usa flexbox
-   - flex-direction: column: Organiza el contenido verticalmente
-*/
 .cancha-content {
     padding: 20px;
     flex-grow: 1;
@@ -558,25 +416,12 @@ body {
     flex-direction: column;
 }
 
-/* CLASE .cancha-content h3
-   Título del nombre de la cancha.
-   - font-size: 1.4rem: Tamaño moderadamente grande
-   - color: #333: Gris muy oscuro
-   - margin-bottom: 15px: Espacio debajo
-*/
 .cancha-content h3 {
     font-size: 1.4rem;
     color: #333;
     margin-bottom: 15px;
 }
 
-/* CLASE .cancha-details
-   Contenedor de las etiquetas de detalles de la cancha (tipo, tamaño, etc).
-   - display: flex: Alinea las etiquetas horizontalmente
-   - flex-wrap: wrap: Permite que las etiquetas se rompan en líneas
-   - gap: 8px: Espacio entre etiquetas
-   - margin-bottom: 20px: Espacio debajo del contenedor
-*/
 .cancha-details {
     display: flex;
     flex-wrap: wrap;
@@ -584,15 +429,6 @@ body {
     margin-bottom: 20px;
 }
 
-/* CLASE .detail-badge
-   Etiqueta de detalle (aire libre, cubierta, etc).
-   - background: #e3f2fd: Fondo azul muy claro
-   - color: #1976d2: Texto azul
-   - padding: 5px 12px: Espaciado interno pequeño
-   - border-radius: 15px: Esquinas muy redondeadas para aspecto de píldora
-   - font-size: 0.85rem: Tamaño pequeño
-   - font-weight: 500: Texto semi-negrita
-*/
 .detail-badge {
     background: #e3f2fd;
     color: #1976d2;
@@ -602,28 +438,12 @@ body {
     font-weight: 500;
 }
 
-/* CLASE .detail-badge.lighting
-   Variante de etiqueta para iluminación/luz.
-   - background: #fff3e0: Fondo anaranjado claro
-   - color: #f57c00: Texto anaranjado oscuro
-*/
 .detail-badge.lighting {
     background: #fff3e0;
     color: #f57c00;
 }
 
 /* ============ PRECIO DE LA CANCHA ============ */
-
-/* CLASE .cancha-precio
-   Sección que muestra el precio de la cancha.
-   - background: #f8f9fa: Fondo gris muy claro
-   - padding: 15px: Espaciado interno
-   - border-radius: 8px: Esquinas redondeadas
-   - margin-bottom: 20px: Espacio debajo
-   - display: flex: Usa flexbox
-   - flex-direction: column: Organiza contenido verticalmente
-   - gap: 5px: Espacio pequeño entre elementos
-*/
 .cancha-precio {
     background: #f8f9fa;
     padding: 15px;
@@ -634,13 +454,6 @@ body {
     gap: 5px;
 }
 
-/* CLASE .precio-label
-   Etiqueta del precio (ej: "Precio por hora").
-   - font-size: 0.85rem: Tamaño pequeño
-   - color: #999: Gris claro
-   - text-transform: uppercase: Convierte el texto a mayúsculas
-   - letter-spacing: 0.5px: Espaciado entre letras para aspecto formal
-*/
 .precio-label {
     font-size: 0.85rem;
     color: #999;
@@ -648,41 +461,17 @@ body {
     letter-spacing: 0.5px;
 }
 
-/* CLASE .precio-valor
-   Valor del precio (número).
-   - font-size: 1.8rem: Tamaño muy grande para destacar
-   - font-weight: 700: Texto en negrita
-   - color: #667eea: Color corporativo para la cifra principal
-*/
 .precio-valor {
     font-size: 1.8rem;
     font-weight: 700;
     color: #667eea;
 }
 
-/* CLASE .precio-extra
-   Información adicional sobre el precio (ej: "más impuestos").
-   - font-size: 0.85rem: Tamaño pequeño
-   - color: #666: Gris medio
-*/
 .precio-extra {
     font-size: 0.85rem;
     color: #666;
 }
 
-/* CLASE .btn-reservar
-   Botón para realizar una reserva.
-   - background: #667eea: Fondo de color corporativo
-   - color: white: Texto blanco
-   - border: none: Sin borde
-   - padding: 12px 24px: Espaciado interno amplio
-   - border-radius: 6px: Esquinas redondeadas
-   - font-size: 1rem: Tamaño normal
-   - font-weight: 600: Texto semi-negrita
-   - cursor: pointer: Cursor tipo mano
-   - transition: background 0.3s, transform 0.2s: Transiciones suaves
-   - margin-top: auto: Se coloca al fondo de la tarjeta
-*/
 .btn-reservar {
     background: #667eea;
     color: white;
@@ -696,42 +485,21 @@ body {
     margin-top: auto;
 }
 
-/* CLASE .btn-reservar:hover
-   Efecto hover del botón reservar.
-   - background: #764ba2: Cambio a púrpura más oscuro
-   - transform: translateY(-2px): Mueve el botón hacia arriba ligeramente
-*/
 .btn-reservar:hover {
     background: #764ba2;
     transform: translateY(-2px);
 }
 
-/* CLASE .btn-reservar:active
-   Efecto cuando se hace click en el botón.
-   - transform: translateY(0): Regresa a posición normal
-*/
 .btn-reservar:active {
     transform: translateY(0);
 }
 
 /* ============ SIN RESULTADOS ============ */
-
-/* CLASE .no-results
-   Sección mostrada cuando no hay canchas que coincidan con los filtros.
-   - text-align: center: Centra todo el contenido
-   - padding: 60px 20px: Espaciado amplio
-*/
 .no-results {
     text-align: center;
     padding: 60px 20px;
 }
 
-/* CLASE .no-results p
-   Párrafo de mensaje cuando no hay resultados.
-   - font-size: 1.2rem: Tamaño moderadamente grande
-   - color: #666: Gris medio
-   - margin-bottom: 30px: Espacio debajo
-*/
 .no-results p {
     font-size: 1.2rem;
     color: #666;
@@ -739,57 +507,24 @@ body {
 }
 
 /* ============ SECCIÓN CTA (CALL TO ACTION) ============ */
-
-/* CLASE .cta-section
-   Sección que contiene una llamada a la acción (CTA) para los usuarios.
-   - padding: 80px 20px: Espaciado amplio para destacar
-   - text-align: center: Centra todo el contenido
-   - background: white: Fondo blanco
-*/
 .cta-section {
     padding: 80px 20px;
     text-align: center;
     background: white;
 }
 
-/* CLASE .cta-section h2
-   Título principal de la sección CTA.
-   - font-size: 2.5rem: Tamaño muy grande para captar atención
-   - margin-bottom: 15px: Espacio debajo
-   - color: #333: Gris muy oscuro
-*/
 .cta-section h2 {
     font-size: 2.5rem;
     margin-bottom: 15px;
     color: #333;
 }
 
-/* CLASE .cta-section p
-   Párrafo descriptivo de la sección CTA.
-   - font-size: 1.1rem: Tamaño ligeramente mayor
-   - color: #666: Gris medio
-   - margin-bottom: 30px: Espacio amplio debajo
-*/
 .cta-section p {
     font-size: 1.1rem;
     color: #666;
     margin-bottom: 30px;
 }
 
-/* CLASE .btn-primary
-   Botón principal (CTA primario).
-   - background: #667eea: Fondo corporativo
-   - color: white: Texto blanco
-   - padding: 12px 40px: Espaciado interno amplio (especialmente horizontal)
-   - border: none: Sin borde
-   - border-radius: 50px: Esquinas muy redondeadas para aspecto de píldora
-   - font-size: 1rem: Tamaño normal
-   - font-weight: 600: Texto semi-negrita
-   - cursor: pointer: Cursor tipo mano
-   - text-decoration: none: Sin subrayado (para enlaces)
-   - display: inline-block: Se comporta como bloque pero en línea
-   - transition: transform 0.3s, box-shadow 0.3s: Transiciones suaves
-*/
 .btn-primary {
     background: #667eea;
     color: white;
@@ -804,39 +539,18 @@ body {
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
-/* CLASE .btn-primary:hover
-   Efecto hover del botón primario.
-   - transform: translateY(-3px): Mueve el botón hacia arriba 3px
-   - box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3): Sombra corporativa más pronunciada
-*/
 .btn-primary:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
 }
 
 /* ============ FOOTER (PIE DE PÁGINA) ============ */
-
-/* CLASE .footer
-   Pie de página del sitio.
-   - background: #1a1a1a: Fondo gris muy oscuro casi negro
-   - color: white: Texto blanco
-   - padding: 60px 20px 20px: Espaciado amplio vertical, menos en el bottom
-*/
 .footer {
     background: #1a1a1a;
     color: white;
     padding: 60px 20px 20px;
 }
 
-/* CLASE .footer-container
-   Contenedor principal del footer con múltiples columnas.
-   - max-width: 1200px: Ancho máximo para limitar contenido
-   - margin: 0 auto: Centra el contenedor
-   - display: grid: Usa CSS Grid
-   - grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)): Crea columnas adaptativas
-   - gap: 40px: Espacio entre columnas
-   - margin-bottom: 40px: Espacio debajo del contenedor
-*/
 .footer-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -846,53 +560,26 @@ body {
     margin-bottom: 40px;
 }
 
-/* CLASE .footer-section h4
-   Título de cada sección del footer.
-   - font-size: 1.2rem: Tamaño moderadamente grande
-   - margin-bottom: 15px: Espacio debajo del título
-   - color: #667eea: Color corporativo
-*/
 .footer-section h4 {
     font-size: 1.2rem;
     margin-bottom: 15px;
     color: #667eea;
 }
 
-/* CLASE .footer-section p
-   Párrafo de descripción en el footer.
-   - color: #aaa: Gris claro
-   - line-height: 1.8: Altura de línea amplia para legibilidad
-   - font-size: 0.95rem: Tamaño ligeramente menor
-*/
 .footer-section p {
     color: #aaa;
     line-height: 1.8;
     font-size: 0.95rem;
 }
 
-/* CLASE .footer-section ul
-   Lista sin viñetas en el footer.
-   - list-style: none: Elimina los puntos de lista
-*/
 .footer-section ul {
     list-style: none;
 }
 
-/* CLASE .footer-section ul li
-   Elemento de lista en el footer.
-   - margin-bottom: 10px: Espacio entre elementos de lista
-*/
 .footer-section ul li {
     margin-bottom: 10px;
 }
 
-/* CLASE .footer-section a
-   Enlace en el footer.
-   - color: #aaa: Gris claro
-   - text-decoration: none: Sin subrayado
-   - transition: color 0.3s: Transición suave del color
-   - font-size: 0.95rem: Tamaño ligeramente menor
-*/
 .footer-section a {
     color: #aaa;
     text-decoration: none;
@@ -900,23 +587,10 @@ body {
     font-size: 0.95rem;
 }
 
-/* CLASE .footer-section a:hover
-   Efecto hover en los enlaces del footer.
-   - color: #667eea: Cambio al color corporativo
-*/
 .footer-section a:hover {
     color: #667eea;
 }
 
-/* CLASE .footer-bottom
-   Sección inferior del footer con información de derechos de autor.
-   - max-width: 1200px: Ancho máximo
-   - margin: 0 auto: Centra el contenedor
-   - text-align: center: Centra el contenido
-   - padding-top: 30px: Espaciado superior
-   - border-top: 1px solid #333: Línea divisoria oscura arriba
-   - color: #888: Gris medio-claro (más claro que el contenido normal)
-*/
 .footer-bottom {
     max-width: 1200px;
     margin: 0 auto;
@@ -926,129 +600,7 @@ body {
     color: #888;
 }
 
-/* ============ MEDIA QUERIES (ESTILOS RESPONSIVOS) ============ */
-
-/* MEDIA QUERY: Tablets y pantallas medianas (max-width: 1024px)
-   Se aplica cuando el ancho de la pantalla es de 1024px o menos.
-   Ajustes:
-   - info-grid: Cambia a una sola columna
-   - contact-card: Deja de ser sticky para mejor UX en tablets
-*/
-@media (max-width: 1024px) {
-    /* Grid de informacion cambia de 2 columnas a 1 */
-    .info-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    /* Tarjeta de contacto ya no se queda fija al hacer scroll */
-    .contact-card {
-        position: static;
-    }
-}
-
-/* MEDIA QUERY: Moviles horizontales y tablets pequenos (max-width: 768px)
-   Se aplica cuando el ancho de la pantalla es de 768px o menos.
-   Ajustes principales:
-   - Titulos: Se reducen de tamanio
-   - Badges de amenities: Mas pequenos
-   - Formulario de filtros: Pasa a orientacion vertical
-   - Grid de canchas: Se convierte en una sola columna
-   - Navbar: Se ajusta para pantallas pequenas
-*/
-@media (max-width: 768px) {
-    /* Titulo principal mas pequenio */
-    .complejo-title {
-        font-size: 2rem;
-    }
-    
-    /* Ubicacion mas pequenia */
-    .complejo-location {
-        font-size: 1rem;
-    }
-    
-    /* Reducir espacio entre badges de amenities */
-    .amenities-badges {
-        gap: 6px;
-    }
-    
-    /* Badges mas pequenios */
-    .amenity-badge {
-        font-size: 0.8rem;
-        padding: 6px 12px;
-    }
-    
-    /* Filtros en vertical en lugar de horizontal */
-    .filtros-form {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    /* Los selects ocupan todo el ancho disponible */
-    .filtro-group select {
-        min-width: 100%;
-    }
-    
-    /* El grid de canchas pasa a una columna */
-    .canchas-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    /* Navbar se adapta para movil */
-    .navbar-container {
-        flex-wrap: wrap;
-    }
-    
-    /* Links de navegacion ocupan todo el ancho */
-    .nav-links {
-        width: 100%;
-        margin-top: 10px;
-        gap: 10px;
-    }
-}
-
-/* MEDIA QUERY: Moviles y pantallas muy pequenias (max-width: 480px)
-   Se aplica cuando el ancho de la pantalla es de 480px o menos.
-   Ajustes para pantallas moviles de tamanio reducido:
-   - Hero mas compacto
-   - Titulos mas pequenios
-   - Precios mas compactos
-*/
-@media (max-width: 480px) {
-    /* Seccion hero mas compacta */
-    .complejo-hero {
-        min-height: 250px;
-    }
-    
-    /* Titulo principal aun mas pequenio */
-    .complejo-title {
-        font-size: 1.5rem;
-    }
-    
-    /* Precio mas pequenio en moviles */
-    .precio-valor {
-        font-size: 1.4rem;
-    }
-    
-    .cancha-content h3 {
-        font-size: 1.2rem;
-    }
-}
-
 /* ============ MODAL DE DISPONIBILIDAD Y RESERVA ============ */
-
-/* CLASE .modal
-   Contenedor del modal que cubre toda la pantalla.
-   - display: none: Oculto por defecto, se muestra con JavaScript
-   - position: fixed: Se posiciona relativamente a la ventana del navegador
-   - z-index: 2000: Se coloca encima de todos los elementos (navbar es 1000)
-   - left: 0, top: 0: Se posiciona en la esquina superior izquierda
-   - width: 100%, height: 100%: Cubre toda la pantalla
-   - background: rgba(0, 0, 0, 0.6): Fondo negro semi-transparente (overlay)
-   - display: flex: Usa flexbox para centrar el contenido
-   - align-items: center: Centra verticalmente
-   - justify-content: center: Centra horizontalmente
-   - overflow: auto: Permite scroll si el contenido es muy grande
-*/
 .modal {
     display: none;
     position: fixed;
@@ -1067,17 +619,6 @@ body {
     display: flex;
 }
 
-/* CLASE .modal-content
-   Contenedor principal del contenido del modal.
-   - background: white: Fondo blanco para contrastar
-   - border-radius: 12px: Esquinas redondeadas
-   - box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2): Sombra pronunciada para profundidad
-   - width: 90%: Ocupa el 90% del ancho disponible (responsive)
-   - max-width: 600px: Ancho máximo para no ser demasiado ancho en pantallas grandes
-   - max-height: 90vh: Altura máxima del 90% de la ventana
-   - overflow-y: auto: Permite scroll vertical si el contenido es muy largo
-   - animation: slideIn 0.3s ease-out: Animación de entrada suave
-*/
 .modal-content {
     background: white;
     border-radius: 12px;
@@ -1089,32 +630,11 @@ body {
     animation: slideIn 0.3s ease-out;
 }
 
-/* ANIMACIÓN slideIn
-   Anima la entrada del modal desde abajo hacia arriba.
-   - from: Comienza con opacidad 0 (invisible) y translateY(30px) (30px más abajo)
-   - to: Termina con opacidad 1 (visible) y translateY(0) (posición final)
-*/
 @keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* ============ HEADER DEL MODAL ============ */
-
-/* CLASE .modal-header
-   Encabezado del modal que contiene el título y el botón de cerrar.
-   - display: flex: Usa flexbox
-   - justify-content: space-between: Separa el título del botón cerrar
-   - align-items: center: Alinea verticalmente al centro
-   - padding: 30px: Espaciado interno amplio
-   - border-bottom: 2px solid #e0e0e0: Línea divisoria gris clara
-*/
 .modal-header {
     display: flex;
     justify-content: space-between;
@@ -1123,29 +643,12 @@ body {
     border-bottom: 2px solid #e0e0e0;
 }
 
-/* CLASE .modal-header h2
-   Título del modal.
-   - margin: 0: Sin margen externo
-   - font-size: 1.8rem: Tamaño grande
-   - color: #333: Gris muy oscuro
-*/
 .modal-header h2 {
     margin: 0;
     font-size: 1.8rem;
     color: #333;
 }
 
-/* CLASE .modal-close
-   Botón para cerrar el modal (X).
-   - font-size: 2rem: Tamaño grande
-   - color: #999: Gris claro
-   - cursor: pointer: Cursor tipo mano
-   - transition: color 0.3s: Transición suave del color
-   - background: none: Sin fondo
-   - border: none: Sin borde
-   - padding: 0: Sin espaciado interno
-   - line-height: 1: Elimina espaciado de línea extra
-*/
 .modal-close {
     font-size: 2rem;
     color: #999;
@@ -1157,80 +660,36 @@ body {
     line-height: 1;
 }
 
-/* CLASE .modal-close:hover
-   Efecto del botón cerrar cuando se pasa el mouse.
-   - color: #333: Cambia a gris muy oscuro
-*/
 .modal-close:hover {
     color: #333;
 }
 
-/* ============ BODY DEL MODAL ============ */
-
-/* CLASE .modal-body
-   Cuerpo principal del modal que contiene los pasos de reserva.
-   - padding: 30px: Espaciado interno amplio
-   - background: white: Fondo blanco
-*/
 .modal-body {
     padding: 30px;
     background: white;
 }
 
-/* CLASE .reserva-step
-   Cada paso/sección del proceso de reserva.
-   - margin-bottom: 30px: Espacio debajo de cada paso
-   - padding-bottom: 30px: Espaciado interno inferior
-   - border-bottom: 1px solid #eee: Línea divisoria clara
-*/
 .reserva-step {
     margin-bottom: 30px;
     padding-bottom: 30px;
     border-bottom: 1px solid #eee;
 }
 
-/* CLASE .reserva-step:last-of-type
-   El último paso no tiene línea divisoria debajo.
-   - border-bottom: none: Elimina la línea
-*/
 .reserva-step:last-of-type {
     border-bottom: none;
 }
 
-/* CLASE .reserva-step h3
-   Título de cada paso.
-   - font-size: 1.2rem: Tamaño moderadamente grande
-   - color: #333: Gris muy oscuro
-   - margin-bottom: 20px: Espacio debajo del título
-*/
 .reserva-step h3 {
     font-size: 1.2rem;
     color: #333;
     margin-bottom: 20px;
 }
 
-/* ============ SELECTOR DE FECHA ============ */
-
-/* CLASE .date-selector
-   Contenedor del input de fecha.
-   - display: flex: Usa flexbox
-   - gap: 10px: Espacio entre elementos
-*/
 .date-selector {
     display: flex;
     gap: 10px;
 }
 
-/* CLASE .date-selector input[type="date"]
-   Input de selección de fecha.
-   - padding: 12px 15px: Espaciado interno
-   - border: 2px solid #e0e0e0: Borde gris claro
-   - border-radius: 6px: Esquinas redondeadas
-   - font-size: 1rem: Tamaño normal
-   - cursor: pointer: Cursor tipo mano
-   - transition: border-color 0.3s: Transición suave del borde
-   - flex: 1: Ocupa el espacio disponible
-*/
 .date-selector input[type="date"] {
     padding: 12px 15px;
     border: 2px solid #e0e0e0;
@@ -1241,35 +700,16 @@ body {
     flex: 1;
 }
 
-/* CLASE .date-selector input[type="date"]:hover
-   Efecto hover del input de fecha.
-   - border-color: #667eea: Borde cambia al color corporativo
-*/
 .date-selector input[type="date"]:hover {
     border-color: #667eea;
 }
 
-/* CLASE .date-selector input[type="date"]:focus
-   Efecto focus del input de fecha.
-   - outline: none: Elimina el contorno por defecto
-   - border-color: #667eea: Borde del color corporativo
-   - box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1): Sombra suave
-*/
 .date-selector input[type="date"]:focus {
     outline: none;
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* ============ HORARIOS DISPONIBLES ============ */
-
-/* CLASE .horarios-grid
-   Grid que organiza los botones de horarios.
-   - display: grid: Usa CSS Grid
-   - grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)): Crea columnas de mínimo 70px
-   - gap: 10px: Espacio entre horarios
-   - margin-top: 15px: Espacio por encima
-*/
 .horarios-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
@@ -1277,18 +717,6 @@ body {
     margin-top: 15px;
 }
 
-/* CLASE .horario-btn
-   Botón individual de selección de horario.
-   - padding: 10px: Espaciado interno
-   - border: 2px solid #e0e0e0: Borde gris claro
-   - background: white: Fondo blanco
-   - border-radius: 6px: Esquinas redondeadas
-   - cursor: pointer: Cursor tipo mano
-   - font-size: 0.9rem: Tamaño pequeño
-   - font-weight: 500: Texto semi-negrita
-   - transition: all 0.3s: Transición suave de todas las propiedades
-   - color: #333: Gris muy oscuro
-*/
 .horario-btn {
     padding: 10px;
     border: 2px solid #e0e0e0;
@@ -1301,35 +729,17 @@ body {
     color: #333;
 }
 
-/* CLASE .horario-btn:hover
-   Efecto hover del botón horario.
-   - border-color: #667eea: Borde cambia al color corporativo
-   - background: #f0f4ff: Fondo azul muy claro
-*/
 .horario-btn:hover {
     border-color: #667eea;
     background: #f0f4ff;
 }
 
-/* CLASE .horario-btn.selected
-   Estilo del horario seleccionado.
-   - background: #667eea: Fondo de color corporativo
-   - color: white: Texto blanco
-   - border-color: #667eea: Borde del color corporativo
-*/
 .horario-btn.selected {
     background: #667eea;
     color: white;
     border-color: #667eea;
 }
 
-/* CLASE .info-text
-   Texto informativo dentro del modal.
-   - color: #999: Gris claro
-   - text-align: center: Centrado
-   - padding: 20px: Espaciado interno
-   - font-size: 0.95rem: Tamaño pequeño
-*/
 .info-text {
     color: #999;
     text-align: center;
@@ -1337,67 +747,30 @@ body {
     font-size: 0.95rem;
 }
 
-/* CLASE .error-text
-   Texto de error en el modal.
-   - color: #f44336: Rojo para indicar error
-   - text-align: center: Centrado
-   - padding: 20px: Espaciado interno
-*/
 .error-text {
     color: #f44336;
     text-align: center;
     padding: 20px;
 }
 
-/* ============ CONFIGURACIÓN DE RESERVA ============ */
-
-/* CLASE .config-grid
-   Grid para los elementos de configuración (duración, iluminación).
-   - display: grid: Usa CSS Grid
-   - grid-template-columns: 1fr: Una columna
-   - gap: 20px: Espacio entre elementos
-*/
 .config-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 20px;
 }
 
-/* CLASE .config-item
-   Elemento individual de configuración.
-   - display: flex: Usa flexbox
-   - flex-direction: column: Organiza verticalmente
-   - gap: 8px: Espacio entre etiqueta e input
-*/
 .config-item {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-/* CLASE .config-item label
-   Etiqueta de configuración.
-   - font-weight: 600: Texto semi-negrita
-   - color: #555: Gris medio-oscuro
-   - font-size: 0.95rem: Tamaño pequeño
-*/
 .config-item label {
     font-weight: 600;
     color: #555;
     font-size: 0.95rem;
 }
 
-/* CLASE .config-item select
-   Select de configuración (duración).
-   - padding: 10px 15px: Espaciado interno
-   - border: 2px solid #e0e0e0: Borde gris claro
-   - border-radius: 6px: Esquinas redondeadas
-   - font-size: 1rem: Tamaño normal
-   - cursor: pointer: Cursor tipo mano
-   - transition: border-color 0.3s: Transición suave
-   - background: white: Fondo blanco
-   - width: 100%: Ocupa todo el ancho disponible
-*/
 .config-item select {
     padding: 10px 15px;
     border: 2px solid #e0e0e0;
@@ -1409,48 +782,21 @@ body {
     width: 100%;
 }
 
-/* CLASE .config-item select:hover
-   Efecto hover del select.
-   - border-color: #667eea: Borde cambia al color corporativo
-*/
 .config-item select:hover {
     border-color: #667eea;
 }
 
-/* CLASE .config-item select:focus
-   Efecto focus del select.
-   - outline: none: Elimina el contorno por defecto
-   - border-color: #667eea: Borde del color corporativo
-   - box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1): Sombra suave
-*/
 .config-item select:focus {
     outline: none;
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* CLASE .config-item input[type="checkbox"]
-   Checkbox de iluminación.
-   - margin-right: 8px: Espacio a la derecha del checkbox
-   - cursor: pointer: Cursor tipo mano
-*/
 .config-item input[type="checkbox"] {
     margin-right: 8px;
     cursor: pointer;
 }
 
-/* ============ RESUMEN Y PRECIO ============ */
-
-/* CLASE .reserva-resumen
-   Sección que muestra el resumen de la reserva y el precio total.
-   - background: #f8f9fa: Fondo gris muy claro
-   - padding: 20px: Espaciado interno
-   - border-radius: 8px: Esquinas redondeadas
-   - margin-bottom: 20px: Espacio debajo
-   - display: flex: Usa flexbox
-   - justify-content: space-between: Separa la información del precio
-   - align-items: center: Alinea verticalmente al centro
-*/
 .reserva-resumen {
     background: #f8f9fa;
     padding: 20px;
@@ -1461,33 +807,16 @@ body {
     align-items: center;
 }
 
-/* CLASE .resumen-info
-   Contenedor de la información del resumen.
-   - flex: 1: Ocupa el espacio disponible
-*/
 .resumen-info {
     flex: 1;
 }
 
-/* CLASE .resumen-info p
-   Párrafo individual de información en el resumen.
-   - margin: 8px 0: Espaciado vertical pequeño
-   - color: #666: Gris medio
-   - font-size: 0.9rem: Tamaño pequeño
-*/
 .resumen-info p {
     margin: 8px 0;
     color: #666;
     font-size: 0.9rem;
 }
 
-/* CLASE .resumen-precio
-   Contenedor del precio total en el resumen.
-   - display: flex: Usa flexbox
-   - flex-direction: column: Organiza verticalmente
-   - align-items: flex-end: Alinea a la derecha
-   - gap: 8px: Espacio entre elementos
-*/
 .resumen-precio {
     display: flex;
     flex-direction: column;
@@ -1495,29 +824,12 @@ body {
     gap: 8px;
 }
 
-/* CLASE .precio-total
-   Valor del precio total.
-   - font-size: 1.8rem: Tamaño muy grande para destacar
-   - font-weight: 700: Texto en negrita
-   - color: #667eea: Color corporativo
-*/
 .precio-total {
     font-size: 1.8rem;
     font-weight: 700;
     color: #667eea;
 }
 
-/* ============ FOOTER DEL MODAL ============ */
-
-/* CLASE .modal-footer
-   Pie del modal que contiene los botones de acción.
-   - display: flex: Usa flexbox
-   - justify-content: flex-end: Alinea los botones a la derecha
-   - gap: 15px: Espacio entre botones
-   - padding: 20px 30px: Espaciado interno
-   - border-top: 1px solid #eee: Línea divisoria clara arriba
-   - background: #f8f9fa: Fondo gris muy claro
-*/
 .modal-footer {
     display: flex;
     justify-content: flex-end;
@@ -1527,17 +839,6 @@ body {
     background: #f8f9fa;
 }
 
-/* CLASE .btn-cancelar
-   Botón para cancelar la reserva.
-   - background: white: Fondo blanco
-   - color: #666: Texto gris
-   - border: 2px solid #e0e0e0: Borde gris claro
-   - padding: 10px 25px: Espaciado interno
-   - border-radius: 6px: Esquinas redondeadas
-   - font-weight: 600: Texto semi-negrita
-   - cursor: pointer: Cursor tipo mano
-   - transition: all 0.3s: Transición suave
-*/
 .btn-cancelar {
     background: white;
     color: #666;
@@ -1549,27 +850,11 @@ body {
     transition: all 0.3s;
 }
 
-/* CLASE .btn-cancelar:hover
-   Efecto hover del botón cancelar.
-   - background: #f0f0f0: Fondo gris muy claro
-   - border-color: #999: Borde gris más oscuro
-*/
 .btn-cancelar:hover {
     background: #f0f0f0;
     border-color: #999;
 }
 
-/* CLASE .btn-confirmar
-   Botón para confirmar la reserva.
-   - background: #667eea: Fondo corporativo
-   - color: white: Texto blanco
-   - border: none: Sin borde
-   - padding: 10px 30px: Espaciado interno
-   - border-radius: 6px: Esquinas redondeadas
-   - font-weight: 600: Texto semi-negrita
-   - cursor: pointer: Cursor tipo mano
-   - transition: all 0.3s: Transición suave
-*/
 .btn-confirmar {
     background: #667eea;
     color: white;
@@ -1581,39 +866,17 @@ body {
     transition: all 0.3s;
 }
 
-/* CLASE .btn-confirmar:hover
-   Efecto hover del botón confirmar.
-   - background: #764ba2: Cambio a púrpura más oscuro
-   - transform: translateY(-2px): Mueve el botón hacia arriba
-*/
 .btn-confirmar:hover {
     background: #764ba2;
     transform: translateY(-2px);
 }
 
-/* CLASE .btn-confirmar:disabled
-   Estilo cuando el botón está deshabilitado.
-   - background: #ccc: Gris para indicar estado deshabilitado
-   - cursor: not-allowed: Cursor cambia a "no permitido"
-   - opacity: 0.6: Reduce la opacidad para indicar deshabilitado
-*/
 .btn-confirmar:disabled {
     background: #ccc;
     cursor: not-allowed;
     opacity: 0.6;
 }
 
-/* ============ MENSAJES DEL MODAL ============ */
-
-/* CLASE .modal-mensaje
-   Contenedor de mensajes de éxito o error en el modal.
-   - display: none: Oculto por defecto
-   - padding: 15px 20px: Espaciado interno
-   - border-radius: 6px: Esquinas redondeadas
-   - margin-top: 15px: Espacio arriba
-   - font-weight: 500: Texto semi-negrita
-   - text-align: center: Centrado
-*/
 .modal-mensaje {
     display: none;
     padding: 15px 20px;
@@ -1623,116 +886,92 @@ body {
     text-align: center;
 }
 
-/* CLASE .modal-mensaje.success
-   Estilo para mensajes de éxito.
-   - background: #d4edda: Fondo verde muy claro
-   - color: #155724: Texto verde oscuro
-   - border: 1px solid #c3e6cb: Borde verde claro
-*/
 .modal-mensaje.success {
     background: #d4edda;
     color: #155724;
     border: 1px solid #c3e6cb;
 }
 
-/* CLASE .modal-mensaje.error
-   Estilo para mensajes de error.
-   - background: #f8d7da: Fondo rojo muy claro
-   - color: #721c24: Texto rojo oscuro
-   - border: 1px solid #f5c6cb: Borde rojo claro
-*/
 .modal-mensaje.error {
     background: #f8d7da;
     color: #721c24;
     border: 1px solid #f5c6cb;
 }
 
-/* ============ MEDIA QUERIES PARA MODAL ============ */
+/* ============ ESTILOS MODAL DE RESEÑA (NOTIFICACIONES) ============ */
+.review-modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); animation: fadeIn 0.2s ease-in; }
+.review-modal.active { display: flex; align-items: center; justify-content: center; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.review-modal-content { background-color: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); max-width: 500px; width: 90%; animation: slideUp 0.3s ease-out; }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.review-modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+.review-modal-header h2 { margin: 0; font-size: 1.5rem; color: #333; }
+.close-modal { font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer; border: none; background: none; padding: 0; line-height: 1; transition: color 0.2s; }
+.close-modal:hover { color: #000; }
+.review-modal-body { margin-bottom: 20px; }
+.form-group label.text-dark { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 0.95rem; }
+.star-rating { display: flex; gap: 10px; margin: 10px 0; }
+.star { font-size: 36px; cursor: pointer; color: #ddd; transition: color 0.2s, transform 0.1s; }
+.star:hover { transform: scale(1.1); }
+.star:hover, .star.active { color: #ffc107; }
+.review-modal textarea { width: 100%; min-height: 120px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; font-size: 0.95rem; resize: vertical; transition: border-color 0.3s; color: #333;}
+.review-modal textarea:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+.review-modal-footer { display: flex; gap: 10px; justify-content: flex-end; }
+.btn-cancel, .btn-submit { padding: 10px 20px; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+.btn-cancel { background-color: #f1f5f9; color: #475569; }
+.btn-cancel:hover { background-color: #e2e8f0; }
+.btn-submit { background-color: #667eea; color: white; }
+.btn-submit:hover { background-color: #5a6fe0; }
+.btn-submit:disabled { background-color: #94a3b8; cursor: not-allowed; }
+.rating-display { font-size: 0.9rem; color: #64748b; margin-top: 5px; font-weight: 600; }
 
-/* MEDIA QUERY: Tablets y pantallas medianas (max-width: 768px)
-   Ajustes del modal para tablets.
-*/
-@media (max-width: 768px) {
-    /* Modal-content más pequeño en tablets */
-    .modal-content {
-        width: 95%;
-        max-width: 500px;
+/* ============ MEDIA QUERIES ============ */
+@media (max-width: 1024px) {
+    .info-grid {
+        grid-template-columns: 1fr;
     }
-    
-    /* Header menos espaciado */
-    .modal-header {
-        padding: 20px;
-    }
-    
-    /* Body menos espaciado */
-    .modal-body {
-        padding: 20px;
-    }
-    
-    /* Footer menos espaciado */
-    .modal-footer {
-        padding: 15px 20px;
-    }
-    
-    /* Grid de horarios con menos columnas */
-    .horarios-grid {
-        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-    }
-    
-    /* Resumen en vertical en tablets */
-    .reserva-resumen {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-    
-    .resumen-precio {
-        width: 100%;
-        align-items: flex-start;
+    .contact-card {
+        position: static;
     }
 }
 
-/* MEDIA QUERY: Moviles (max-width: 480px)
-   Ajustes del modal para moviles muy pequeños.
-*/
+@media (max-width: 768px) {
+    .complejo-title { font-size: 2rem; }
+    .complejo-location { font-size: 1rem; }
+    .amenities-badges { gap: 6px; }
+    .amenity-badge { font-size: 0.8rem; padding: 6px 12px; }
+    .filtros-form { flex-direction: column; align-items: stretch; }
+    .filtro-group select { min-width: 100%; }
+    .canchas-grid { grid-template-columns: 1fr; }
+    
+    .navbar-container { flex-wrap: wrap; }
+    .nav-links { width: 100%; margin-top: 10px; gap: 10px; }
+    
+    .modal-content { width: 95%; max-width: 500px; }
+    .modal-header { padding: 20px; }
+    .modal-body { padding: 20px; }
+    .modal-footer { padding: 15px 20px; }
+    .horarios-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); }
+    .reserva-resumen { flex-direction: column; align-items: flex-start; gap: 15px; }
+    .resumen-precio { width: 100%; align-items: flex-start; }
+    
+    .hero-split { flex-direction: column; text-align: center; gap: 30px; }
+    .hero-image-display { width: 100%; max-width: 380px; }
+}
+
 @media (max-width: 480px) {
-    /* Modal-content ocupa casi toda la pantalla */
-    .modal-content {
-        width: 100%;
-        max-height: 100vh;
-        border-radius: 0;
-    }
+    .complejo-hero { min-height: 250px; }
+    .complejo-title { font-size: 1.5rem; }
+    .precio-valor { font-size: 1.4rem; }
+    .cancha-content h3 { font-size: 1.2rem; }
     
-    /* Header con menos padding */
-    .modal-header {
-        padding: 15px;
-    }
-    
-    .modal-header h2 {
-        font-size: 1.4rem;
-    }
-    
-    /* Body con menos padding */
-    .modal-body {
-        padding: 15px;
-    }
-    
-    /* Botones más grandes en movil para mejor clickabilidad */
-    .btn-cancelar,
-    .btn-confirmar {
-        flex: 1;
-        padding: 12px 15px;
-    }
-    
-    /* Grid de horarios con menos columnas */
-    .horarios-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    
-    /* Titulo más pequeño */
-    .modal-header h2 {
-        font-size: 1.2rem;
-    }
+    .modal-content { width: 100%; max-height: 100vh; border-radius: 0; }
+    .modal-header { padding: 15px; }
+    .modal-header h2 { font-size: 1.4rem; }
+    .modal-body { padding: 15px; }
+    .btn-cancelar, .btn-confirmar { flex: 1; padding: 12px 15px; }
+    .horarios-grid { grid-template-columns: repeat(3, 1fr); }
+    .modal-header h2 { font-size: 1.2rem; }
 }
 
 /* ============ Layout Dividido para Hero ============ */
@@ -1740,22 +979,21 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 40px; /* Buen espacio entre el texto y la imagen */
+    gap: 40px; 
 }
 
 .complejo-hero-content {
-    flex: 1; /* El texto ocupa el espacio sobrante */
+    flex: 1; 
 }
 
-/* ============ Contenedor de la Imagen ============ */
 .hero-image-display {
-    width: 500px; /* Tamaño generoso para la vista pública */
+    width: 500px; 
     height: 303px;
-    flex-shrink: 0; /* Evita que la imagen se aplaste si hay mucho texto */
+    flex-shrink: 0; 
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-    border: 3px solid rgba(255, 255, 255, 0.2); /* Borde elegante */
+    border: 3px solid rgba(255, 255, 255, 0.2); 
 }
 
 .hero-image-display img {
@@ -1764,7 +1002,6 @@ body {
     object-fit: cover;
 }
 
-/* Fallback (Por si acaso un complejo antiguo no tiene el default) */
 .no-image-placeholder {
     width: 100%;
     height: 100%;
@@ -1773,20 +1010,6 @@ body {
     justify-content: center;
     background: rgba(255, 255, 255, 0.1);
     font-size: 4rem;
-}
-
-/* ============ Diseño Responsivo (Móviles) ============ */
-@media (max-width: 768px) {
-    .hero-split {
-        flex-direction: column;
-        text-align: center;
-        gap: 30px;
-    }
-    
-    .hero-image-display {
-        width: 100%;
-        max-width: 380px; /* En móviles no superará este ancho */
-    }
 }
 
 /* ============ TEXTO DE RESEÑAS ============ */
@@ -1799,10 +1022,9 @@ body {
     margin-top: 5px; 
     margin-bottom: 5px;
     color: white; 
-    font-size: 1.1rem; /* Un poquito más grande para que destaque por sí solo */
+    font-size: 1.1rem; 
 }
 
-/* Efecto muy sutil al pasar el mouse, sin cajas ni sombras */
 .complex-rating:hover {
     opacity: 0.8; 
 }
@@ -1816,7 +1038,7 @@ body {
 }
 
 .star-icon {
-    color: #fbbf24; /* Dorado brillante */
+    color: #fbbf24; 
     font-size: 1.2rem;
 }
 
@@ -1833,10 +1055,10 @@ body {
     opacity: 0.8;
 }
 
-/* ============ MODAL DE RESEÑAS (MODO CLARO) ============ */
+/* ============ MODAL DE VER RESEÑAS ============ */
 .reviews-modal {
-    background: #ffffff !important; /* Forzamos fondo blanco limpio */
-    color: #1f2937; /* Texto oscuro principal */
+    background: #ffffff !important; 
+    color: #1f2937; 
     max-width: 550px !important;
     max-height: 80vh;
     display: flex;
@@ -1866,7 +1088,6 @@ body {
     padding-right: 10px;
 }
 
-/* Scrollbar sutil */
 .reviews-list::-webkit-scrollbar { width: 6px; }
 .reviews-list::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
 
@@ -1905,7 +1126,7 @@ body {
 }
 
 .user-rating { 
-    color: #fbbf24; /* Amarillo solo para las estrellas */
+    color: #fbbf24; 
     font-size: 0.85rem; 
     display: flex; 
     align-items: center; 
@@ -1914,7 +1135,7 @@ body {
 }
 
 .review-date { 
-    color: #9ca3af; /* Gris sutil para la fecha */
+    color: #9ca3af; 
     font-size: 0.8rem; 
     margin-left: 8px; 
 }
@@ -1922,8 +1143,8 @@ body {
 .review-text {
     font-size: 0.95rem;
     line-height: 1.5;
-    color: #4b5563; /* Gris oscuro para que se lea perfecto */
-    margin: 8px 0 0 0; /* Un pequeño margen arriba para separarlo del nombre */
+    color: #4b5563; 
+    margin: 8px 0 0 0; 
 }
 
 .btn-cerrar {

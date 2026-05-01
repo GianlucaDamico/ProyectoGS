@@ -61,6 +61,21 @@ def complejo_detalle(request, complejo_id, slug=None):
     promedio_calificacion = promedio_data['promedio'] or 0
     cantidad_resenas = resenas.count() # Útil para el texto del link
 
+    # 👇 LÓGICA DE NOTIFICACIONES AÑADIDA AQUÍ 👇
+    resenas_pendientes = None
+    if request.user.is_authenticated:
+        resenas_pendientes = (
+            Booking.objects
+            .filter(user=request.user)
+            .filter(
+                Q(status=Booking.Status.FINISHED) | Q(end__lt=timezone.now())
+            )
+            .exclude(status=Booking.Status.CANCELLED)
+            .exclude(review__isnull=False)
+            .select_related('court__complex')
+            .order_by('-end')
+        )
+
     context = {
         'complejo': complejo,
         'canchas': canchas,
@@ -73,6 +88,7 @@ def complejo_detalle(request, complejo_id, slug=None):
         'resenas': resenas,
         'promedio_calificacion': promedio_calificacion,
         'cantidad_resenas': cantidad_resenas,
+        'resenas_pendientes': resenas_pendientes, # ← PASADO AL CONTEXTO
     }
     
     return render(request, 'core/complejo_detalle.html', context)
@@ -136,8 +152,6 @@ def explorar_complejos(request):
             .select_related('court__complex')
             .order_by('-end')
         )
-
-    # Borramos el bloque de "resenas = ..." que daba error, porque ahora todo viaja en page_obj
     
     context = {
         'page_obj': page_obj,
@@ -150,7 +164,6 @@ def explorar_complejos(request):
         'ciudades_disponibles': ciudades_disponibles,
         'sport_choices': Sport.choices,
         'resenas_pendientes': resenas_pendientes,
-        # Ya no hace falta pasar promedio_calificacion ni cantidad_resenas sueltos
     }
     
     return render(request, 'core/explorar_complejos.html', context)
@@ -232,7 +245,6 @@ def mis_reservas(request):
     if estado_filtro:
         reservas = reservas.filter(status=estado_filtro)
         
-    # 👇 LÓGICA DE NOTIFICACIONES AÑADIDA AQUÍ 👇
     resenas_pendientes = (
         Booking.objects
         .filter(user=request.user)
