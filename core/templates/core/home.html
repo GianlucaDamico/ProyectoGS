@@ -1,0 +1,190 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courtly</title>
+    <link rel="icon" type="image/png" href="{% static 'core/img/logoicono.png' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'core/home.css' %}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo">
+                <a href="{% url 'core:home' %}">
+                    <img src="{% static 'core/img/LOGO.png' %}" alt="Courtly" class="logo-img">
+                </a>
+            </div>
+            <div class="nav-links">
+                {% if user.is_authenticated %}
+                        {% if user.perfil_propietario %}
+                            <a href="{% url 'cuentas:home_propietario' %}" class="btn-login">Entrar</a>
+                        {% elif user.perfil_jugador %}
+                            <a href="{% url 'cuentas:home_usuario' %}" class="btn-login">Entrar</a>
+                        {% else %}
+                            <a href="{% url 'core:home' %}" class="btn-login">Entrar</a>
+                        {% endif %}
+                        <form action="{% url 'cuentas:logout_usuario' %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-close-sesion"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>
+                        <a href="{% url 'cuentas:register' %}" class="btn-register">Registrarse</a>
+                    {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <video autoplay muted loop playsinline id="hero-video">
+            <source src="{% static 'core/videos/hero_video.mp4' %}" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">Encuentra tu cancha deportiva ideal</h1>
+            <p class="hero-subtitle">Reserva canchas, campos y complejos deportivos en segundos</p>
+            <button class="btn-primary" onclick="window.location.href='{% url 'core:explorar_complejos' %}'">Explorar canchas</button>
+        </div>
+    </section>
+
+    <section class="about-section">
+        <div class="container about-grid">
+            <div class="about-text-content">
+                <h2 class="section-heading">¿Qué es Courtly?</h2>
+                <p class="section-desc">La plataforma líder para conectar deportistas con sus canchas ideales. Simplificamos tu reserva en 4 pasos:</p>
+                
+                <div class="booking-flow">
+                    <div class="flow-step">
+                        <div class="step-icon"><i class="fas fa-search"></i></div>
+                        <div class="step-info">
+                            <h4>Busca tu cancha</h4>
+                            <p>Filtra por deporte, ubicación y horario.</p>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-line"></div>
+                        <div class="step-icon"><i class="fas fa-filter"></i></div>
+                        <div class="step-info">
+                            <h4>Filtra y Selecciona</h4>
+                            <p>Compara precios, fotos y disponibilidad real.</p>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-line"></div>
+                        <div class="step-icon"><i class="fas fa-calendar-check"></i></div>
+                        <div class="step-info">
+                            <h4>Reserva al instante</h4>
+                            <p>Sin llamadas, todo desde tu navegador.</p>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-line"></div>
+                        <div class="step-icon"><i class="fas fa-credit-card"></i></div>
+                        <div class="step-info">
+                            <h4>Pago Seguro</h4>
+                            <p>Completa la transacción de forma confiable.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-visual-panel">
+                <div class="perspective-container">
+                    <div class="confirmation-card-3d">
+                        <div class="card-header-3d">
+                            <span class="status-badge-3d">RESERVA COMPLETADA</span>
+                            <h3>Complejo Madrid Central</h3>
+                        </div>
+                        <div class="card-body-3d">
+                            <div class="booking-detail">
+                                <small>Deporte</small>
+                                <p>Pádel - Cancha #3</p>
+                            </div>
+                            <div class="booking-detail">
+                                <small>Fecha y Hora</small>
+                                <p>Sábado, 14 Mar | 18:00 - 19:30</p>
+                            </div>
+                            <div class="booking-detail">
+                                <small>Estado</small>
+                                <p class="text-success">✅ Pago Confirmado</p>
+                            </div>
+                        </div>
+                        <div class="card-footer-3d">
+                            <div class="qr-mock">🔳</div>
+                            <p>Scan para entrar</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="owners-section">
+        <div class="container">
+            <div class="owners-content">
+                <div class="owners-image">
+                    <img src="{% static 'core/img/CANCHA.png' %}" alt="Gestión de complejo" class="owners-dashboard-img">
+
+                    <div class="stat-badge badge-top">
+                        <i class="fas fa-chart-line"></i> +25% Ingresos
+                    </div>
+                    <div class="stat-badge badge-bottom">
+                        <i class="fas fa-calendar-check"></i> 12 Reservas hoy
+                    </div>
+                </div>
+                <div class="owners-text">
+                    <h2>¿Tienes un complejo deportivo?</h2>
+                    <p>Digitaliza tus reservas y maximiza tus ingresos con Courtly. Gestiona tu complejo de manera fácil y profesional.</p>
+                    <button class="btn-primary-dark" onclick="window.location.href='{% url 'cuentas:register_propietario' %}'">Registrar mi complejo</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="prefooter">
+        <div class="container">
+            <h2>¿Listo para empezar?</h2>
+            <p>Únete a miles de usuarios que ya reservan sus canchas con Courtly.</p>
+            <button class="btn-primary" disabled>Descargar aplicación (Próximamente)</button>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>Courtly</h4>
+                <p>La mejor plataforma para reservar canchas deportivas.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Enlaces Rápidos</h4>
+                <ul>
+                    <li><a href="{% url 'core:home' %}">Inicio</a></li>
+                    <li><a href="{% url 'core:contacto' %}">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="{% url 'core:terminos' %}">Términos de servicio</a></li>
+                    <li><a href="{% url 'core:privacidad' %}">Política de privacidad</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Síguenos</h4>
+                <div class="social-links">
+                    <a href="#">📘 Facebook</a>
+                    <a href="#">📷 Instagram</a>
+                    <a href="#">𝕏 Twitter</a>
+                    <a href="#">💼 LinkedIn</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Courtly. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>

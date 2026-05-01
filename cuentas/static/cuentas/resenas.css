@@ -1,0 +1,285 @@
+/* ============ Estilos Base Panel ============ 
+   (Comparte variables con agenda.css) */
+.dashboard-body {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.dashboard-main {
+    padding: 50px 20px;
+    max-width: 1000px; /* Un poco más estrecho para leer bien los textos largos */
+    margin: 0 auto;
+}
+
+.dashboard-header {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.section-heading {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #2c3e50;
+}
+
+/* ============ Navegación Propietario (Reutilizado) ============ */
+.owner-nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.logo-img { 
+    height: 91px;
+    width: auto; 
+    object-fit: contain; 
+}
+
+.nav-item {
+    color: #666;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+.nav-item:hover {
+    color: #667eea;
+    background-color: #f0f4ff;
+}
+
+.nav-item.active {
+    color: #fff;
+    background-color: #667eea;
+}
+
+/* ============ Tarjetas de Estadísticas ============ */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 30px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.08);
+    border: 1px solid #f0f2ff;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-icon {
+    width: 70px;
+    height: 70px;
+    background: #f0f4ff;
+    color: #667eea;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #2c3e50;
+    line-height: 1.1;
+}
+
+.stat-label {
+    font-size: 0.95rem;
+    color: #888;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ============ Banner Promedio ============ */
+.avg-rating-banner {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    margin-bottom: 40px;
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.2);
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.avg-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.avg-score {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.avg-rating-stars {
+    color: #ffd700;
+    font-size: 1.5rem;
+    letter-spacing: 3px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* ============ Lista de Reseñas ============ */
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.review-card {
+    background: white;
+    border-radius: 25px;
+    padding: 30px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+    border: 1px solid #f0f2ff;
+    transition: all 0.3s ease;
+}
+
+.review-card:hover {
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.1);
+    border-color: #e0e6ff;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.review-user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.review-avatar {
+    font-size: 3rem;
+    color: #e0e6ff;
+}
+
+.profile-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    background: var(--primary);
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.review-user-name {
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: #2c3e50;
+    margin-bottom: 2px;
+}
+
+.review-date {
+    font-size: 0.85rem;
+    color: #999;
+    font-weight: 500;
+}
+
+.review-rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    padding: 8px 15px;
+    border-radius: 50px;
+    border: 1px solid #eee;
+}
+
+.stars {
+    color: #f1c40f; /* Amarillo vibrante pero elegante */
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+}
+
+.rating-number-badge {
+    background-color: #f0f4ff;
+    color: #667eea;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 800;
+    font-size: 0.9rem;
+}
+
+.review-description {
+    color: #555;
+    line-height: 1.8;
+    font-size: 1.05rem;
+    background: #fcfcfc;
+    padding: 20px;
+    border-radius: 15px;
+    border-left: 4px solid #e0e6ff;
+}
+
+/* ============ Estado Vacío ============ */
+.empty-state-global {
+    width: 100%;
+    text-align: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 30px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+    border: 1px dashed #e0e6ff;
+}
+
+.empty-state-global i {
+    font-size: 5rem;
+    color: #e0e6ff;
+    margin-bottom: 20px;
+}
+
+.empty-state-global h3 {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.empty-state-global p {
+    font-size: 1.1rem;
+    color: #666;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Responsive básico */
+@media (max-width: 768px) {
+    .avg-rating-banner {
+        flex-direction: column;
+        text-align: center;
+        justify-content: center;
+    }
+}

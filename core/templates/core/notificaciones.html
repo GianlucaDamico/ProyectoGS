@@ -1,0 +1,216 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificaciones - Courtly</title>
+    <link rel="stylesheet" href="{% static 'core/notificaciones.css' %}">
+        <style>
+        .review-modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); animation: fadeIn 0.2s ease-in; }
+        .review-modal.active { display: flex; align-items: center; justify-content: center; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .review-modal-content { background-color: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); max-width: 500px; width: 90%; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .review-modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        .review-modal-header h2 { margin: 0; font-size: 1.5rem; color: #333; }
+        .close-modal { font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer; border: none; background: none; padding: 0; line-height: 1; transition: color 0.2s; }
+        .close-modal:hover { color: #000; }
+        .review-modal-body { margin-bottom: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 0.95rem; }
+        .star-rating { display: flex; gap: 10px; margin: 10px 0; }
+        .star { font-size: 36px; cursor: pointer; color: #ddd; transition: color 0.2s, transform 0.1s; }
+        .star:hover { transform: scale(1.1); }
+        .star:hover, .star.active { color: #ffc107; }
+        .form-group textarea { width: 100%; min-height: 120px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; font-size: 0.95rem; resize: vertical; transition: border-color 0.3s; }
+        .form-group textarea:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+        .review-modal-footer { display: flex; gap: 10px; justify-content: flex-end; }
+        .btn-cancel, .btn-submit { padding: 10px 20px; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+        .btn-cancel { background-color: #f1f5f9; color: #475569; }
+        .btn-cancel:hover { background-color: #e2e8f0; }
+        .btn-submit { background-color: #667eea; color: white; }
+        .btn-submit:hover { background-color: #5a6fe0; }
+        .btn-submit:disabled { background-color: #94a3b8; cursor: not-allowed; }
+        .rating-display { font-size: 0.9rem; color: #64748b; margin-top: 5px; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo">
+                <a href="{% url 'core:home' %}">
+                    <img src="{% static 'core/img/LOGO.png' %}" alt="Courtly" class="logo-img">
+                </a>
+            </div>
+
+            <div class="nav-right">
+                {% if user.is_authenticated %}
+            
+                    <details class="profile-menu">
+                        <summary class="profile-trigger" aria-label="Abrir menu de perfil">
+                            <span class="profile-avatar">{{ user.username|slice:":1"|upper }}</span>
+                            <span class="profile-label">Perfil</span>
+                        </summary>
+                        <div class="profile-dropdown">
+                            <a href="{% url 'cuentas:home_usuario' %}" class="profile-item">Mi perfil</a>
+                            
+                            <a href="{% url 'core:mis_reservas' %}" class="profile-item">Mis reservas</a>
+                            
+                            <form method="post" action="{% url 'cuentas:logout_usuario' %}" style="margin: 0;">
+                                {% csrf_token %}
+                                <button type="submit" class="profile-item logout-item">Cerrar sesión</button>
+                            </form>
+                        </div>
+                    </details>
+
+                {% else %}
+                    <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>
+                    <a href="{% url 'cuentas:register' %}" class="btn-register">Registrarse</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Hero Section -->
+    <section class="notificaciones-hero">
+        <div class="container">
+            <h1>📬 Notificaciones Pendientes</h1>
+            <p>Reservas que requieren tu atención inmediata</p>
+        </div>
+    </section>
+
+    <!-- Lista de notificaciones -->
+    <section class="notificaciones-section">
+        <div class="container">
+            {% if notificaciones %}
+                <div class="notificaciones-grid">
+                    {% for notificacion in notificaciones %}
+                        <div class="notificacion-card {% if notificacion.status == 'pending_payment' %}payment-pending{% else %}upcoming-soon{% endif %}">
+                            <!-- Badge de tipo de notificación -->
+                            <div class="notificacion-badge">
+                                {% if notificacion.status == 'pending_payment' %}
+                                    <span class="badge-icon">💳</span>
+                                    <span class="badge-text">Pago Pendiente</span>
+                                {% else %}
+                                    <span class="badge-icon">⏰</span>
+                                    <span class="badge-text">Próxima Reserva</span>
+                                {% endif %}
+                            </div>
+
+                            <!-- Encabezado de la cancha -->
+                            <div class="notificacion-header">
+                                <h3 class="cancha-nombre">{{ notificacion.court.name }}</h3>
+                                <p class="complejo-nombre">{{ notificacion.court.complex.name }}</p>
+                            </div>
+
+                            <!-- Línea divisora -->
+                            <div class="divider"></div>
+
+                            <!-- Información detallada -->
+                            <div class="notificacion-info">
+                                <div class="info-item">
+                                    <span class="info-icon">📅</span>
+                                    <div class="info-content">
+                                        <label>Fecha</label>
+                                        <p>{{ notificacion.start|date:"l, d \d\e F Y" }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-icon">🕐</span>
+                                    <div class="info-content">
+                                        <label>Hora</label>
+                                        <p>{{ notificacion.start|time:"H:i" }} - {{ notificacion.end|time:"H:i" }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-icon">⏱️</span>
+                                    <div class="info-content">
+                                        <label>Duración</label>
+                                        <p>{{ notificacion.get_duration_minutes }} minutos</p>
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="info-icon">💰</span>
+                                    <div class="info-content">
+                                        <label>Precio Total</label>
+                                        <p class="precio-destacado">${{ notificacion.total_price }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mensaje específico según tipo -->
+                            <div class="notificacion-mensaje">
+                                {% if notificacion.status == 'pending_payment' %}
+                                    <div class="mensaje-pago">
+                                        <p>Esta reserva está pendiente de confirmación de pago.</p>
+                                        <p class="subtle">Por favor, completa el pago para garantizar tu reserva.</p>
+                                    </div>
+                                {% else %}
+                                    <div class="mensaje-proxima">
+                                        <p>Tu reserva está programada para <strong>muy pronto</strong>.</p>
+                                        <p class="subtle">Asegúrate de llegar con tiempo.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Botón de acción -->
+                            <div class="notificacion-footer">
+                                <a href="{% url 'core:reserva_detalle' notificacion.id %}" class="btn-detalle">
+                                    Ver Detalles →
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <!-- Estado vacío -->
+                <div class="empty-state">
+                    <div class="empty-icon">✅</div>
+                    <h2>¡Todo al día!</h2>
+                    <p>No tienes notificaciones pendientes en este momento.</p>
+                    <p class="empty-subtitle">Todas tus reservas están confirmadas y sin acciones pendientes.</p>
+                    <div class="empty-actions">
+                        <a href="{% url 'core:explorar_complejos' %}" class="btn-primary">Explorar Canchas</a>
+                        <a href="{% url 'core:mis_reservas' %}" class="btn-secondary">Ver Mis Reservas</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>Courtly</h4>
+                <p>La mejor plataforma para reservar canchas deportivas. Conectamos jugadores con complejos en toda la región.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Enlaces Rápidos</h4>
+                <ul>
+                    <li><a href="{% url 'core:home' %}">Inicio</a></li>
+                    <li><a href="{% url 'core:explorar_complejos' %}">Explorar Canchas</a></li>
+                    <li><a href="{% url 'core:mis_reservas' %}">Mis Reservas</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Términos de servicio</a></li>
+                    <li><a href="#">Política de privacidad</a></li>
+                    <li><a href="#">Política de cookies</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Courtly. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>

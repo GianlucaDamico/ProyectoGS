@@ -1,0 +1,218 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.90) 0%, rgba(118, 75, 162, 0.90) 100%),url('/static/cuentas/img/fondoregistro.png');
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.login-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+    padding: 40px;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-header h1 {
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.login-header p {
+    color: #666;
+    font-size: 14px;
+}
+
+.logo-img { height: 100px; width: auto; object-fit: contain; }
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    color: #333;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #667eea;
+    background-color: #f8f9ff;
+}
+
+.form-group input::placeholder {
+    color: #999;
+}
+
+.remember-forgot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    font-size: 13px;
+}
+
+.remember-forgot label {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: #666;
+}
+
+.remember-forgot input[type="checkbox"] {
+    width: auto;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.remember-forgot a {
+    color: #667eea;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.remember-forgot a:hover {
+    color: #764ba2;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-bottom: 20px;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.login-btn:active {
+    transform: translateY(0);
+}
+
+.signup-link {
+    text-align: center;
+    color: #666;
+    font-size: 13px;
+}
+
+.signup-link a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.signup-link a:hover {
+    color: #764ba2;
+}
+
+.error-message {
+    background-color: #fee;
+    border: 1px solid #fcc;
+    color: #c33;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    display: none;
+}
+
+.error-message.show {
+    display: block;
+}
+
+.django-messages {
+    margin-bottom: 16px;
+}
+
+.django-messages .message {
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    border: 1px solid #d7dbe7;
+    background: #f5f7fb;
+    color: #2d3a54;
+    display: block;
+}
+
+.django-messages .message.error {
+    background: #ffe9e9;
+    color: #8f1f1f;
+    border-color: #f3b4b4;
+}
+
+.django-messages .message.danger {
+    background: #ffe9e9;
+    color: #8f1f1f;
+    border-color: #f3b4b4;
+}
+
+.django-messages .message.success {
+    background: #e9f9ee;
+    color: #1f6a35;
+    border-color: #b8e7c6;
+}
+
+.django-messages .message.warning {
+    background: #fff7e8;
+    color: #7a5316;
+    border-color: #f2ddb2;
+}
+
+.django-messages .message.info {
+    background: #eaf4ff;
+    color: #1f4f85;
+    border-color: #bed8f6;
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        padding: 25px;
+    }
+
+    .login-header h1 {
+        font-size: 24px;
+    }
+}

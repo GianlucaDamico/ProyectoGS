@@ -1,0 +1,105 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Iniciar Sesión</title>
+    <link rel="icon" type="image/png" href="{% static 'core/img/logoicono.png' %}">
+    <link rel="stylesheet" href="{% static 'cuentas/login.css' %}">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <img src="{% static 'core/img/logotexto.png' %}" alt="Courtly" class="logo-img">
+            <p>Ingresa a tu cuenta</p>
+        </div>
+
+        {% if messages %}
+            <div class="django-messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <form id="loginForm" method="POST">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="username">Correo Electrónico o Usuario</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    placeholder="ejemplo@correo.com" 
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    placeholder="••••••••" 
+                    required
+                >
+            </div>
+
+            <div class="remember-forgot">
+                <label>
+                    <input type="checkbox" name="remember" id="remember">
+                    Recuérdame
+                </label>
+                <a href="#">¿Olvidaste tu contraseña?</a>
+            </div>
+
+            <button type="submit" class="login-btn">Iniciar Sesión</button>
+        </form>
+
+        <div class="signup-link">
+            ¿No tienes cuenta? <a href="{% url 'cuentas:register' %}">Regístrate aquí</a>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+
+        form.addEventListener('submit', function(e) {
+            // Validación básica
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!username || !password) {
+                e.preventDefault();
+                errorMessage.textContent = 'Por favor, completa todos los campos.';
+                errorMessage.classList.add('show');
+                return;
+            }
+
+            if (password.length < 6) {
+                e.preventDefault();
+                errorMessage.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+                errorMessage.classList.add('show');
+                return;
+            }
+
+            errorMessage.classList.remove('show');
+        });
+
+        // Limpiar mensaje de error al escribir
+        document.getElementById('username').addEventListener('focus', () => {
+            errorMessage.classList.remove('show');
+        });
+
+        document.getElementById('password').addEventListener('focus', () => {
+            errorMessage.classList.remove('show');
+        });
+    </script>
+</body>
+</html>

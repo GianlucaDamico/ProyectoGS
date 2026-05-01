@@ -1,0 +1,689 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: #f8f9fa;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ============ Navbar ============ */
+.navbar { 
+    background: white; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04); 
+    position: sticky; 
+    top: 0; 
+    z-index: 1000; 
+    min-height: 85px; 
+    display: flex; 
+    align-items: center; 
+}
+
+.navbar-container { 
+    width: 100%; 
+    max-width: 1800px; 
+    margin: 0 auto; 
+    padding: 0 30px; 
+    display: flex; 
+    justify-content: space-between;
+    align-items: center; 
+}
+
+.logo-img { 
+    height: 91px; 
+    width: auto; 
+    object-fit: contain; 
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.notifications-menu, .profile-menu { position: relative; }
+
+/* Limpieza de flechas nativas */
+summary::-webkit-details-marker { display: none; }
+summary { list-style: none; outline: none; cursor: pointer; }
+
+.notifications-trigger {
+    list-style: none;
+    width: 44px; 
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    background: #f1f5f9; 
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.notifications-trigger:hover { background: #eef2ff; }
+
+.bell-icon { font-size: 1.15rem; color: #64748b; transition: color 0.3s ease; }
+.notifications-trigger:hover .bell-icon { color: var(--primary); }
+
+.badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    background: var(--accent);
+    color: white;
+    border: 2px solid white;
+}
+
+.profile-trigger {
+    list-style: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 50px; 
+    height: 44px;
+    padding: 4px 16px 4px 6px; 
+    transition: all 0.3s ease;
+}
+
+.profile-trigger:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.04); 
+}
+
+.profile-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    background: var(--primary);
+}
+
+.profile-label { color: var(--text); font-size: 0.95rem; font-weight: 600; }
+
+/* MODIFICACIÓN: Lógica de Dropdowns Smooth */
+.notifications-dropdown, .profile-dropdown {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 12px);
+    border: 1px solid var(--border);
+    background: #fff;
+    box-shadow: var(--shadow);
+    z-index: 30;
+    
+    /* Configuración para animación suave */
+    display: flex !important; /* Usamos flex para alinear los items verticalmente */
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+/* Mostramos el menú si pasamos el ratón O si está abierto por click */
+.notifications-menu:hover .notifications-dropdown,
+.profile-menu:hover .profile-dropdown,
+details[open] .notifications-dropdown,
+details[open] .profile-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Área de puente invisible para no perder el hover */
+.notifications-menu::after,
+.profile-menu::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 15px;
+}
+
+.notifications-dropdown { width: 300px; border-radius: 14px; padding: 16px; }
+.profile-dropdown { min-width: 180px; border-radius: 14px; padding: 8px; }
+
+.dropdown-title { margin: 0 0 12px; font-size: 1rem; font-weight: 700; color: var(--text); }
+.dropdown-empty { margin: 0; color: var(--muted); font-size: 0.9rem; }
+
+/* MODIFICACIÓN: Corrección de botones "Rotos" */
+.profile-item {
+    width: 100%;
+    border: 0;
+    border-radius: 8px;
+    text-align: left;
+    background: transparent;
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 10px 14px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+    display: block; /* Aseguramos que ocupen todo el ancho */
+    font-family: inherit;
+}
+
+.profile-item:hover { background: #f0f4ff; color: var(--primary); }
+
+/* Arreglo para el formulario de logout */
+.profile-dropdown form {
+    margin: 0;
+    width: 100%;
+}
+
+.logout-item { 
+    color: #ef4444; 
+    border-top: 1px solid #f1f5f9;
+    margin-top: 4px;
+    padding-top: 12px;
+}
+.logout-item:hover { background: #fef2f2; color: #dc2626; }
+
+.notification-item { padding: 12px 0; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; gap: 15px; }
+.notification-item:last-child { border-bottom: none; padding-bottom: 0; }
+.notification-text strong { color: var(--text); font-size: 0.95rem; }
+.notification-text p { color: var(--muted); font-size: 0.85rem; margin-top: 4px; line-height: 1.4; }
+.notification-action { padding: 8px 14px; background-color: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: background-color 0.2s; }
+.notification-action:hover { background-color: var(--primary-light); }
+
+.btn-login { color: var(--primary); text-decoration: none; font-weight: 600; margin-right: 15px; }
+.btn-register { background: var(--primary); color: white; text-decoration: none; padding: 0.8rem 2rem; border-radius: 50px; font-weight: 600; transition: background 0.3s; }
+.btn-register:hover { background: var(--primary-light); }
+
+
+/* ============ Hero Section ============ */
+.notificaciones-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.notificaciones-hero h1 {
+    font-size: 2.8rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.notificaciones-hero p {
+    font-size: 1.1rem;
+    opacity: 0.95;
+    font-weight: 300;
+    letter-spacing: 0.3px;
+}
+
+/* ============ Notificaciones Section ============ */
+.notificaciones-section {
+    padding: 60px 20px;
+    min-height: 500px;
+}
+
+.notificaciones-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+    margin-top: 20px;
+}
+
+/* ============ Notificación Card ============ */
+.notificacion-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border-left: 4px solid #667eea;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.notificacion-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.notificacion-card.payment-pending {
+    border-left-color: #f5576c;
+}
+
+.notificacion-card.upcoming-soon {
+    border-left-color: #4facfe;
+}
+
+/* ============ Badge ============ */
+.notificacion-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.notificacion-card.payment-pending .notificacion-badge {
+    background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+}
+
+.notificacion-card.upcoming-soon .notificacion-badge {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.badge-icon {
+    font-size: 1.3rem;
+}
+
+.badge-text {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.85rem;
+}
+
+/* ============ Encabezado ============ */
+.notificacion-header {
+    padding: 20px 20px 15px;
+}
+
+.cancha-nombre {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.complejo-nombre {
+    color: #999;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* ============ Divider ============ */
+.divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
+    margin: 0 20px;
+}
+
+/* ============ Info Items ============ */
+.notificacion-info {
+    padding: 20px;
+    flex: 1;
+}
+
+.info-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    align-items: flex-start;
+}
+
+.info-item:last-child {
+    margin-bottom: 0;
+}
+
+.info-icon {
+    font-size: 1.3rem;
+    min-width: 30px;
+    text-align: center;
+}
+
+.info-content {
+    flex: 1;
+}
+
+.info-content label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 4px;
+}
+
+.info-content p {
+    font-size: 0.95rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.precio-destacado {
+    font-size: 1.2rem !important;
+    color: #f5576c !important;
+    font-weight: 700 !important;
+}
+
+/* ============ Mensaje ============ */
+.notificacion-mensaje {
+    padding: 16px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #e0e0e0;
+}
+
+.mensaje-pago,
+.mensaje-proxima {
+    margin: 0;
+}
+
+.notificacion-mensaje p {
+    margin: 0 0 8px 0;
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.5;
+}
+
+.notificacion-mensaje p:last-child {
+    margin-bottom: 0;
+}
+
+.notificacion-mensaje p.subtle {
+    color: #999;
+    font-size: 0.85rem;
+    font-weight: 400;
+}
+
+.notificacion-mensaje strong {
+    color: #667eea;
+    font-weight: 700;
+}
+
+/* ============ Footer Card ============ */
+.notificacion-footer {
+    padding: 16px 20px;
+    border-top: 1px solid #e0e0e0;
+    background: white;
+}
+
+.btn-detalle {
+    display: inline-block;
+    width: 100%;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.notificacion-card.payment-pending .btn-detalle {
+    background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+}
+
+.notificacion-card.upcoming-soon .btn-detalle {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.btn-detalle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(102, 126, 234, 0.3);
+}
+
+/* ============ Empty State ============ */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.empty-state h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.empty-state > p {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.empty-subtitle {
+    color: #999 !important;
+    font-size: 0.95rem !important;
+}
+
+.empty-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn-secondary {
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+}
+
+.btn-secondary:hover {
+    background: #667eea;
+    color: white;
+}
+
+/* ============ Footer ============ */
+.footer {
+    background: #1a1a1a;
+    color: white;
+    padding: 60px 20px 20px;
+    margin-top: 60px;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.footer-section h4 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: #667eea;
+    font-weight: 700;
+}
+
+.footer-section p {
+    color: #aaa;
+    line-height: 1.8;
+    font-size: 0.9rem;
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section ul li {
+    margin-bottom: 10px;
+}
+
+.footer-section a {
+    color: #aaa;
+    text-decoration: none;
+    transition: color 0.3s;
+    font-size: 0.9rem;
+}
+
+.footer-section a:hover {
+    color: #667eea;
+}
+
+.footer-bottom {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+    padding-top: 30px;
+    border-top: 1px solid #333;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 768px) {
+    .notificaciones-hero h1 {
+        font-size: 1.8rem;
+    }
+
+    .notificaciones-hero p {
+        font-size: 1rem;
+    }
+
+    .notificaciones-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .navbar-container {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .nav-links {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .btn-register {
+        flex: 1;
+        text-align: center;
+    }
+
+    .user-greeting {
+        width: 100%;
+    }
+
+    .notificacion-card {
+        border-left: 3px solid;
+    }
+
+    .empty-state {
+        padding: 40px 20px;
+    }
+
+    .empty-state h2 {
+        font-size: 1.5rem;
+    }
+
+    .empty-actions {
+        flex-direction: column;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+    }
+
+    .footer-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .notificaciones-hero {
+        padding: 50px 15px;
+    }
+
+    .notificaciones-hero h1 {
+        font-size: 1.5rem;
+    }
+
+    .notificaciones-section {
+        padding: 40px 15px;
+    }
+
+    .notificacion-info {
+        padding: 15px;
+    }
+
+    .info-item {
+        margin-bottom: 12px;
+    }
+
+    .cancha-nombre {
+        font-size: 1.2rem;
+    }
+
+    .navbar-container {
+        padding: 0.8rem 15px;
+    }
+
+    .logo {
+        font-size: 1.2rem;
+    }
+
+    .logo-icon {
+        font-size: 1.5rem;
+    }
+}

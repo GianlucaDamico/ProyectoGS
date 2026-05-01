@@ -1,0 +1,177 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.90) 0%, rgba(118, 75, 162, 0.90) 100%),url('/static/cuentas/img/fondoregistro.png');
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    padding: 36px;
+    width: 100%;
+    max-width: 720px;
+}
+
+.form-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #333;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.form-step {
+    font-size: 13px;
+    color: #666;
+    text-align: center;
+    margin-bottom: 22px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: 600;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="password"],
+input[type="date"],
+input[type="file"],
+select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e6e6e6;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.25s, background-color 0.25s;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #667eea;
+    background-color: #f8f9ff;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.form-row.full {
+    grid-template-columns: 1fr;
+}
+
+.button-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 26px;
+}
+
+button {
+    flex: 1;
+    padding: 12px 14px;
+    font-size: 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btn-next,
+.btn-finish {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+}
+
+.btn-next:hover,
+.btn-finish:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102,126,234,0.25);
+}
+
+.btn-back {
+    background: #f1f1f1;
+    color: #333;
+}
+
+.btn-back:hover {
+    background: #e6e6e6;
+}
+
+.hidden { display: none; }
+.password-requirements { font-size: 12px; color: #666; margin-top: 6px; }
+.form-group .error { color: #c33; font-size: 12px; margin-top: 6px; display: none; }
+
+.django-messages {
+    margin-bottom: 16px;
+}
+
+.django-messages .message {
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    border: 1px solid #d7dbe7;
+    background: #f5f7fb;
+    color: #2d3a54;
+    display: block;
+}
+
+.django-messages .message.error {
+    background: #ffe9e9;
+    color: #8f1f1f;
+    border-color: #f3b4b4;
+}
+
+.django-messages .message.danger {
+    background: #ffe9e9;
+    color: #8f1f1f;
+    border-color: #f3b4b4;
+}
+
+.django-messages .message.success {
+    background: #e9f9ee;
+    color: #1f6a35;
+    border-color: #b8e7c6;
+}
+
+.django-messages .message.warning {
+    background: #fff7e8;
+    color: #7a5316;
+    border-color: #f2ddb2;
+}
+
+.django-messages .message.info {
+    background: #eaf4ff;
+    color: #1f4f85;
+    border-color: #bed8f6;
+}
+
+@media (max-width: 720px) {
+    .form-row { grid-template-columns: 1fr; }
+    .container { padding: 24px; }
+}

@@ -1,0 +1,7 @@
+.env
+definicionproyecto.txt
+modelusers.txt
+__pycache__/
+venues/migrations/
+cuentas/migrations/
+media/

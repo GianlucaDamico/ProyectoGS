@@ -1,0 +1,547 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Panel - Courtly</title>
+    <link rel="icon" type="image/png" href="{% static 'core/img/logoicono.png' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'cuentas/home_usuario.css' %}">
+</head>
+<body style="background: url('{% static 'cuentas/img/RED.png' %}') no-repeat center center fixed; background-size: cover;">
+    
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo">
+                <a href="{% url 'core:explorar_complejos' %}">
+                    <img src="{% static 'core/img/LOGO.png' %}" alt="Courtly" class="logo-img">
+                </a>
+            </div>
+
+            <div class="nav-links">
+                <a href="{% url 'core:explorar_complejos' %}" class="btn-login"><i class="fas fa-search"></i> Explorar</a>
+                
+                <details class="notifications-menu">
+                    <summary class="notifications-trigger">
+                        <span class="bell-icon"><i class="fas fa-bell"></i></span>
+                        {% if resenas_pendientes %}<span class="badge">{{ resenas_pendientes|length }}</span>{% endif %}
+                    </summary>
+                    <div class="notifications-dropdown">
+                        <p class="dropdown-title">Notificaciones</p>
+                        {% if resenas_pendientes %}
+                            {% for reserva in resenas_pendientes %}
+                                <div class="notification-item">
+                                    <div class="notification-text">
+                                        <strong>{{ reserva.court.complex.name }}</strong>
+                                        <p>¡Deja una reseña!</p>
+                                    </div>
+                                    <button class="notification-action" onclick="abrirModalResena({{ reserva.id }}, '{{ reserva.court.complex.name|escapejs }}')">Reseñar</button>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="dropdown-empty">No tienes notificaciones nuevas.</p>
+                        {% endif %}
+                    </div>
+                </details>
+
+                <form method="post" action="{% url 'cuentas:logout_usuario' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-register">Cerrar sesión</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar-glass">
+            <div class="sidebar-user-info">
+                <div class="avatar-frame">
+                    {% if user.perfil_jugador.avatar %}
+                        <img src="{{ user.perfil_jugador.avatar.url }}" alt="Avatar de {{ nombre }}" class="avatar-img">
+                    {% else %}
+                        <span>{{ nombre|slice:":1"|upper }}</span>
+                    {% endif %}
+                </div>
+                <h3>{{ nombre }}</h3>
+                <p>{{ user.email }}</p>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-btn active" onclick="switchTab(event, 'resumen')">
+                    <i class="fas fa-th-large"></i> Mi Resumen
+                </button>
+                <button class="nav-btn" onclick="switchTab(event, 'perfil')">
+                    <i class="fas fa-user-edit"></i> Editar Perfil
+                </button>
+                <button class="nav-btn" onclick="switchTab(event, 'pagos')">
+                    <i class="fas fa-credit-card"></i> Métodos de Pago
+                </button>
+                <button class="nav-btn" onclick="switchTab(event, 'seguridad')">
+                    <i class="fas fa-shield-alt"></i> Seguridad
+                </button>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div id="resumen" class="tab-pane active">
+                <div class="welcome-section">
+                    <h1>¡Hola, {{ nombre }}!</h1>
+                    <p>¿Qué jugamos hoy?</p>
+                </div>
+
+                <div class="stats-grid-top">
+                    <div class="glass-card stat-item">
+                        <div class="stat-content">
+                            <h3>Reservas Pendientes</h3>
+                            <p class="big-num">{{ reservas_pendientes }}</p>
+                        </div>
+                        <i class="fas fa-clock stat-icon"></i>
+                    </div>
+                    <div class="glass-card stat-item">
+                        <div class="stat-content">
+                            <h3>Reservas (Historial)</h3>
+                            <p class="big-num">{{ reservas_historial }}</p>
+                        </div>
+                        <i class="fas fa-history stat-icon"></i>
+                    </div>
+                </div>
+
+                <div class="match-section-header">
+                    <h2>Próximos partidos</h2>
+                    <a href="{% url 'core:mis_reservas' %}" class="btn-text-link">Ver todo</a>
+                </div>
+
+                <div class="matches-grid-dashboard">
+                    {% if partidos_proximos %}
+                        {% for partido in partidos_proximos %}
+                        <div class="glass-card match-card-dash">
+                            <div class="match-icon"><i class="fas fa-calendar-check"></i></div>
+                            <div class="match-details">
+                                <h3>{{ partido.court.complex.name }}</h3>
+                                <p>{{ partido.start|date:'d M' }} • {{ partido.start|time:'H:i' }}</p>
+                                <span class="status-pill-dash">{{ partido.get_status_display }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="glass-card" style="grid-column: span 2; text-align: center;">
+                            <p>No hay partidos programados actualmente.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div id="perfil" class="tab-pane">
+                <div class="glass-card">
+                    <h2>Configuración de Perfil</h2>
+                    
+                    <form id="form-perfil" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="profile-edit-container">
+                            
+                            <div class="profile-pic-edit" style="display: flex; flex-direction: column; align-items: center;">
+                                <div class="avatar-frame large">
+                                    {% if user.perfil_jugador.avatar %}
+                                        <img src="{{ user.perfil_jugador.avatar.url }}" alt="Avatar" class="avatar-img" id="avatar-preview">
+                                    {% else %}
+                                        <span id="avatar-initial">{{ nombre|slice:":1"|upper }}</span>
+                                        <img src="" class="avatar-img" id="avatar-preview" style="display: none;">
+                                    {% endif %}                            
+                                </div>
+                                <label for="foto-perfil" class="btn-outline-light" style="margin-top: 15px; cursor: pointer;">
+                                    <i class="fas fa-camera"></i> Cambiar Foto
+                                </label>
+                                <input type="file" name="avatar" id="foto-perfil" accept="image/*" hidden>
+                            </div>
+                            
+                            <div class="glass-form"> 
+                                <div class="form-group">
+                                    <label>Nombre Completo</label>
+                                    <input type="text" name="nombre" value="{{ nombre }}" class="glass-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>Correo Electrónico</label>
+                                    <input type="email" value="{{ user.email }}" class="glass-input" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label>Teléfono de Contacto</label>
+                                    <input type="tel" name="telefono" value="{{ user.perfil_jugador.telefono }}" placeholder="+34 XXX XXX XXX" class="glass-input">
+                                </div>
+                                <button type="button" id="btn-abrir-modal" class="btn-primary-glass">Guardar Cambios</button>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+
+            <div id="pagos" class="tab-pane">
+                <div class="glass-card">
+                    <h2>Mis Métodos de Pago</h2>
+                    
+                    <div class="saved-cards">
+                        <div class="credit-card-mock">
+                            <div style="display:flex; align-items:center; gap:15px;">
+                                <i class="fab fa-cc-visa"></i>
+                                <span>**** **** **** 4242</span>
+                            </div>
+                            <button class="btn-icon" title="Eliminar tarjeta"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+
+                    <h3 style="margin: 30px 0 20px; font-size: 1.2rem;">Añadir Nueva Tarjeta</h3>
+                    <form class="glass-form">
+                        <div class="form-group">
+                            <label>Titular de la Tarjeta</label>
+                            <input type="text" placeholder="Ej. Juan Pérez" class="glass-input">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 2;">
+                                <label>Número de Tarjeta</label>
+                                <input type="text" placeholder="0000 0000 0000 0000" class="glass-input" maxlength="19">
+                            </div>
+                            <div class="form-group" style="flex: 1; min-width: 100px;">
+                                <label>Vencimiento</label>
+                                <input type="text" placeholder="MM/AA" class="glass-input" maxlength="5">
+                            </div>
+                            <div class="form-group" style="flex: 1; min-width: 80px;">
+                                <label>CVV</label>
+                                <input type="password" placeholder="123" class="glass-input" maxlength="4">
+                            </div>
+                        </div>
+                        <button type="button" class="btn-primary-glass"><i class="fas fa-plus"></i> Guardar Tarjeta</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="seguridad" class="tab-pane">
+                <div class="glass-card">
+                    <h2>Seguridad y Contraseña</h2>
+                    <p style="color: var(--text-dim); margin-bottom: 25px;">Protege tu cuenta utilizando una contraseña segura y no la compartas con nadie.</p>
+                    
+                    <form id="form-password" class="glass-form" action="#" method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label>Contraseña Actual</label>
+                            <input type="password" name="old_password" placeholder="••••••••" class="glass-input">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 1;">
+                                <label>Nueva Contraseña</label>
+                                <input type="password" name="new_password" placeholder="••••••••" class="glass-input">
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label>Confirmar Nueva Contraseña</label>
+                                <input type="password" name="confirm_password" placeholder="••••••••" class="glass-input">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary-glass"><i class="fas fa-lock"></i> Actualizar Contraseña</button>
+                    </form>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="reviewModal" class="review-modal">
+        <div class="review-modal-content">
+            <div class="review-modal-header">
+                <h2>Dejar una reseña</h2>
+                <button class="close-modal" onclick="cerrarModalResena()">&times;</button>
+            </div>
+            <div class="review-modal-body">
+                <div class="form-group">
+                    <label class="text-dark">Complejo: <strong id="complexName"></strong></label>
+                </div>
+                <div class="form-group">
+                    <label class="text-dark">Calificación</label>
+                    <div class="star-rating" id="starRating">
+                        <span class="star" onclick="seleccionarEstrella(1)">★</span>
+                        <span class="star" onclick="seleccionarEstrella(2)">★</span>
+                        <span class="star" onclick="seleccionarEstrella(3)">★</span>
+                        <span class="star" onclick="seleccionarEstrella(4)">★</span>
+                        <span class="star" onclick="seleccionarEstrella(5)">★</span>
+                    </div>
+                    <div class="rating-display" id="ratingDisplay"></div>
+                </div>
+                <div class="form-group">
+                    <label for="reviewDescription" class="text-dark">Descripción (opcional)</label>
+                    <textarea id="reviewDescription" placeholder="Cuéntanos tu experiencia..."></textarea>
+                </div>
+            </div>
+            <div class="review-modal-footer">
+                <button class="btn-cancel" onclick="cerrarModalResena()">Cancelar</button>
+                <button class="btn-submit" onclick="enviarResena()" id="submitReviewBtn">Enviar reseña</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content glass-card" style="max-width: 350px; text-align: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <div class="modal-header" style="justify-content: center; border-bottom: none;">
+                <h3>¿Guardar cambios?</h3>
+            </div>
+            <p style="margin-bottom: 20px; color: var(--text-dim);">Se actualizará tu información de perfil.</p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button type="button" onclick="cerrarModalConfirmacion()" style="padding: 10px 20px; border-radius: 8px; border: 1px solid #ccc; background: transparent; color: white; cursor:pointer;">Cancelar</button>
+                <button type="button" id="btn-confirmar-guardar" class="btn-primary-glass" style="margin: 0; width: auto;">Sí, guardar</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function switchTab(evt, tabId) {
+            document.querySelectorAll('.tab-pane').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+        // ==========================================
+        // LÓGICA DE NOTIFICACIONES Y MODAL DE RESEÑA
+        // ==========================================
+        let currentBookingId = null;
+        let selectedRating = 0;
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                          document.querySelector('input[name=csrfmiddlewaretoken]')?.value ||
+                          getCookie('csrftoken');
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function abrirModalResena(bookingId, complexName) {
+            currentBookingId = bookingId;
+            selectedRating = 0;
+            
+            document.getElementById('complexName').textContent = complexName;
+            document.getElementById('reviewDescription').value = '';
+            
+            document.querySelectorAll('.star').forEach(star => {
+                star.classList.remove('active');
+            });
+            document.getElementById('ratingDisplay').textContent = '';
+            
+            document.getElementById('reviewModal').classList.add('active');
+        }
+
+        function cerrarModalResena() {
+            document.getElementById('reviewModal').classList.remove('active');
+            currentBookingId = null;
+            selectedRating = 0;
+        }
+
+        function seleccionarEstrella(rating) {
+            selectedRating = rating;
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+            document.getElementById('ratingDisplay').textContent = rating + ' estrellas';
+        }
+
+        function enviarResena() {
+            if (!currentBookingId || selectedRating === 0) {
+                alert('Por favor selecciona una calificación');
+                return;
+            }
+
+            const description = document.getElementById('reviewDescription').value;
+            const submitBtn = document.getElementById('submitReviewBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
+
+            fetch('/api/reviews/create/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({
+                    booking_id: currentBookingId,
+                    rating: selectedRating,
+                    description: description
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert('¡Reseña enviada exitosamente!');
+                    cerrarModalResena();
+                    location.reload();
+                } else if (data.error) {
+                    alert('Error: ' + data.error);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Enviar reseña';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Ocurrió un error al enviar la reseña');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Enviar reseña';
+            });
+        }
+
+        // Cierre de menús notificaciones al hacer clic fuera
+        document.addEventListener('click', function(event) {
+            const allDetails = document.querySelectorAll('details');
+            
+            // Cerrar el modal de reseña si se hace clic por fuera
+            const modal = document.getElementById('reviewModal');
+            if (event.target === modal) {
+                cerrarModalResena();
+            }
+
+            // Lógica para cerrar detalles de notificaciones
+            allDetails.forEach((details) => {
+                if (!details.contains(event.target)) {
+                    details.removeAttribute('open');
+                }
+                const summary = details.querySelector('summary');
+                if (summary && summary.contains(event.target)) {
+                    allDetails.forEach((otherDetails) => {
+                        if (otherDetails !== details) {
+                            otherDetails.removeAttribute('open');
+                        }
+                    });
+                }
+            });
+        });
+
+        // 1. Previsualizar la foto seleccionada
+        document.getElementById('foto-perfil').addEventListener('change', function(event) {
+            if (event.target.files && event.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('avatar-preview').src = e.target.result;
+                    document.getElementById('avatar-preview').style.display = 'block';
+                    const initial = document.getElementById('avatar-initial');
+                    if (initial) initial.style.display = 'none';
+                }
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        });
+
+        // 2. Lógica del Modal
+        const modalConfirm = document.getElementById('confirm-modal');
+        
+        document.getElementById('btn-abrir-modal').addEventListener('click', () => {
+            modalConfirm.style.display = "block";
+            setTimeout(() => modalConfirm.classList.add("show"), 10);
+        });
+
+        function cerrarModalConfirmacion() {
+            modalConfirm.classList.remove("show");
+            setTimeout(() => modalConfirm.style.display = "none", 300);
+        }
+
+        // 3. Confirmar y enviar a la API
+        document.getElementById('btn-confirmar-guardar').addEventListener('click', async function() {
+            const formPerfil = document.getElementById('form-perfil');
+            const formData = new FormData(formPerfil);
+            const btn = this;
+            
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/user/update-avatar/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    // Feedback visual en el botón y recarga suave, sin alerts
+                    btn.innerHTML = '<i class="fas fa-check"></i> ¡Listo!';
+                    setTimeout(() => location.reload(), 600); 
+                } else {
+                    // Solo mostramos alert si ocurre un error real del servidor
+                    alert('Error al guardar. Verifica los datos.');
+                    btn.innerHTML = 'Sí, guardar';
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                btn.innerHTML = 'Sí, guardar';
+                btn.disabled = false;
+            }
+        });
+
+        // Escuchamos el evento "submit" del formulario
+        document.getElementById('form-password').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Evitamos que la página parpadee o se recargue
+
+            const form = this;
+            const btnSubmit = form.querySelector('button[type="submit"]');
+            const iconoOriginal = '<i class="fas fa-lock"></i> ';
+            
+            // Obtenemos los valores usando el atributo "name" de tu HTML
+            const oldPassword = form.elements['old_password'].value;
+            const newPassword = form.elements['new_password'].value;
+            const confirmPassword = form.elements['confirm_password'].value;
+
+            // Validación rápida en el Frontend para no hacer esperar al usuario
+            if (newPassword !== confirmPassword) {
+                alert("Las contraseñas nuevas no coinciden.");
+                return;
+            }
+
+            // Cambiamos el estado del botón mientras carga
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
+
+            try {
+                // Asegúrate de que esta URL sea la correcta según tu urls.py
+                const response = await fetch('/api/cambiar-contrasena/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken') // El token de seguridad de Django
+                    },
+                    body: JSON.stringify({
+                        // Mapeamos los nombres de tu HTML a los que espera views.py
+                        password_actual: oldPassword,
+                        password_nueva: newPassword,
+                        password_confirmar: confirmPassword
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // ¡Éxito!
+                    alert(data.mensaje); // "¡Contraseña actualizada con éxito!"
+                    form.reset(); // Limpiamos los inputs
+                } else {
+                    // El servidor encontró un error (ej. falta una mayúscula, o la actual es incorrecta)
+                    alert("Error: " + data.error);
+                }
+            } catch (error) {
+                console.error("Error en la petición:", error);
+                alert("Ocurrió un error al intentar conectar con el servidor.");
+            } finally {
+                // Restauramos el botón a su estado original, pase lo que pase
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = iconoOriginal + 'Actualizar Contraseña';
+            }
+        });
+    </script>
+</body>
+</html>

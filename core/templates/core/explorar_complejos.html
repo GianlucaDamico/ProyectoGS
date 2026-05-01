@@ -1,0 +1,610 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorar Complejos - Courtly</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'core/explorar.css' %}">
+    <link rel="icon" type="image/png" href="{% static 'core/img/logoicono.png' %}">
+
+    <!-- LIBRERÍA PARA GENERAR EL QR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        .review-modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); animation: fadeIn 0.2s ease-in; }
+        .review-modal.active { display: flex; align-items: center; justify-content: center; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .review-modal-content { background-color: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); max-width: 500px; width: 90%; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .review-modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        .review-modal-header h2 { margin: 0; font-size: 1.5rem; color: #333; }
+        .close-modal { font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer; border: none; background: none; padding: 0; line-height: 1; transition: color 0.2s; }
+        .close-modal:hover { color: #000; }
+        .review-modal-body { margin-bottom: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 0.95rem; }
+        .star-rating { display: flex; gap: 10px; margin: 10px 0; }
+        .star { font-size: 36px; cursor: pointer; color: #ddd; transition: color 0.2s, transform 0.1s; }
+        .star:hover { transform: scale(1.1); }
+        .star:hover, .star.active { color: #ffc107; }
+        .form-group textarea { width: 100%; min-height: 120px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; font-size: 0.95rem; resize: vertical; transition: border-color 0.3s; }
+        .form-group textarea:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+        .review-modal-footer { display: flex; gap: 10px; justify-content: flex-end; }
+        .btn-cancel, .btn-submit { padding: 10px 20px; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+        .btn-cancel { background-color: #f1f5f9; color: #475569; }
+        .btn-cancel:hover { background-color: #e2e8f0; }
+        .btn-submit { background-color: #667eea; color: white; }
+        .btn-submit:hover { background-color: #5a6fe0; }
+        .btn-submit:disabled { background-color: #94a3b8; cursor: not-allowed; }
+        .rating-display { font-size: 0.9rem; color: #64748b; margin-top: 5px; font-weight: 600; }
+        
+        /* ESTILOS DEL MODAL QR */
+        .qr-timer { width: 100%; text-align: center; color: #60708a; font-size: 0.85rem; margin-top: 10px; }
+        .qr-progress-bar { width: 100%; height: 6px; background: #e2e8f0; border-radius: 10px; margin-top: 8px; overflow: hidden; }
+        .qr-progress { height: 100%; background: #667eea; transition: width 1s linear; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo">
+                <a href="{% url 'core:explorar_complejos' %}">
+                    <img src="{% static 'core/img/LOGO.png' %}" alt="Courtly" class="logo-img">
+                </a>
+            </div>
+
+            <div class="nav-right">
+                {% if user.is_authenticated %}
+                    
+                    <!-- BOTÓN DEL QR -->
+                    <a href="#" class="qr-trigger" title="Mi código QR" onclick="abrirModalQR(event)">
+                        <span class="bell-icon"><i class="fas fa-qrcode"></i></span>
+                    </a>
+
+                    <details class="notifications-menu">
+                        <summary class="notifications-trigger" aria-label="Abrir notificaciones">
+                            <span class="bell-icon"><i class="fas fa-bell"></i></span>
+                            {% if resenas_pendientes %}<span class="badge">{{ resenas_pendientes|length }}</span>{% endif %}
+                        </summary>
+                        <div class="notifications-dropdown">
+                            <p class="dropdown-title">Notificaciones</p>
+                            {% if resenas_pendientes %}
+                                {% for reserva in resenas_pendientes %}
+                                    <div class="notification-item">
+                                        <div class="notification-text">
+                                            <strong>{{ reserva.court.complex.name }}</strong>
+                                            <p>Tu partida en {{ reserva.court.name }} terminó. ¡Deja una reseña!</p>
+                                        </div>
+                                        <button class="notification-action" onclick="abrirModalResena({{ reserva.id }}, '{{ reserva.court.complex.name|escapejs }}')">Reseñar</button>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p class="dropdown-empty">No tienes notificaciones nuevas.</p>
+                            {% endif %}
+                        </div>
+                    </details>
+
+                    <details class="profile-menu">
+                        <summary class="profile-trigger" aria-label="Abrir menu de perfil">
+                            {% if user.perfil_jugador.avatar %}
+                                <img src="{{ user.perfil_jugador.avatar.url }}" alt="Avatar" class="profile-avatar">
+                            {% else %}
+                                <span class="profile-avatar">{{ user.username|slice:":1"|upper }}</span>
+                            {% endif %}
+                            <span class="profile-label">Perfil</span>
+                        </summary>
+                        <div class="profile-dropdown">
+                            <a href="{% url 'cuentas:home_usuario' %}" class="profile-item">Mi perfil</a>
+                            
+                            <a href="{% url 'core:mis_reservas' %}" class="profile-item">Mis reservas</a>
+                            
+                            <form method="post" action="{% url 'cuentas:logout_usuario' %}" style="margin: 0;">
+                                {% csrf_token %}
+                                <button type="submit" class="profile-item logout-item">Cerrar sesión</button>
+                            </form>
+                        </div>
+                    </details>
+
+                {% else %}
+                    <a href="{% url 'cuentas:login' %}" class="btn-login">Iniciar sesión</a>
+                    <a href="{% url 'cuentas:register' %}" class="btn-register">Registrarse</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <section class="page-header" style="background-image: url('{% static 'core/img/BANNER1.png' %}');">
+        <div class="container">
+            <h1>Explorar Complejos Deportivos</h1>
+            <p>Encuentra el complejo perfecto para tu deporte favorito</p>
+        </div>
+    </section>
+    
+    <section class="filtros-section">
+        <div class="container">
+            <div class="filtros-card">
+                <form method="GET" class="filtros-form" id="filtrosForm">
+                    <div class="filtro-item search-box">
+                        <label for="q"><i class="fas fa-search text-muted"></i> Buscar</label>
+                        <input 
+                            type="text" 
+                            id="q" 
+                            name="q" 
+                            value="{{ query }}"
+                            placeholder="Buscar por nombre o ciudad..."
+                        >
+                    </div>
+
+                    <div class="filtro-item">
+                        <label for="ciudad"><i class="fas fa-map-marker-alt text-muted" style="color: #e74c3c;"></i> Ciudad</label>
+                        <select name="ciudad" id="ciudad" onchange="this.form.submit()">
+                            <option value="">Todas las ciudades</option>
+                            {% for ciudad in ciudades_disponibles %}
+                                <option value="{{ ciudad }}" 
+                                    {% if ciudad_filtro == ciudad %}selected{% endif %}>
+                                    {{ ciudad }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="filtro-item">
+                        <label for="deporte"><i class="fas fa-volleyball-ball text-muted" style="color: #9b59b6;"></i> Deporte</label>
+                        <select name="deporte" id="deporte" onchange="this.form.submit()">
+                            <option value="">Todos los deportes</option>
+                            {% for sport_value, sport_label in sport_choices %}
+                                <option value="{{ sport_value }}"
+                                    {% if deporte_filtro == sport_value %}selected{% endif %}>
+                                    {{ sport_label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="filtro-item">
+                        <label for="orden"><i class="fas fa-sort-amount-down text-muted" style="color: #2ecc71;"></i> Ordenar por</label>
+                        <select name="orden" id="orden" onchange="this.form.submit()">
+                            <option value="nombre" {% if orden_actual == 'nombre' %}selected{% endif %}>
+                                Nombre A-Z
+                            </option>
+                            <option value="ciudad" {% if orden_actual == 'ciudad' %}selected{% endif %}>
+                                Ciudad
+                            </option>
+                            <option value="canchas" {% if orden_actual == 'canchas' %}selected{% endif %}>
+                                Más canchas
+                            </option>
+                            <option value="calificacion" {% if orden_actual == 'calificacion' %}selected{% endif %}>
+                                Mejor valorados
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="filtro-actions">
+                        <button type="submit" class="btn-buscar"><i class="fas fa-search"></i> Buscar</button>
+                        {% if query or ciudad_filtro or deporte_filtro %}
+                            <a href="{% url 'core:explorar_complejos' %}" class="btn-limpiar" title="Limpiar filtros">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section class="resultados-section">
+        <div class="container">
+            <div class="resultados-header">
+                <h2>Todos los complejos</h2>
+                <p class="resultados-count">
+                    {{ total_complejos }} complejo{{ total_complejos|pluralize }} encontrado{{ total_complejos|pluralize }}
+                </p>
+            </div>
+
+            {% if complejos %}
+                <div class="complejos-grid">
+                    {% for complejo in complejos %}
+                        <div class="complejo-card" onclick="window.location.href='{{ complejo.get_absolute_url }}'">
+                            <div class="complejo-image">
+                                {% if complejo.imagen %}
+                                    <img src="{{ complejo.imagen.url }}" alt="Imagen de {{ complejo.name|default:'complejo' }}" class="complejo-img">
+                                {% else %}
+                                    <div style="height: 200px; display: flex; align-items: center; justify-content: center; background: #eee;">
+                                        <span style="font-size: 3rem;">🏆</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="complejo-content">
+                                <div class="complejo-header">
+                                    <h3>{{ complejo.name }}</h3>
+                                    {% if complejo.cantidad_resenas > 0 %}
+                                        <div class="card-rating" title="Basado en {{ complejo.cantidad_resenas }} reseñas">
+                                            <i class="fas fa-star star-icon"></i>
+                                            <span class="rating-number">{{ complejo.promedio_calificacion|floatformat:1 }}</span>
+                                        </div>
+                                    {% else %}
+                                        <div class="card-rating no-reviews" title="Aún no tiene reseñas">
+                                            <i class="fas fa-star star-icon"></i>
+                                            <span class="rating-number">N/A</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <p class="complejo-ubicacion">
+                                    <i class="fas fa-map-marker-alt text-muted" style="color: #e74c3c;"></i> {{ complejo.city }}
+                                </p>
+                                
+                                <div class="complejo-stats">
+                                    <span class="stat-item">
+                                        <i class="fa-solid fa-basketball"></i> {{ complejo.num_courts }} cancha{{ complejo.num_courts|pluralize }}
+                                    </span>
+                                    {% if complejo.amenities.exists %}
+                                        <span class="stat-item">
+                                            <i class="fa-solid fa-gem"></i> {{ complejo.amenities.count }} servicio{{ complejo.amenities.count|pluralize }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                
+                                {% if complejo.amenities.exists %}
+                                    <div class="complejo-amenities">
+                                        {% for amenity in complejo.amenities.all|slice:":3" %}
+                                            <span class="amenity-tag">{{ amenity.name }}</span>
+                                        {% endfor %}
+                                        {% if complejo.amenities.count > 3 %}
+                                            <span class="amenity-tag">+{{ complejo.amenities.count|add:"-3" }} más</span>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="complejo-deportes">
+                                    {% for court in complejo.courts.all|slice:":5" %}
+                                        <span class="deporte-badge">{{ court.get_sport_display }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <div class="complejo-footer">
+                                <span class="ver-mas">Ver detalles →</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {% if page_obj.has_other_pages %}
+                    <div class="pagination">
+                        {% if page_obj.has_previous %}
+                            <a href="?page=1{% if query %}&q={{ query }}{% endif %}{% if ciudad_filtro %}&ciudad={{ ciudad_filtro }}{% endif %}{% if deporte_filtro %}&deporte={{ deporte_filtro }}{% endif %}{% if orden_actual %}&orden={{ orden_actual }}{% endif %}" 
+                               class="page-link">
+                                « Primera
+                            </a>
+                            <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if ciudad_filtro %}&ciudad={{ ciudad_filtro }}{% endif %}{% if deporte_filtro %}&deporte={{ deporte_filtro }}{% endif %}{% if orden_actual %}&orden={{ orden_actual }}{% endif %}" 
+                               class="page-link">
+                                ‹ Anterior
+                            </a>
+                        {% endif %}
+
+                        <span class="page-current">
+                            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                        </span>
+
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if ciudad_filtro %}&ciudad={{ ciudad_filtro }}{% endif %}{% if deporte_filtro %}&deporte={{ deporte_filtro }}{% endif %}{% if orden_actual %}&orden={{ orden_actual }}{% endif %}" 
+                               class="page-link">
+                                Siguiente ›
+                            </a>
+                            <a href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}{% if ciudad_filtro %}&ciudad={{ ciudad_filtro }}{% endif %}{% if deporte_filtro %}&deporte={{ deporte_filtro }}{% endif %}{% if orden_actual %}&orden={{ orden_actual }}{% endif %}" 
+                               class="page-link">
+                                Última »
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+            {% else %}
+                <div class="no-resultados">
+                    <div class="no-resultados-illustration">
+                        <i class="fas fa-search" style="font-size: 5rem; color: #667eea; margin-bottom: 20px; opacity: 0.8;"></i>
+                        <div style="font-size: 2.5rem; margin-top: -30px;">🎾 ⚽ 🏀</div>
+                    </div>
+                    <h3 style="font-size: 2.2rem; color: #1b1f2a; font-weight: 800; margin-bottom: 10px;">Parece que estamos en blanco...</h3>
+                    <p style="font-size: 1.2rem; color: #60708a;">¡Prueba con otra búsqueda!</p>
+                    <h4 style="font-size: 1.5rem; color: #1b1f2a; margin-top: 15px;">0 complejos encontrados</h4>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>Courtly</h4>
+                <p>La mejor plataforma para reservar canchas deportivas. Conectamos jugadores con complejos en toda la región.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Enlaces Rápidos</h4>
+                <ul>
+                    <li><a href="{% url 'core:home' %}">Inicio</a></li>
+                    <li><a href="{% url 'core:explorar_complejos' %}">Complejos</a></li>
+                    <li><a href="#">Para dueños</a></li>
+                    <li><a href="#">Contacto</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Términos de servicio</a></li>
+                    <li><a href="#">Política de privacidad</a></li>
+                    <li><a href="#">Política de cookies</a></li>
+                    <li><a href="#">Aviso legal</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Síguenos</h4>
+                <div class="social-links">
+                    <a href="#">📘 Facebook</a>
+                    <a href="#">📷 Instagram</a>
+                    <a href="#">𝕏 Twitter</a>
+                    <a href="#">💼 LinkedIn</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Courtly. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- MODAL DE CREAR RESEÑA -->
+    <div id="reviewModal" class="review-modal">
+        <div class="review-modal-content">
+            <div class="review-modal-header">
+                <h2>Dejar una reseña</h2>
+                <button class="close-modal" onclick="cerrarModalResena()">&times;</button>
+            </div>
+            <div class="review-modal-body">
+                <div class="form-group">
+                    <label>Complejo: <strong id="complexName"></strong></label>
+                </div>
+                <div class="form-group">
+                    <label>Calificación</label>
+                    <div class="star-rating" id="starRating">
+                        <span class="star" onclick="seleccionarEstrella(1)">★</span>
+                        <span class="star" onclick="seleccionarEstrella(2)">★</span>
+                        <span class="star" onclick="seleccionarEstrella(3)">★</span>
+                        <span class="star" onclick="seleccionarEstrella(4)">★</span>
+                        <span class="star" onclick="seleccionarEstrella(5)">★</span>
+                    </div>
+                    <div class="rating-display" id="ratingDisplay"></div>
+                </div>
+                <div class="form-group">
+                    <label for="reviewDescription">Descripción (opcional)</label>
+                    <textarea id="reviewDescription" placeholder="Cuéntanos tu experiencia..."></textarea>
+                </div>
+            </div>
+            <div class="review-modal-footer">
+                <button class="btn-cancel" onclick="cerrarModalResena()">Cancelar</button>
+                <button class="btn-submit" onclick="enviarResena()" id="submitReviewBtn">Enviar reseña</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CÓDIGO QR -->
+    <div id="qrModal" class="review-modal">
+        <div class="review-modal-content" style="max-width: 350px; text-align: center;">
+            <div class="review-modal-header">
+                <h2 style="font-size: 1.3rem;">Tu código de acceso</h2>
+                <button class="close-modal" onclick="cerrarModalQR()">&times;</button>
+            </div>
+            <div class="review-modal-body" style="display: flex; flex-direction: column; align-items: center;">
+                <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 15px;">Muestra este QR en la entrada del complejo.</p>
+                
+                <!-- Contenedor donde qrcode.js inyectará la imagen -->
+                <div id="qrcode-container" style="padding: 15px; background: white; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 15px;"></div>
+                
+                <div class="qr-timer">
+                    <span id="qr-countdown">20</span>s para actualizar
+                    <div class="qr-progress-bar">
+                        <div id="qr-progress" class="qr-progress"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentBookingId = null;
+        let selectedRating = 0;
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                          document.querySelector('input[name=csrfmiddlewaretoken]')?.value ||
+                          getCookie('csrftoken');
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // ==========================================
+        // LÓGICA DE RESEÑAS
+        // ==========================================
+        function abrirModalResena(bookingId, complexName) {
+            currentBookingId = bookingId;
+            selectedRating = 0;
+            
+            document.getElementById('complexName').textContent = complexName;
+            document.getElementById('reviewDescription').value = '';
+            
+            // Resetear estrellas
+            document.querySelectorAll('.star').forEach(star => {
+                star.classList.remove('active');
+            });
+            document.getElementById('ratingDisplay').textContent = '';
+            
+            document.getElementById('reviewModal').classList.add('active');
+        }
+
+        function cerrarModalResena() {
+            document.getElementById('reviewModal').classList.remove('active');
+            currentBookingId = null;
+            selectedRating = 0;
+        }
+
+        function seleccionarEstrella(rating) {
+            selectedRating = rating;
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+            document.getElementById('ratingDisplay').textContent = rating + ' estrellas';
+        }
+
+        function enviarResena() {
+            if (!currentBookingId || selectedRating === 0) {
+                alert('Por favor selecciona una calificación');
+                return;
+            }
+
+            const description = document.getElementById('reviewDescription').value;
+            const submitBtn = document.getElementById('submitReviewBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
+
+            fetch('/api/reviews/create/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({
+                    booking_id: currentBookingId,
+                    rating: selectedRating,
+                    description: description
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert('¡Reseña enviada exitosamente!');
+                    cerrarModalResena();
+                    location.reload();
+                } else if (data.error) {
+                    alert('Error: ' + data.error);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Enviar reseña';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Ocurrió un error al enviar la reseña');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Enviar reseña';
+            });
+        }
+
+        // ==========================================
+        // LÓGICA DEL CÓDIGO QR
+        // ==========================================
+        let qrInterval;
+        let countdownInterval;
+        let timeRemaining = 20;
+
+        function abrirModalQR(event) {
+            event.preventDefault();
+            document.getElementById('qrModal').classList.add('active');
+            generarQR();
+            iniciarTemporizador();
+        }
+
+        function cerrarModalQR() {
+            document.getElementById('qrModal').classList.remove('active');
+            clearInterval(qrInterval);
+            clearInterval(countdownInterval);
+        }
+
+        function generarQR() {
+            const qrContainer = document.getElementById('qrcode-container');
+            qrContainer.innerHTML = ''; // Limpiar el QR anterior
+            
+            // Genera un string aleatorio simulando un token temporal único para el usuario
+            const token = "courtly_user_{% if user.is_authenticated %}{{ user.id }}{% else %}guest{% endif %}_" + Math.random().toString(36).substring(2, 15);
+            
+            new QRCode(qrContainer, {
+                text: token,
+                width: 200,
+                height: 200,
+                colorDark : "#1b1f2a",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        }
+
+        function iniciarTemporizador() {
+            clearInterval(qrInterval);
+            clearInterval(countdownInterval);
+            timeRemaining = 20;
+            actualizarUI();
+
+            countdownInterval = setInterval(() => {
+                timeRemaining--;
+                actualizarUI();
+                if (timeRemaining <= 0) {
+                    generarQR();
+                    timeRemaining = 20;
+                }
+            }, 1000);
+        }
+
+        function actualizarUI() {
+            document.getElementById('qr-countdown').textContent = timeRemaining;
+            const progressWidth = (timeRemaining / 20) * 100;
+            document.getElementById('qr-progress').style.width = progressWidth + '%';
+        }
+
+        // ==========================================
+        // CERRAR MODALES AL HACER CLICK FUERA
+        // ==========================================
+        window.onclick = function(event) {
+            const modalReview = document.getElementById('reviewModal');
+            const modalQR = document.getElementById('qrModal');
+            
+            if (event.target === modalReview) {
+                cerrarModalResena();
+            } else if (event.target === modalQR) {
+                cerrarModalQR();
+            }
+        }
+
+        document.addEventListener('click', function(event) {
+            const allDetails = document.querySelectorAll('details');
+            allDetails.forEach((details) => {
+                if (!details.contains(event.target)) {
+                    details.removeAttribute('open');
+                }
+                const summary = details.querySelector('summary');
+                if (summary && summary.contains(event.target)) {
+                    allDetails.forEach((otherDetails) => {
+                        if (otherDetails !== details) {
+                            otherDetails.removeAttribute('open');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
