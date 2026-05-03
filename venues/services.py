@@ -3,13 +3,12 @@ from django.utils import timezone
 from datetime import timedelta
 from bookings.models import Booking
 
-
 class ComplexStatsService:
     """
     Servicio para calcular estadísticas de complejos.
     Útil para el dashboard del propietario.
     """
-    
+
     @staticmethod
     def get_complex_stats(complex, days=30):
         """
@@ -24,42 +23,42 @@ class ComplexStatsService:
         """
         end_date = timezone.now()
         start_date = end_date - timedelta(days=days)
-        
+
         bookings = Booking.objects.filter(
             court__complex=complex,
             created_at__gte=start_date,
             created_at__lte=end_date
         )
-        
+
         total_bookings = bookings.count()
-        
+
         confirmed_bookings = bookings.filter(
             status__in=[Booking.Status.CONFIRMED, Booking.Status.FINISHED]
         ).count()
-        
+
         cancelled_bookings = bookings.filter(
             status=Booking.Status.CANCELLED
         ).count()
-        
+
         revenue_bookings = bookings.filter(
             status__in=[Booking.Status.CONFIRMED, Booking.Status.FINISHED]
         )
-        
+
         total_revenue = revenue_bookings.aggregate(
             total=Sum('total_price')
         )['total'] or 0
-        
+
         court_stats = bookings.filter(
             status__in=[Booking.Status.CONFIRMED, Booking.Status.FINISHED]
         ).values('court__name').annotate(
             bookings_count=Count('id')
         ).order_by('-bookings_count').first()
-        
+
         most_popular_court = court_stats['court__name'] if court_stats else "N/A"
-        
+
         total_courts = complex.courts.count()
         avg_bookings_per_court = total_bookings / total_courts if total_courts > 0 else 0
-        
+
         return {
             'period_days': days,
             'total_bookings': total_bookings,

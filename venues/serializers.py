@@ -66,7 +66,7 @@ class CourtDetailSerializer(serializers.ModelSerializer):
 
     def get_complex_city(self, obj):
         return obj.complex.city
-    
+
 class ComplexListSerializer(serializers.ModelSerializer):
     """
     Serializer para listar complejos.
@@ -126,7 +126,6 @@ class ComplexDetailSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'owner']
 
-
 class ReviewSerializer(serializers.ModelSerializer):
     """
     Serializer para las reseñas de complejos.
@@ -134,7 +133,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     user_name = serializers.CharField(source='user.first_name', read_only=True)
     user_id = serializers.IntegerField(source='user.id', read_only=True)
     rating_display = serializers.CharField(source='get_rating_display', read_only=True)
-    
+
     class Meta:
         model = Review
         fields = [
