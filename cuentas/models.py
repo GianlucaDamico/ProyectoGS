@@ -60,7 +60,7 @@ class Propietario(models.Model):
 
 	def __str__(self):
 		if self.complex:
-			return f"{self.complex.nombre_complejo} ({self.user.username})"
+			return f"{self.complex.name} ({self.user.username})"
 		return self.user.username
 
 

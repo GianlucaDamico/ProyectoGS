@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'core/mis_reservas.css' %}">
     <link rel="icon" type="image/png" href="{% static 'core/img/logoicono.png' %}">
-
 </head>
 <body>
     <nav class="navbar">
@@ -54,7 +53,7 @@
                             {% if user.perfil_jugador.avatar %}
                                 <img src="{{ user.perfil_jugador.avatar.url }}" alt="Avatar" class="profile-avatar">
                             {% else %}
-                                <span class="profile-avatar">{{ nombre|slice:":1"|upper }}</span>
+                                <span class="profile-avatar">{{ user.username|slice:":1"|upper }}</span>
                             {% endif %}
                             <span class="profile-label">Perfil</span>
                         </summary>
@@ -76,14 +75,15 @@
         </div>
     </nav>
 
-    <section class="reservas-header">
+    <!-- HEADER CON IMAGEN DE FONDO APLICADA DIRECTAMENTE AL DIV -->
+    <section class="reservas-header" style="background-image: url('{% static 'core/img/Reservar.png' %}');">
         <div class="container">
             {% if mostrar_historial %}
                 <h1>Historial de Reservas</h1>
-                <p>Revisa tus reservas finalizadas y canceladas</p>
+                <p>Revisa tus reservas pasadas y canceladas en Courtly</p>
             {% else %}
                 <h1>Mis Reservas</h1>
-                <p>Gestiona tus reservas de canchas</p>
+                <p>Gestiona todas tus próximas reservas de canchas</p>
             {% endif %}
         </div>
     </section>
@@ -150,7 +150,14 @@
                 </div>
             {% else %}
                 <div class="no-reservas">
-                    <p>No tienes reservas {% if estado_filtro %}con este estado{% endif %}</p>
+                    <i class="far fa-calendar-times"></i>
+                    {% if mostrar_historial %}
+                        <h3>Tu historial está vacío</h3>
+                        <p>Aún no tienes reservas finalizadas o canceladas{% if estado_filtro %} con este estado{% endif %}.</p>
+                    {% else %}
+                        <h3>No hay reservas a la vista</h3>
+                        <p>No tienes reservas {% if estado_filtro %}con este estado{% else %}próximas{% endif %}. ¿Listo para tu próximo partido?</p>
+                    {% endif %}
                     <a href="{% url 'core:explorar_complejos' %}" class="btn-primary">Explorar complejos</a>
                 </div>
             {% endif %}
@@ -191,7 +198,7 @@
     </div>
 
     <script>
-        // ==========================================
+       // ==========================================
         // LÓGICA DE CANCELAR RESERVAS
         // ==========================================
         function cancelarReserva(reservaId) {
@@ -212,13 +219,23 @@
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'X-CSRFToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest' // <-- ¡AQUÍ ESTÁ LA MAGIA!
                 },
                 body: new URLSearchParams({
                     'nuevo_estado': 'cancelled'
                 })
             })
-            .then(response => response.json())
+            .then(response => {
+                // Verificamos si la respuesta no es un JSON (por si acaso redirige)
+                if (response.redirected || !response.headers.get("content-type")?.includes("application/json")) {
+                    location.reload(); 
+                    return null;
+                }
+                return response.json();
+            })
             .then(data => {
+                if (!data) return; // Si fue nulo arriba, no hacemos nada más
+                
                 if (data.success) {
                     alert('✓ Reserva cancelada exitosamente');
                     location.reload();
@@ -232,7 +249,7 @@
                 console.error('Error:', error);
                 button.disabled = false;
                 button.textContent = originalText;
-                alert('✗ Error al procesar tu solicitud');
+                alert('✗ Error al procesar tu solicitud. Por favor, recarga la página.');
             });
 
             return false;
@@ -343,13 +360,11 @@
         document.addEventListener('click', function(event) {
             const allDetails = document.querySelectorAll('details');
             
-            // Cerrar el modal de reseña si se hace clic por fuera
             const modal = document.getElementById('reviewModal');
             if (event.target === modal) {
                 cerrarModalResena();
             }
 
-            // Lógica para cerrar detalles
             allDetails.forEach((details) => {
                 if (!details.contains(event.target)) {
                     details.removeAttribute('open');

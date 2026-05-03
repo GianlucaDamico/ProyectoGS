@@ -156,7 +156,7 @@
                     <div class="info-sidebar">
                         <div class="contact-card">
                             <h3>Información de contacto</h3>
-                            <p><strong>Propietario:</strong> {{ complejo.owner.username }}</p>
+                            <p><strong>Propietario:</strong> {{ complejo.owner.first_name }} {{ complejo.owner.last_name }}</p>
                             {% if complejo.telefono_comercial %}
                                 <p><strong>Teléfono:</strong> {{ complejo.telefono_comercial }}</p>
                             {% endif %}
