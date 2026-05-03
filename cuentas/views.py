@@ -18,18 +18,15 @@ from venues.models import Sport, Complex, Court, Review, Surface
 from venues.forms import CourtForm
 from .models import Jugador, Propietario
 
-# Create your views here.
-
 def login(request):
-    
+
     if request.method == 'GET':
         return render(request, 'cuentas/login.html')
-    
+
     elif request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
 
-        # Validar que ambos campos estén completos
         if not username or not password:
             messages.error(request, 'Por favor, completa todos los campos.')
             return render(request, 'cuentas/login.html')
@@ -37,7 +34,7 @@ def login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             auth_login(request, user)
-            # Redirigir según el tipo de usuario
+
             if hasattr(user, 'perfil_jugador'):
                 return redirect('core:explorar_complejos')
             elif hasattr(user, 'perfil_propietario'):
@@ -48,7 +45,6 @@ def login(request):
             messages.error(request, 'Credenciales inválidas.')
             return render(request, 'cuentas/login.html')
 
-
 @login_required
 def logout_usuario(request):
     if request.method == 'POST':
@@ -56,14 +52,12 @@ def logout_usuario(request):
         return redirect('core:home')
     return redirect('cuentas:home_usuario')
 
-
 @login_required
 def home_usuario(request):
     user = request.user
 
     reservas = Booking.objects.filter(user=request.user)
-    
-    # Actualización lógica de estados por tiempo
+
     for reserva in reservas:
         if reserva.status == Booking.Status.PENDING_PAYMENT and reserva.is_past():
             reserva.status = Booking.Status.CANCELLED
@@ -107,17 +101,15 @@ def home_usuario(request):
         start__lt=timezone.now(),
     ).count()
 
-    # Obtener reservas que pueden ser reseñadas (sin reseña)
-    # Dos casos: 1) Status FINISHED (marcadas manualmente) 2) Hora de fin ya pasó (automático)
     resenas_pendientes = (
         Booking.objects
         .filter(user=user)
         .filter(
-            # O bien está marcada como FINISHED, O bien la hora de fin ya pasó
+
             models.Q(status=Booking.Status.FINISHED) | models.Q(end__lt=timezone.now())
         )
-        .exclude(status=Booking.Status.CANCELLED)  # Excluir canceladas
-        .exclude(review__isnull=False)  # Excluir las que ya tienen reseña
+        .exclude(status=Booking.Status.CANCELLED)
+        .exclude(review__isnull=False)
         .select_related('court__complex')
         .order_by('-end')
     )
@@ -152,7 +144,6 @@ def home_usuario(request):
     }
     return render(request, 'cuentas/home_usuario.html', context)
 
-
 @login_required
 def home_propietario(request):
     user = request.user
@@ -164,13 +155,12 @@ def home_propietario(request):
         today = timezone.now().date()
         current_year = today.year
         current_month_start = today.replace(day=1)
-        
+
         if current_month_start.month == 12:
             next_month_start = current_month_start.replace(year=current_year + 1, month=1)
         else:
             next_month_start = current_month_start.replace(month=current_month_start.month + 1)
 
-        # 1. Métricas Básicas
         canchas_activas = complex.courts.count()
         reservas_dia = Booking.objects.filter(court__complex=complex, start__date=today).count()
         ingresos_dia = Booking.objects.filter(
@@ -186,7 +176,6 @@ def home_propietario(request):
 
         reservas_pendientes = Booking.objects.filter(court__complex=complex, start__gte=today, status=Booking.Status.PENDING_PAYMENT).count()
 
-        # 2. Comparativa Mes Anterior (Para el indicador +%)
         last_month_start = (current_month_start - datetime.timedelta(days=1)).replace(day=1)
         ingresos_mes_pasado = Booking.objects.filter(
             court__complex=complex, start__gte=last_month_start, start__lt=current_month_start,
@@ -197,7 +186,6 @@ def home_propietario(request):
         if ingresos_mes_pasado > 0:
             crecimiento_ingresos = ((float(ingresos_mes) - float(ingresos_mes_pasado)) / float(ingresos_mes_pasado)) * 100
 
-        # 3. Gráfica Principal: Ingresos Mensuales
         ingresos_por_mes = Booking.objects.filter(
             court__complex=complex, start__year=current_year,
             status__in=[Booking.Status.CONFIRMED, Booking.Status.FINISHED]
@@ -210,7 +198,6 @@ def home_propietario(request):
                 mes_index = item['month'].month - 1
                 datos_grafica[mes_index] = float(item['total'])
 
-        # 4. Gráfica Secundaria: Reservas por Deporte
         reservas_por_deporte = Booking.objects.filter(
             court__complex=complex, start__gte=current_month_start, start__lt=next_month_start
         ).values('court__sport').annotate(total=Count('id'))
@@ -218,7 +205,6 @@ def home_propietario(request):
         nombres_deportes = [item['court__sport'] for item in reservas_por_deporte]
         datos_deportes = [item['total'] for item in reservas_por_deporte]
 
-        # 5. Próximas Reservas
         proximas_reservas = Booking.objects.filter(
             court__complex=complex,
             start__gte=timezone.now(),
@@ -246,14 +232,13 @@ def home_propietario(request):
         context = {'nombre': nombre, 'complex': None}
     return render(request, 'cuentas/home_propietario.html', context)
 
-
 @login_required
 def agenda(request):
     user = request.user
     perfil_propietario = getattr(user, 'perfil_propietario', None)
 
     if not perfil_propietario or not perfil_propietario.complex:
-        # Si no tiene complejo, redirigir o mostrar error
+
         messages.error(request, 'No tienes un complejo asignado.')
         return redirect('cuentas:home_propietario')
 
@@ -268,10 +253,8 @@ def agenda(request):
     else:
         selected_date = timezone.now().date()
 
-    # Obtener courts del complex
     courts = complex.courts.all()
 
-    # Para cada court, obtener bookings en selected_date
     agenda_data = []
     for court in courts:
         bookings = Booking.objects.filter(
@@ -305,7 +288,6 @@ def agenda(request):
     }
     return render(request, 'cuentas/agenda.html', context)
 
-
 @login_required
 def configuration(request):
     user = request.user
@@ -324,7 +306,6 @@ def configuration(request):
         'complejo': complex,
     }
     return render(request, 'cuentas/configuration.html', context)
-
 
 @login_required
 def gestion(request):
@@ -371,28 +352,25 @@ def gestion(request):
     }
     return render(request, 'cuentas/gestion.html', context)
 
-
 @login_required
 def resenas(request):
     user = request.user
     perfil_propietario = getattr(user, 'perfil_propietario', None)
 
     nombre = user.first_name or user.username
-    
-    # Obtener las reseñas del complejo del propietario
+
     resenas = []
     promedio_calificacion = 0
     if perfil_propietario and perfil_propietario.complex:
         resenas = Review.objects.filter(
             complex=perfil_propietario.complex
         ).select_related('user').order_by('-created_at')
-        
-        # Calcular el promedio de calificación
+
         promedio_data = Review.objects.filter(
             complex=perfil_propietario.complex
         ).aggregate(promedio=Avg('rating'))
         promedio_calificacion = promedio_data['promedio'] or 0
-    
+
     context = {
         'nombre': nombre,
         'page': 'Reseñas',
@@ -401,16 +379,15 @@ def resenas(request):
     }
     return render(request, 'cuentas/resenas.html', context)
 
-
 def register(request):
     return render(request, 'cuentas/register.html')
 
 def register_jugador(request):
     if request.method == 'GET':
        return render(request, 'cuentas/register_jugador.html')
-    
+
     elif request.method == 'POST':
-        # extraer datos del formulario
+
         nombre = request.POST.get('nombre', '').strip()
         apellido = request.POST.get('apellido', '').strip()
         username = request.POST.get('username', '').strip()
@@ -420,7 +397,6 @@ def register_jugador(request):
         password = request.POST.get('password')
         confirm_password = request.POST.get('confirm_password')
 
-        # valida mínimo
         if not all([nombre, apellido, username, email, telefono, password, confirm_password]):
             messages.error(request, 'Por favor completa todos los campos.')
             return render(request, 'cuentas/register_jugador.html')
@@ -429,7 +405,6 @@ def register_jugador(request):
             messages.error(request, 'Las contraseñas no coinciden.')
             return render(request, 'cuentas/register_jugador.html')
 
-        # crear user (username debe ser único)
         if User.objects.filter(username=username).exists():
             messages.error(request, 'El nombre de usuario ya está en uso.')
             return render(request, 'cuentas/register_jugador.html')
@@ -439,7 +414,6 @@ def register_jugador(request):
         user.last_name = apellido
         user.save()
 
-        # crear perfil de jugador
         from .models import Jugador
         Jugador.objects.create(
             user=user,
@@ -455,14 +429,13 @@ def register_jugador(request):
 def register_propietario(request):
     if request.method == 'GET':
        return render(request, 'cuentas/register_propietario.html')
-    
+
     elif request.method == 'POST':
-        # recogemos los datos (hay muchos, no olvidemos los pasos anteriores)
+
         username = request.POST.get('usuario_complejo', '').strip()
         password = request.POST.get('contraseña')
         confirm_password = request.POST.get('confirmar_contraseña')
 
-        # Paso 1
         nombre_responsable = request.POST.get('nombre_responsable', '').strip()
         apellido_responsable = request.POST.get('apellido_responsable', '').strip()
         email_responsable = request.POST.get('email_responsable', '').strip()
@@ -471,13 +444,11 @@ def register_propietario(request):
         telefono_responsable = request.POST.get('telefono_responsable', '').strip()
         fecha_nacimiento = request.POST.get('fecha_nacimiento')
 
-        # Paso 2
         nombre_legal = request.POST.get('nombre_legal', '').strip()
         nombre_complejo = request.POST.get('nombre_complejo', '').strip()
         id_fiscal = request.POST.get('id_fiscal', '').strip()
         categoria_fiscal = request.POST.get('categoria_fiscal', '').strip()
 
-        # Paso 3
         calle = request.POST.get('calle', '').strip()
         altura = request.POST.get('altura', '').strip()
         ciudad = request.POST.get('ciudad', '').strip()
@@ -487,7 +458,6 @@ def register_propietario(request):
         if not email_comercial:
             email_comercial = email_responsable
 
-        # simple validaciones básicas
         missing = []
         for field_name, value in [
             ('usuario', username),
@@ -524,7 +494,6 @@ def register_propietario(request):
             messages.error(request, 'El nombre de usuario ya está en uso.')
             return render(request, 'cuentas/register_propietario.html')
 
-        # crear usuario (nombre/apellido del responsable en auth_user)
         user = User.objects.create_user(username=username, password=password)
         user.first_name = nombre_responsable
         user.last_name = apellido_responsable
@@ -545,7 +514,6 @@ def register_propietario(request):
             email_comercial=email_comercial,
         )
 
-        # crear perfil propietario
         from .models import Propietario
         Propietario.objects.create(
             user=user,
@@ -558,7 +526,6 @@ def register_propietario(request):
 
         messages.success(request, 'Registro de propietario completado. Puedes iniciar sesión.')
         return redirect('cuentas:login')
-
 
 @login_required
 @csrf_exempt
@@ -577,7 +544,6 @@ def update_description(request, complex_id):
         except:
             return JsonResponse({'success': False})
     return JsonResponse({'success': False})
-
 
 @login_required
 @csrf_exempt
@@ -599,7 +565,6 @@ def update_contact(request, complex_id):
             return JsonResponse({'success': False})
     return JsonResponse({'success': False})
 
-
 @login_required
 @csrf_exempt
 def add_amenity(request, complex_id):
@@ -620,7 +585,6 @@ def add_amenity(request, complex_id):
         except:
             return JsonResponse({'success': False})
     return JsonResponse({'success': False})
-
 
 @login_required
 @csrf_exempt
@@ -648,33 +612,29 @@ def update_image(request, complex_id):
         user = request.user
         perfil_propietario = getattr(user, 'perfil_propietario', None)
 
-        # 1. Seguridad: Verificar que el usuario sea el dueño de este complejo exacto
         if not perfil_propietario or not perfil_propietario.complex or perfil_propietario.complex.id != complex_id:
             return JsonResponse({'error': 'No autorizado'}, status=403)
 
         complex = perfil_propietario.complex
 
-        # 2. Capturar y guardar la imagen
-        # Nota: Los archivos no vienen en request.POST, vienen en request.FILES
         if 'imagen' in request.FILES:
             complex.imagen = request.FILES['imagen']
             complex.save()
             return JsonResponse({'success': True, 'message': 'Imagen actualizada'})
         else:
             return JsonResponse({'error': 'No se envió ninguna imagen'}, status=400)
-            
+
     return JsonResponse({'error': 'Método no permitido'}, status=405)
 
 @login_required
 def update_court_api(request, court_id):
     if request.method == 'POST':
         try:
-            # 1. Obtener la cancha y verificar que pertenezca al complejo del usuario
+
             court = Court.objects.get(id=court_id)
             if court.complex.owner != request.user:
                 return JsonResponse({'error': 'No tienes permiso'}, status=403)
 
-            # 2. Actualizar campos de texto y números
             court.name = request.POST.get('name')
             court.sport = request.POST.get('sport')
             court.surface = request.POST.get('surface')
@@ -682,7 +642,6 @@ def update_court_api(request, court_id):
             court.base_price_per_hour = request.POST.get('base_price_per_hour')
             court.lighting_extra_per_hour = request.POST.get('lighting_extra_per_hour')
 
-            # 3. Actualizar imagen solo si se subió una nueva
             if 'imagen' in request.FILES:
                 court.imagen = request.FILES['imagen']
 
@@ -696,33 +655,29 @@ def update_court_api(request, court_id):
 
     return JsonResponse({'error': 'Método no permitido'}, status=405)
 
-
 @login_required
 def update_avatar(request):
     if request.method == 'POST':
         user = request.user
         perfil = getattr(user, 'perfil_jugador', None)
-        
+
         if not perfil:
             return JsonResponse({'error': 'Perfil no encontrado'}, status=404)
 
-        # 1. Guardamos los datos de texto si vienen en la petición
         if 'nombre' in request.POST:
             perfil.nombre = request.POST['nombre']
         if 'telefono' in request.POST:
             perfil.telefono = request.POST['telefono']
 
-        # 2. Guardamos la imagen si viene en la petición
         if 'avatar' in request.FILES:
             perfil.avatar = request.FILES['avatar']
-            
+
         perfil.save()
-        
-        # Devolvemos la URL del avatar (por si se actualizó) o string vacío si no hay foto
+
         url_avatar = perfil.avatar.url if perfil.avatar else ''
-        
+
         return JsonResponse({
-            'success': True, 
+            'success': True,
             'message': 'Perfil actualizado correctamente',
             'url': url_avatar
         })
@@ -740,43 +695,35 @@ def cambiar_contrasena(request):
 
             user = request.user
 
-            # Campos obligatorios
             if not password_actual or not password_nueva or not password_confirmar:
                 return JsonResponse({'error': 'Todos los campos son obligatorios.'}, status=400)
 
-            # Contraseña actual correcta
             if not user.check_password(password_actual):
                 return JsonResponse({'error': 'La contraseña actual es incorrecta.'}, status=400)
 
-            # Que las nuevas coincidan
             if password_nueva != password_confirmar:
                 return JsonResponse({'error': 'Las contraseñas nuevas no coinciden.'}, status=400)
 
-            # - REGLAS DE SEGURIDAD ESTRICTAS -
-            
-            # Mínimo 8 caracteres
             if len(password_nueva) < 8:
                 return JsonResponse({'error': 'La contraseña debe tener al menos 8 caracteres.'}, status=400)
-            # Al menos una mayúscula
+
             if not any(char.isupper() for char in password_nueva):
                 return JsonResponse({'error': 'La contraseña debe tener al menos una letra mayúscula.'}, status=400)
-            # Al menos una minúscula
+
             if not any(char.islower() for char in password_nueva):
                 return JsonResponse({'error': 'La contraseña debe tener al menos una letra minúscula.'}, status=400)
-            # Al menos un número
+
             if not any(char.isdigit() for char in password_nueva):
                 return JsonResponse({'error': 'La contraseña debe tener al menos un número.'}, status=400)
-                
-            #  Todo perfecto, guardamos
+
             user.set_password(password_nueva)
             user.save()
 
-            # Mantiene la sesión viva
             update_session_auth_hash(request, user)
 
             return JsonResponse({'mensaje': '¡Contraseña actualizada con éxito!'})
-            
+
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Error al procesar los datos.'}, status=400)
-    
+
     return JsonResponse({'error': 'Método no permitido'}, status=405)

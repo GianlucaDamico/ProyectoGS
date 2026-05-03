@@ -127,23 +127,21 @@ class BookingCreateSerializer(serializers.ModelSerializer):
         start = attrs['start']
         end = attrs['end']
         lighting = attrs.get('lighting', False)
-        
-        # Instancia temporal para validaciones del modelo
+
         booking = Booking(court=court, start=start, end=end, lighting=lighting)
-        
+
         try:
             booking.clean()
         except Exception as e:
             raise serializers.ValidationError(str(e))
-        
-        # Verificamos disponibilidad usando el servicio
+
         is_available, conflicting = BookingService.check_availability(court, start, end)
         if not is_available:
             raise serializers.ValidationError(
                 f"La cancha no está disponible en ese horario. "
                 f"Hay {conflicting.count()} reserva(s) que solapan."
             )
-        
+
         return attrs
 
     def create(self, validated_data):

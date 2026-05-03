@@ -1,4 +1,4 @@
-# bookings/views.py
+
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -8,8 +8,6 @@ from .services import BookingService
 from django.utils import timezone
 from datetime import timedelta
 
-
-
 from .models import Booking
 from .serializers import (
     BookingListSerializer,
@@ -17,7 +15,6 @@ from .serializers import (
     BookingCreateSerializer,
     BookingUpdateSerializer
 )
-
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
@@ -29,13 +26,11 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
-        # Permisos de lectura (GET, HEAD, OPTIONS) están permitidos para todos
+
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        # Permisos de escritura solo para el dueño de la reserva
         return obj.user == request.user
-
 
 class BookingViewSet(viewsets.ModelViewSet):
     """
@@ -54,12 +49,10 @@ class BookingViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
 
-    # Filtros disponibles
     filterset_fields = ['status', 'court', 'lighting']
 
-    # Ordenamiento
     ordering_fields = ['start', 'end', 'created_at']
-    ordering = ['-start']  # Por defecto, más recientes primero
+    ordering = ['-start']
 
     def get_queryset(self):
         """
@@ -71,14 +64,12 @@ class BookingViewSet(viewsets.ModelViewSet):
         """
         user = self.request.user
 
-        # Los superusuarios ven todo
         if user.is_superuser:
             queryset = Booking.objects.all()
         else:
-            # Los usuarios normales solo ven sus propias reservas
+
             queryset = Booking.objects.filter(user=user)
 
-        # Optimización: traemos relaciones en la misma query
         queryset = queryset.select_related('user', 'court', 'court__complex')
 
         return queryset
@@ -93,7 +84,7 @@ class BookingViewSet(viewsets.ModelViewSet):
             return BookingCreateSerializer
         elif self.action in ['update', 'partial_update']:
             return BookingUpdateSerializer
-        else:  # retrieve
+        else:
             return BookingDetailSerializer
 
     def create(self, request, *args, **kwargs):
@@ -107,12 +98,8 @@ class BookingViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        # Aquí podrías calcular el precio total antes de guardar
-        # Por ahora asumimos que viene en el request
-
         self.perform_create(serializer)
 
-        # Retornamos el detalle completo de la reserva creada
         headers = self.get_success_headers(serializer.data)
         booking = serializer.instance
         detail_serializer = BookingDetailSerializer(booking)
@@ -138,8 +125,6 @@ class BookingViewSet(viewsets.ModelViewSet):
         """
         queryset = self.filter_queryset(self.get_queryset())
 
-        # Podemos añadir filtros adicionales aquí
-        # Por ejemplo, solo reservas futuras
         future_only = request.query_params.get('future', None)
         if future_only == 'true':
             queryset = queryset.filter(start__gte=timezone.now())
@@ -151,7 +136,7 @@ class BookingViewSet(viewsets.ModelViewSet):
 
         serializer = BookingListSerializer(queryset, many=True)
         return Response(serializer.data)
-    
+
     @action(detail=True, methods=['post'])
     def cancel(self, request, pk=None):
 
@@ -167,7 +152,7 @@ class BookingViewSet(viewsets.ModelViewSet):
                 {"error": str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
+
     @action(detail=False, methods=['get'], permission_classes=[permissions.AllowAny])
     def disponibilidad(self, request):
         """
@@ -176,31 +161,28 @@ class BookingViewSet(viewsets.ModelViewSet):
         """
         court_id = request.query_params.get('court_id')
         fecha = request.query_params.get('fecha')
-        
+
         if not court_id or not fecha:
             return Response({'error': 'Faltan parámetros court_id y fecha'}, status=400)
-        
+
         reservas = self.get_queryset().filter(
-            court_id=court_id, 
+            court_id=court_id,
             start__date=fecha
         )
-        
+
         reservas = reservas.exclude(status='CANCELLED')
-        
+
         horas_ocupadas = []
         for reserva in reservas:
-            # Empezamos desde la hora de inicio
+
             tiempo_actual = reserva.start
-            
-            # Mientras el tiempo actual sea menor a la hora de fin de la reserva
+
             while tiempo_actual < reserva.end:
                 hora_str = tiempo_actual.strftime('%H:%M')
-                
-                # Evitamos duplicados por si acaso
+
                 if hora_str not in horas_ocupadas:
                     horas_ocupadas.append(hora_str)
-                
-                # Le sumamos 1 hora al tiempo actual para revisar la siguiente
+
                 tiempo_actual += timedelta(hours=1)
-            
+
         return Response({'ocupados': horas_ocupadas})

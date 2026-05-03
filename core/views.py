@@ -6,11 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.utils import timezone
 
-# Importes de modelos locales
 from venues.models import Complex, Court, Sport, Surface, Review
 from bookings.models import Booking
-
-# --- VISTAS GENERALES ---
 
 def home(request):
     return render(request, 'core/home.html')
@@ -27,8 +24,6 @@ def cookies(request):
 def contacto(request):
     return render(request, 'core/contacto.html')
 
-# --- VISTAS DE COMPLEJOS ---
-
 def complejo_detalle(request, complejo_id, slug=None):
     """Vista de detalle de un complejo deportivo."""
     complejo = get_object_or_404(
@@ -38,30 +33,27 @@ def complejo_detalle(request, complejo_id, slug=None):
         ),
         id=complejo_id
     )
-    
+
     filtro_deporte = request.GET.get('deporte', '')
     filtro_superficie = request.GET.get('superficie', '')
-    
+
     canchas = complejo.courts.all()
-    
+
     if filtro_deporte:
         canchas = canchas.filter(sport=filtro_deporte)
-    
+
     if filtro_superficie:
         canchas = canchas.filter(surface=filtro_superficie)
-    
+
     deportes_disponibles = complejo.courts.values_list('sport', flat=True).distinct()
     superficies_disponibles = complejo.courts.values_list('surface', flat=True).distinct()
-    
-    # Obtenemos las reseñas asociadas a este complejo específico
+
     resenas = Review.objects.filter(complex=complejo).select_related('user').order_by('-created_at')
-    
-    # Calculamos el promedio
+
     promedio_data = resenas.aggregate(promedio=Avg('rating'))
     promedio_calificacion = promedio_data['promedio'] or 0
-    cantidad_resenas = resenas.count() # Útil para el texto del link
+    cantidad_resenas = resenas.count()
 
-    # 👇 LÓGICA DE NOTIFICACIONES AÑADIDA AQUÍ 👇
     resenas_pendientes = None
     if request.user.is_authenticated:
         resenas_pendientes = (
@@ -88,9 +80,9 @@ def complejo_detalle(request, complejo_id, slug=None):
         'resenas': resenas,
         'promedio_calificacion': promedio_calificacion,
         'cantidad_resenas': cantidad_resenas,
-        'resenas_pendientes': resenas_pendientes, # ← PASADO AL CONTEXTO
+        'resenas_pendientes': resenas_pendientes,
     }
-    
+
     return render(request, 'core/complejo_detalle.html', context)
 
 @login_required(login_url='cuentas:login')
@@ -100,29 +92,29 @@ def explorar_complejos(request):
     ciudad = request.GET.get('ciudad', '')
     deporte = request.GET.get('deporte', '')
     orden = request.GET.get('orden', 'nombre')
-    
+
     complejos = Complex.objects.select_related('owner').prefetch_related(
         'courts', 'amenities'
     ).annotate(
-        # distinct=True es vital aquí para que no se mezclen las canchas con las reseñas
-        num_courts=Count('courts', distinct=True), 
+
+        num_courts=Count('courts', distinct=True),
         cantidad_resenas=Count('reviews', distinct=True),
         promedio_calificacion=Avg('reviews__rating')
     ).filter(
         num_courts__gt=0
     )
-    
+
     if query:
         complejos = complejos.filter(
             Q(name__icontains=query) | Q(city__icontains=query)
         )
-    
+
     if ciudad:
         complejos = complejos.filter(city__iexact=ciudad)
-    
+
     if deporte:
         complejos = complejos.filter(courts__sport=deporte).distinct()
-    
+
     if orden == 'nombre':
         complejos = complejos.order_by('name')
     elif orden == 'ciudad':
@@ -131,14 +123,13 @@ def explorar_complejos(request):
         complejos = complejos.order_by('-num_courts', 'name')
     elif orden == 'calificacion':
         complejos = complejos.order_by(F('promedio_calificacion').desc(nulls_last=True), 'name')
-    
+
     ciudades_disponibles = Complex.objects.values_list('city', flat=True).distinct().order_by('city')
-    
+
     paginator = Paginator(complejos, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # Lógica de NOTIFICACIONES (Reseñas pendientes) para la navbar
     resenas_pendientes = None
     if request.user.is_authenticated:
         resenas_pendientes = (
@@ -152,7 +143,7 @@ def explorar_complejos(request):
             .select_related('court__complex')
             .order_by('-end')
         )
-    
+
     context = {
         'page_obj': page_obj,
         'complejos': page_obj.object_list,
@@ -165,17 +156,14 @@ def explorar_complejos(request):
         'sport_choices': Sport.choices,
         'resenas_pendientes': resenas_pendientes,
     }
-    
-    return render(request, 'core/explorar_complejos.html', context)
 
-# --- VISTAS DE RESERVAS ---
+    return render(request, 'core/explorar_complejos.html', context)
 
 @login_required(login_url='cuentas:login')
 def mis_reservas(request):
     """Muestra las reservas del usuario actual actualizando estados caducados."""
     reservas = Booking.objects.filter(user=request.user)
-    
-    # Actualización lógica de estados por tiempo
+
     for reserva in reservas:
         if reserva.status == Booking.Status.PENDING_PAYMENT and reserva.is_past():
             reserva.status = Booking.Status.CANCELLED
@@ -190,12 +178,10 @@ def mis_reservas(request):
             reserva.status = Booking.Status.FINISHED
             reserva.save()
 
-    # Verificar si se solicita ver el historial
     mostrar_historial = request.GET.get('historial', 'false').lower() == 'true'
-    
-    # Re-consulta con ordenamiento específico
+
     if mostrar_historial:
-        # Mostrar solo reservas finalizadas y canceladas
+
         reservas = Booking.objects.filter(
             user=request.user,
             status__in=[Booking.Status.FINISHED, Booking.Status.CANCELLED]
@@ -209,14 +195,13 @@ def mis_reservas(request):
                 output_field=IntegerField(),
             )
         ).order_by('status_order', '-start')
-        
-        # Para el historial, mostrar todos los estados (FINISHED y CANCELLED)
+
         allowed_statuses = [
             Booking.Status.FINISHED,
             Booking.Status.CANCELLED,
         ]
     else:
-        # Mostrar solo reservas confirmadas, pendientes de pago e en curso
+
         reservas = Booking.objects.filter(
             user=request.user,
             status__in=[Booking.Status.CONFIRMED, Booking.Status.PENDING_PAYMENT, Booking.Status.IN_PROGRESS]
@@ -233,18 +218,17 @@ def mis_reservas(request):
                 output_field=IntegerField(),
             )
         ).order_by('status_order', '-start')
-        
-        # Para la vista normal, solo mostrar estados activos
+
         allowed_statuses = [
             Booking.Status.PENDING_PAYMENT,
             Booking.Status.CONFIRMED,
             Booking.Status.IN_PROGRESS,
         ]
-    
+
     estado_filtro = request.GET.get('estado', '')
     if estado_filtro:
         reservas = reservas.filter(status=estado_filtro)
-        
+
     resenas_pendientes = (
         Booking.objects
         .filter(user=request.user)
@@ -256,14 +240,13 @@ def mis_reservas(request):
         .select_related('court__complex')
         .order_by('-end')
     )
-    
-    # Filtrar status_choices para solo mostrar los estados permitidos
+
     status_choices = [
         (status, label)
         for status, label in Booking.Status.choices
         if status in allowed_statuses
     ]
-    
+
     context = {
         'reservas': reservas,
         'estado_filtro': estado_filtro,
@@ -271,7 +254,7 @@ def mis_reservas(request):
         'resenas_pendientes': resenas_pendientes,
         'mostrar_historial': mostrar_historial,
     }
-    
+
     return render(request, 'core/mis_reservas.html', context)
 
 @login_required(login_url='cuentas:login')
@@ -281,11 +264,10 @@ def reserva_detalle(request, reserva_id):
         Booking.objects.select_related('user', 'court', 'court__complex'),
         id=reserva_id
     )
-    
+
     if not (request.user == reserva.user or request.user.is_staff):
         return render(request, 'core/error.html', {'message': 'No tienes permiso para ver esta reserva'}, status=403)
-    
-    # Actualización de estado según tiempo
+
     if reserva.status == Booking.Status.PENDING_PAYMENT and reserva.is_past():
         reserva.status = Booking.Status.CANCELLED
         reserva.save()
@@ -301,10 +283,10 @@ def reserva_detalle(request, reserva_id):
 
     es_propietario = request.user == reserva.user
     es_admin = request.user.is_staff
-    
+
     puede_confirmar_pago = es_propietario and reserva.status == Booking.Status.PENDING_PAYMENT and not reserva.is_past()
     puede_cancelar = es_propietario and reserva.can_be_cancelled()
-    
+
     puede_cambiar_estado = es_admin
     todas_las_transiciones = [
         ('confirmed', 'Confirmar'),
@@ -312,7 +294,7 @@ def reserva_detalle(request, reserva_id):
         ('finished', 'Finalizada'),
         ('cancelled', 'Cancelada'),
     ] if puede_cambiar_estado else []
-    
+
     context = {
         'reserva': reserva,
         'es_propietario': es_propietario,
@@ -322,7 +304,7 @@ def reserva_detalle(request, reserva_id):
         'puede_cambiar_estado': puede_cambiar_estado,
         'transiciones_disponibles': todas_las_transiciones,
     }
-    
+
     return render(request, 'core/reserva_detalle.html', context)
 
 @login_required(login_url='cuentas:login')
@@ -330,16 +312,16 @@ def reserva_detalle(request, reserva_id):
 def cambiar_estado_reserva(request, reserva_id):
     """Procesa el cambio de estado de una reserva vía POST o AJAX."""
     reserva = get_object_or_404(Booking, id=reserva_id)
-    
+
     if not (request.user == reserva.user or request.user.is_staff):
         return JsonResponse({'error': 'No tienes permiso para modificar esta reserva'}, status=403)
-    
+
     nuevo_estado = request.POST.get('nuevo_estado')
     estados_validos = [choice[0] for choice in Booking.Status.choices]
-    
+
     if nuevo_estado not in estados_validos:
         return JsonResponse({'error': 'Estado no válido'}, status=400)
-    
+
     es_propetario = request.user == reserva.user
     es_admin = request.user.is_staff
 
@@ -354,14 +336,14 @@ def cambiar_estado_reserva(request, reserva_id):
         reserva.status = nuevo_estado
     else:
         return JsonResponse({'error': 'No tienes permiso'}, status=403)
-    
+
     reserva.save()
 
     if request.headers.get('x-requested-with') != 'XMLHttpRequest':
         return redirect('core:mis_reservas')
-    
+
     return JsonResponse({
-        'success': 'Estado actualizado', 
+        'success': 'Estado actualizado',
         'nuevo_estado': reserva.get_status_display(),
         'nuevo_estado_code': reserva.status,
         'mensaje': f'La reserva ha sido actualizada a {reserva.get_status_display()}'
@@ -372,8 +354,7 @@ def notificaciones(request):
     """Vista de notificaciones del usuario (placeholder)."""
 
     reservas = Booking.objects.filter(user=request.user)
-    
-    # Actualización lógica de estados por tiempo
+
     for reserva in reservas:
         if reserva.status == Booking.Status.PENDING_PAYMENT and reserva.is_past():
             reserva.status = Booking.Status.CANCELLED
