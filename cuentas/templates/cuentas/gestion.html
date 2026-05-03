@@ -63,11 +63,11 @@
                             <div class="price-section">
                                 <div class="price-item">
                                     <small>Precio base/hora</small>
-                                    <span class="price-value">${{ court.base_price_per_hour }}</span>
+                                    <span class="price-value">€{{ court.base_price_per_hour }}</span>
                                 </div>
                                 <div class="price-item">
                                     <small>Extra luz/hora</small>
-                                    <span class="price-value">${{ court.lighting_extra_per_hour }}</span>
+                                    <span class="price-value">€{{ court.lighting_extra_per_hour }}</span>
                                 </div>
                             </div>
                         </div>
@@ -238,7 +238,7 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
 
             try {
-                const response = await fetch(`/api/court/${courtId}/edit/`, {
+                const response = await fetch(`/api/court/€{courtId}/edit/`, {
                     method: 'POST',
                     headers: {
                         'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
