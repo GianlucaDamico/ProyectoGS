@@ -50,7 +50,7 @@
                 </div>
                 <div class="metric-card">
                     <div class="metric-icon" style="color: #28a745; background: #e8fbf3;"><i class="fas fa-money-bill-wave"></i></div>
-                    <div class="metric-info"><h3>Ingresos Hoy</h3><p class="metric-value">${{ ingresos_dia }}</p></div>
+                    <div class="metric-info"><h3>Ingresos Hoy</h3><p class="metric-value">€{{ ingresos_dia }}</p></div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-icon" style="color: #667eea; background: #f0f4ff;"><i class="far fa-calendar-alt"></i></div>
@@ -68,7 +68,7 @@
                                 <span class="trend-badge negative"><i class="fas fa-arrow-down"></i> {{ crecimiento_ingresos|default:"0" }}%</span>
                             {% endif %}
                         </div>
-                        <p class="metric-value">${{ ingresos_mes }}</p>
+                        <p class="metric-value">€{{ ingresos_mes }}</p>
                     </div>
                 </div>
             </section>
@@ -113,7 +113,7 @@
                                     <td><strong>{{ r.court.name }}</strong></td>
                                     <td>{{ r.user.username|default:"Cliente" }}</td>
                                     <td>{{ r.start|date:"d/m/Y - H:i" }}</td>
-                                    <td><strong>${{ r.total_price }}</strong></td>
+                                    <td><strong>€{{ r.total_price }}</strong></td>
                                     <td>
                                         {% if r.status == "confirmed" %}
                                             <span class="status-pill confirmed">Confirmada</span>
@@ -154,7 +154,7 @@
                 data: {
                     labels: {{ chart_labels|safe }},
                     datasets: [{
-                        label: 'Ingresos Totales ($)',
+                        label: 'Ingresos Totales (€)',
                         data: {{ chart_data|safe }},
                         borderColor: '#667eea',
                         backgroundColor: gradient,
