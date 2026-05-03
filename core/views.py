@@ -61,7 +61,7 @@ def complejo_detalle(request, complejo_id, slug=None):
     promedio_calificacion = promedio_data['promedio'] or 0
     cantidad_resenas = resenas.count() # Útil para el texto del link
 
-    # 👇 LÓGICA DE NOTIFICACIONES AÑADIDA AQUÍ 👇
+    # LÓGICA DE NOTIFICACIONES
     resenas_pendientes = None
     if request.user.is_authenticated:
         resenas_pendientes = (
@@ -138,7 +138,7 @@ def explorar_complejos(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # Lógica de NOTIFICACIONES (Reseñas pendientes) para la navbar
+    # Lógica de NOTIFICACIONES
     resenas_pendientes = None
     if request.user.is_authenticated:
         resenas_pendientes = (

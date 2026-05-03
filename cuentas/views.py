@@ -170,7 +170,7 @@ def home_propietario(request):
         else:
             next_month_start = current_month_start.replace(month=current_month_start.month + 1)
 
-        # 1. Métricas Básicas
+        # Métricas Básicas
         canchas_activas = complex.courts.count()
         reservas_dia = Booking.objects.filter(court__complex=complex, start__date=today).count()
         ingresos_dia = Booking.objects.filter(
@@ -186,7 +186,7 @@ def home_propietario(request):
 
         reservas_pendientes = Booking.objects.filter(court__complex=complex, start__gte=today, status=Booking.Status.PENDING_PAYMENT).count()
 
-        # 2. Comparativa Mes Anterior (Para el indicador +%)
+        # Comparativa Mes Anterior (Para el indicador +%)
         last_month_start = (current_month_start - datetime.timedelta(days=1)).replace(day=1)
         ingresos_mes_pasado = Booking.objects.filter(
             court__complex=complex, start__gte=last_month_start, start__lt=current_month_start,
@@ -197,7 +197,7 @@ def home_propietario(request):
         if ingresos_mes_pasado > 0:
             crecimiento_ingresos = ((float(ingresos_mes) - float(ingresos_mes_pasado)) / float(ingresos_mes_pasado)) * 100
 
-        # 3. Gráfica Principal: Ingresos Mensuales
+        # Gráfica Principal: Ingresos Mensuales
         ingresos_por_mes = Booking.objects.filter(
             court__complex=complex, start__year=current_year,
             status__in=[Booking.Status.CONFIRMED, Booking.Status.FINISHED]
@@ -210,7 +210,7 @@ def home_propietario(request):
                 mes_index = item['month'].month - 1
                 datos_grafica[mes_index] = float(item['total'])
 
-        # 4. Gráfica Secundaria: Reservas por Deporte
+        # Gráfica Secundaria: Reservas por Deporte
         reservas_por_deporte = Booking.objects.filter(
             court__complex=complex, start__gte=current_month_start, start__lt=next_month_start
         ).values('court__sport').annotate(total=Count('id'))
@@ -218,7 +218,7 @@ def home_propietario(request):
         nombres_deportes = [item['court__sport'] for item in reservas_por_deporte]
         datos_deportes = [item['total'] for item in reservas_por_deporte]
 
-        # 5. Próximas Reservas
+        # Próximas Reservas
         proximas_reservas = Booking.objects.filter(
             court__complex=complex,
             start__gte=timezone.now(),
@@ -648,14 +648,13 @@ def update_image(request, complex_id):
         user = request.user
         perfil_propietario = getattr(user, 'perfil_propietario', None)
 
-        # 1. Seguridad: Verificar que el usuario sea el dueño de este complejo exacto
+        # Verificar que el usuario sea el dueño de este complejo exacto
         if not perfil_propietario or not perfil_propietario.complex or perfil_propietario.complex.id != complex_id:
             return JsonResponse({'error': 'No autorizado'}, status=403)
 
         complex = perfil_propietario.complex
 
-        # 2. Capturar y guardar la imagen
-        # Nota: Los archivos no vienen en request.POST, vienen en request.FILES
+        # Capturar y guardar la imagen
         if 'imagen' in request.FILES:
             complex.imagen = request.FILES['imagen']
             complex.save()
@@ -669,12 +668,12 @@ def update_image(request, complex_id):
 def update_court_api(request, court_id):
     if request.method == 'POST':
         try:
-            # 1. Obtener la cancha y verificar que pertenezca al complejo del usuario
+            # Obtener la cancha y verificar que pertenezca al complejo del usuario
             court = Court.objects.get(id=court_id)
             if court.complex.owner != request.user:
                 return JsonResponse({'error': 'No tienes permiso'}, status=403)
 
-            # 2. Actualizar campos de texto y números
+            # Actualizar campos de texto y números
             court.name = request.POST.get('name')
             court.sport = request.POST.get('sport')
             court.surface = request.POST.get('surface')
@@ -682,7 +681,7 @@ def update_court_api(request, court_id):
             court.base_price_per_hour = request.POST.get('base_price_per_hour')
             court.lighting_extra_per_hour = request.POST.get('lighting_extra_per_hour')
 
-            # 3. Actualizar imagen solo si se subió una nueva
+            # Actualizar imagen solo si se subió una nueva
             if 'imagen' in request.FILES:
                 court.imagen = request.FILES['imagen']
 
@@ -706,13 +705,13 @@ def update_avatar(request):
         if not perfil:
             return JsonResponse({'error': 'Perfil no encontrado'}, status=404)
 
-        # 1. Guardamos los datos de texto si vienen en la petición
+        # Guardamos los datos de texto si vienen en la petición
         if 'nombre' in request.POST:
             perfil.nombre = request.POST['nombre']
         if 'telefono' in request.POST:
             perfil.telefono = request.POST['telefono']
 
-        # 2. Guardamos la imagen si viene en la petición
+        # Guardamos la imagen si viene en la petición
         if 'avatar' in request.FILES:
             perfil.avatar = request.FILES['avatar']
             
