@@ -242,23 +242,41 @@ details[open] .profile-dropdown {
 .btn-register { background: var(--primary); color: white; text-decoration: none; padding: 0.8rem 2rem; border-radius: 50px; font-weight: 600; transition: background 0.3s; }
 .btn-register:hover { background: var(--primary-light); }
 
-/* ============ HEADER DE RESERVAS ============ */
+/* ============ HEADER DE RESERVAS (ACTUALIZADO PARA IMAGEN) ============ */
 .reservas-header {
-    background: linear-gradient(135deg, var(--primary) 0%, #764ba2 100%);
+    background-color: var(--primary);
+    background-size: cover;
+    background-position: center;
     color: white;
-    padding: 60px 20px;
+    padding: 100px 20px; 
     text-align: center;
+    position: relative;
+}
+
+.reservas-header::before {
+    display: none; 
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, rgba(77, 94, 176, 0.85) 0%, rgba(102, 126, 234, 0.85) 100%);
+    z-index: 1;
+}
+
+.reservas-header .container {
+    position: relative;
+    z-index: 2;
 }
 
 .reservas-header h1 {
-    font-size: 2.5rem;
+    font-size: 3rem;
     margin-bottom: 10px;
-    font-weight: 700;
+    font-weight: 800;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.6); 
 }
 
 .reservas-header p {
     font-size: 1.2rem;
-    opacity: 0.95;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.6);
 }
 
 /* ============ SECCIÓN DE FILTROS ============ */
@@ -342,8 +360,9 @@ details[open] .profile-dropdown {
 
 /* ============ SECCIÓN DE RESERVAS ============ */
 .reservas-section {
-    padding: 60px 20px;
-    background: white;
+    padding: 60px 20px 80px;
+    background: #f8f9fa;
+    min-height: 50vh;
 }
 
 .reservas-list {
@@ -449,18 +468,34 @@ details[open] .profile-dropdown {
 
 .btn-danger:hover { background: #d32f2f; }
 
-/* ============ SIN RESERVAS ============ */
+/* ============ SIN RESERVAS (MEJORADO) ============ */
 .no-reservas {
     text-align: center;
-    padding: 80px 20px;
+    padding: 80px 30px;
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    max-width: 600px;
+    margin: 40px auto;
+    border: 1px solid var(--border);
+}
+
+.no-reservas i {
+    font-size: 4.5rem;
+    color: #cbd5e1;
+    margin-bottom: 20px;
+}
+
+.no-reservas h3 {
+    font-size: 1.6rem;
+    color: var(--text);
+    margin-bottom: 10px;
+    font-weight: 700;
 }
 
 .no-reservas p {
-    font-size: 1.2rem;
-    color: #666;
+    font-size: 1.1rem;
+    color: var(--muted);
     margin-bottom: 30px;
 }
 
