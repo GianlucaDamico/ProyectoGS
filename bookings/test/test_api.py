@@ -257,6 +257,21 @@ class BookingAPINormalUserTest(APITestCase):
         
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 1)
+
+    def test_disponibilidad_includes_other_users_reservations(self):
+        """
+        Test: la disponibilidad debe reflejar reservas de todos los usuarios.
+        """
+        fecha = self.start.date().isoformat()
+        url = f'/api/bookings/disponibilidad/?court_id={self.court.id}&fecha={fecha}'
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('ocupados', response.data)
+
+        # Debe incluir la reserva propia a las 18:00 y la reserva del otro usuario a las 20:00
+        self.assertIn('18:00', response.data['ocupados'])
+        self.assertIn('20:00', response.data['ocupados'])
     
     def test_my_bookings_future_filter(self):
         """

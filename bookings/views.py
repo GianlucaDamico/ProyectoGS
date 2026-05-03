@@ -180,12 +180,10 @@ class BookingViewSet(viewsets.ModelViewSet):
         if not court_id or not fecha:
             return Response({'error': 'Faltan parámetros court_id y fecha'}, status=400)
         
-        reservas = self.get_queryset().filter(
-            court_id=court_id, 
+        reservas = Booking.objects.filter(
+            court_id=court_id,
             start__date=fecha
-        )
-        
-        reservas = reservas.exclude(status='CANCELLED')
+        ).exclude(status='CANCELLED')
         
         horas_ocupadas = []
         for reserva in reservas:
