@@ -50,7 +50,7 @@ class ReviewAdmin(admin.ModelAdmin):
     list_display = ['get_user_name', 'complex', 'rating', 'created_at']
     list_filter = ['rating', 'complex', 'created_at']
     search_fields = ['user__first_name', 'user__username', 'complex__name', 'description']
-    readonly_fields = ['booking', 'complex', 'user', 'created_at']
+    readonly_fields = ['created_at']
     
     fieldsets = (
         ('Información de la Reseña', {
